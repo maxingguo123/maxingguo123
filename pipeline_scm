@@ -3,8 +3,7 @@ pipeline {
   stages {
     stage('Deploy') {
         steps {
-            {sh "kubectl apply -f stream.yaml"
-            }
+            timeout(time: 1, unit: 'MINUTES') {sh "kubectl apply -f stream.yaml"}
         }
     }    
   }  
