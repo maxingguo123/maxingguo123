@@ -2,13 +2,9 @@ pipeline {
   agent { label 'common' }
   stages {
     stage('Deploy') {
-        //sh "sh modify_yaml_mlc.sh"
-        //sh 'sed -i \'24c \\        kubernetes.io/hostname: ying-k8s-jenkins\' k8s_test_mlc.yaml'
-        //sh 'sed -i \'20c \\        command: ["./MLC.sh","PEAK_BANDWIDTH"]\' k8s_test_mlc.yaml'
-        //sh 'sed -i \'20c \\        command: ["./MLC.sh","REMOTE_LATENCY"]\' k8s_test_mlc.yaml'
-        //sh 'sed -i \'20c \\        command: ["./MLC.sh","LOCAL_LATENCY"]\' k8s_test_mlc.yaml'
-        sh "kubectl apply -f stream.yaml"
-        //sh "sh log_yaml_mlc.sh"
+        steps {
+        {sh "kubectl apply -f stream.yaml"}
+               }
     }
 }
 }
