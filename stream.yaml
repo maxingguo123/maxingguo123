@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: jenkins-stream
+  namespace: kube-app
+  annotations:
+    time: time15
+spec:
+  template:
+    metadata:
+      labels:
+        app: jenkins-stream
+    spec:
+      imagePullSecrets:
+      - name: jenkins-docker
+      containers:
+      - image: pnp-harbor.sh.intel.com/pnp/stream:latest
+        imagePullPolicy: Always
+        name: jenkins-stream
+        command: ["./docker_stream.sh"]
+        securityContext:
+          privileged: true
+      nodeSelector: 
+        kubernetes.io/hostname: localhost.localdomain
+      restartPolicy: Never
