@@ -1,3 +1,4 @@
+def KUBECONFIG="--kubeconfig=/data_bck/kubeconfig/config"
 pipeline {
   agent { label 'common' }
   stages {
