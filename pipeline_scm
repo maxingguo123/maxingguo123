@@ -3,8 +3,9 @@ pipeline {
   stages {
     stage('Deploy') {
         steps {
-        {sh "kubectl apply -f stream.yaml"}
-               }
-    }
-}
+            {sh "kubectl apply -f stream.yaml"
+            }
+        }
+    }    
+  }  
 }
