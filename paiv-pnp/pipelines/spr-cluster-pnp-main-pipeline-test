@@ -1,10 +1,10 @@
 // Pipeline specific variables
 
 def cluster="spr"
-def test_list = ["paiv-pnp/linpack/linpack_avx2", "paiv-pnp/linpack/linpack_avx512", "paiv-pnp/ai/ai_resnet50_inference", "paiv-pnp/speccpu/specrate2017-int", "paiv-pnp/speccpu/specrate2017-fp", "paiv-pnp/stream/stream_sse", "paiv-pnp/stream/stream_avx2", "paiv-pnp/stream/stream_avx512", "paiv-pnp/mlc/mlc_bandwidth", "paiv-pnp/mlc/mlc_idle_latency"]
+def test_list = ["paiv-pnp/stream/stream_avx2"]
 
 
-def KUBECONFIG="--kubeconfig=/srv/kube/config.opus"
+def KUBECONFIG="--kubeconfig=/data_bck/kubeconfig/config"
 def JENKINS_NODE_LABEL="pnp-content-test-spr"
 def NS="pnp-content-test-spr"
 pipeline {
@@ -31,7 +31,7 @@ def private base
 def run_job(job_file) {
   base = load "${env.WORKSPACE}/base/base.groovy"
   job = load(job_file)
-  env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.opus"
+  env.KUBECTL_ARGS="--kubeconfig=/data_bck/kubeconfig/config"
   base.init()
   env.JENKINS_NODE_LABEL="pnp-content-test-spr"
   env.NS="pnp-content-test-spr"
