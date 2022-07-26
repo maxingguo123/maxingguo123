@@ -11,14 +11,14 @@ def init(type=null) {
             if(env.DEPLOYMENT_YAML_URL.contains("github")) {
                 index = "https://raw.githubusercontent.com".length()
                 end = env.DEPLOYMENT_YAML_URL.substring(index)
-                sh 'https_proxy=proxy-dmz.intel.com:912 curl -O https://$SECRET@raw.githubusercontent.com'+end
+                sh 'https_proxy=child-prc.intel.com:913 curl -O https://$SECRET@raw.githubusercontent.com'+end
             } else if(env.DEPLOYMENT_YAML_URL.contains("gitlab")) {
                 sh "curl -O ${env.DEPLOYMENT_YAML_URL}"
             } else {
                 echo "DEPLOYMENT_YAML_URL=${env.DEPLOYMENT_YAML_URL} does not match github or gitlab URL pattern"
             }
         } else {
-            sh 'https_proxy=proxy-dmz.intel.com:911 curl -O https://$SECRET@raw.githubusercontent.com/intel-innersource/applications.infrastructure.data-center.test-cluster.cluster-infra/main/k8s/sandstone_run_specific.yaml'
+            sh 'https_proxy=child-prc.intel.com:913 curl -O https://$SECRET@raw.githubusercontent.com/maxingguo123/maxingguo123/main/k8s/sandstone_run_specific.yaml'
         }
     }
 
@@ -33,7 +33,7 @@ def init(type=null) {
             break;
     }
     withCredentials([string(credentialsId: 'onesource', variable: 'SECRET')]) { //set SECRET with the credential content
-        sh 'https_proxy=proxy-dmz.intel.com:911 curl -O https://$SECRET@raw.githubusercontent.com/intel-innersource/applications.infrastructure.data-center.test-cluster.cluster-infra/main/k8s/jenkins-cluster-cd-specific.sh'
+        sh 'https_proxy=child-prc.intel.com:913 curl -O https://$SECRET@raw.githubusercontent.com/maxingguo123/maxingguo123/main/k8s/jenkins-cluster-cd-specific.sh'
     }
     sh 'chmod +x jenkins-cluster-cd-specific.sh'
 }
