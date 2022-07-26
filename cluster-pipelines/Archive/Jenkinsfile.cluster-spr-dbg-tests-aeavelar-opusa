@@ -1,0 +1,45 @@
+// Pipeline specific variables
+
+def cluster="spr"
+//def def_list = ["sandstone/sandstone-release","tmul-amx/tmul-amx","benchdnn/benchdnn","shc/shc","ive-povray/ive-povray","memory-subsystem/mlc","sandstone/sandstone-combo","packer-qemu-mixed/packer-qemu-mixed"]
+def def_list = ["TSL/TSL","tmul-amx/tmul-amx","benchdnn/benchdnn","shc/shc","ive-povray/ive-povray","jasper/mlc","sandstone/sandstone-combo","packer-qemu-mixed/packer-qemu-mixed"]
+def test_list = def_list
+def NS="spr-dbg-tests-aeavelar"
+def KUBECONFIG="--kubeconfig=/srv/kube/config.opus"
+def JENKINS_NODE_LABEL="spr-dbg-tests-aeavelar"
+
+pipeline {
+  agent { label 'common' }
+  stages {
+    stage("Tests") {
+      steps {
+        script {
+          test_list.each { test ->
+          stage(test) {
+            catchError {
+                run_job("${env.WORKSPACE}/${test}.${cluster}")
+            }
+          }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Agnostic variables and functions
+def private iter
+def private base
+def run_job(job_file) {
+  base = load "${env.WORKSPACE}/base/base.groovy"
+  job = load(job_file)
+  base.init()
+  env.NS = "spr-dbg-tests-aeavelar"
+  env.JENKINS_NODE_LABEL = "spr-dbg-tests-aeavelar"
+  env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.opus"
+  iter = (env.ITERATIONS as int) ?: (1 as int)
+  for (int i = 0; i < iter; i++) {
+    base.run(env.JOB_RUNTIME)
+  }
+  base.reset()
+}

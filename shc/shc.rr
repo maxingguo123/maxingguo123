@@ -1,0 +1,4 @@
+load "${env.WORKSPACE}/shc/shc.base"
+
+env.JENKINS_TEST_TAG="shc_bdx_csp_305"
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.rr"

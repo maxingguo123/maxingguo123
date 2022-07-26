@@ -1,0 +1,3 @@
+load "${env.WORKSPACE}/TSL/TSL.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"

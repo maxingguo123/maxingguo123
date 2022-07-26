@@ -1,0 +1,106 @@
+// Pipeline specific variables
+
+def cluster="spr"
+
+def mlc_list = ["jasper/mlc-samsung"]
+def NS="spr-dbg-osmargin-screenb"
+def KUBECONFIG="--kubeconfig=/srv/kube/config.icx-1"
+def JENKINS_NODE_LABEL="spr-dbg-osmargin-screenb"
+
+//RMT initial and rollback knobs
+//Knob TrainingResultOffsetFunctionEnable needs to be enabled before the offset training
+def RMT_KNOBS_INIT="bdatEn=1,EnableEvLoader=1,EnableRMT=1,RMTPerBitMargining=1,RMTBacksideMargining=1,AttemptFastBoot=0,AttemptFastBootCold=0,EnableRMTonFCB=0,AllowedSocketsInParallel=1,TrainingResultOffsetFunctionEnable=1"
+def RMT_KNOBS_ROLLBACK="bdatEn=1,EnableEvLoader=0,EnableRMT=0,RMTPerBitMargining=1,RMTBacksideMargining=0,AttemptFastBoot=1,AttemptFastBootCold=1,EnableRMTonFCB=0,AllowedSocketsInParallel=0,TrainingResultOffsetFunctionEnable=0,OffsetRxDq=0x64,TelemetryRxDqsDelayRightEdge=0x7"
+
+//Offset training + Telemetry value
+def offset_list = ["OffsetRxDq=0x7,OffsetRxVref=0x64,TelemetryRxDqsDelayRightEdge=0xE,TelemetryRxDqsDelayLeftEdge=0x7,TelemetryRxVrefRightEdge=0x6,TelemetryRxVrefLeftEdge=0x6","OffsetRxDq=0x6b,OffsetRxVref=0x64,TelemetryRxDqsDelayRightEdge=0x7,TelemetryRxDqsDelayLeftEdge=0xE,TelemetryRxVrefRightEdge=0x6,TelemetryRxVrefLeftEdge=0x6"]
+
+pipeline {
+    agent { label 'common' }
+    stages {
+
+        stage("RMT INITIAL KNOBS") {
+            steps {
+                script {
+                    stage("rmt-knobs-start") {
+                        catchError {
+                            build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value:"${NS}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}"), string(name: "KNOBS", value: "${RMT_KNOBS_INIT}"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+                        }
+                    }
+                }
+            }
+        }
+
+        stage("TESTS") {
+            steps {
+                script {
+                    mlc_list.each { test ->
+                    stage(test) {
+                        catchError {
+                            run_job("${env.WORKSPACE}/${test}.${cluster}")
+                        }
+                    }
+                    }
+                }
+            }
+        }
+
+        stage("OS MARGIN RXDQ/RXVR") {
+            steps {
+                script {
+                    offset_list.each { offset ->
+                    stage("offset-knobs") {
+                        catchError {
+                            build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value:"${NS}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}"), string(name: "KNOBS", value:"${offset}"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+                        }
+                    }
+                    stage("memory-margin") {
+                        catchError {
+                            build(job: "Tests/memory-margin", parameters:  [string(name: "NS", value:"${NS}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}"), string(name: "JENKINS_NODE_LABEL", value:  "${JENKINS_NODE_LABEL}"), string(name: "CYCLES", value: "0")])
+                        }
+                    }
+                    stage("TESTS") {
+                        mlc_list.each { test ->
+                        stage(test) {
+                            catchError {
+                                run_job("${env.WORKSPACE}/${test}.${cluster}")
+                            }
+                        }
+                        }
+                    }
+                    }
+                }
+            }
+        }
+
+        stage("RMT ROLLBACK KNOBS") {
+            steps {
+                script {
+                    stage("rmt-knobs-rollback") {
+                       catchError {
+                            build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value:"${NS}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}"), string(name: "KNOBS", value: "${RMT_KNOBS_ROLLBACK}"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+                       }
+                    }
+                }
+            }
+        }
+
+    }
+}
+
+// Agnostic variables and functions
+def private iter
+def private base
+def run_job(job_file) {
+  base = load "${env.WORKSPACE}/base/base.groovy"
+  job = load(job_file)
+  base.init()
+  env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+  env.NS = "spr-dbg-osmargin-screenb"
+  env.JENKINS_NODE_LABEL = "spr-dbg-osmargin-screenb"
+  iter = (env.ITERATIONS as int) ?: (1 as int)
+  for (int i = 0; i < iter; i++) {
+    base.run(env.JOB_RUNTIME)
+  }
+  base.reset()
+}

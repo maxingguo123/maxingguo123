@@ -1,0 +1,7 @@
+env.JENKINS_TEST_TAG="ive-benchdnn-v1p4-22ww07-5"
+env.JENKINS_TEST_LABEL="ive-benchdnn-v1p4-22ww07-5"
+env.JENKINS_NODE_LABEL="ive-benchdnn-v1p4-22ww07-5"
+env.JENKINS_TEST_BINARY="\\/ive\\/content\\/ive-watch"
+env.JENKINS_TEST_ARGS="-name=ive-benchdnn -time=43200 -display=error -- -steps=32"
+env.JOB_RUNTIME=46800
+env.EMAIL="francisco.javier.rojas.correa@intel.com"

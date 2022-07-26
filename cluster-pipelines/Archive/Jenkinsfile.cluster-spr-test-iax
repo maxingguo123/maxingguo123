@@ -1,0 +1,67 @@
+// Pipeline specific variables
+
+def cluster="spr"
+def test_list = ["iax-kdmatest/iax-kdmatest"]
+def NS="spr-test-iax"
+def KUBECONFIG="--kubeconfig=/srv/kube/config.icx-1"
+def JENKINS_NODE_LABEL="spr-test-iax" 
+
+pipeline {
+  agent { label 'common' }
+  stages {
+
+      stage("IAX/KERNEL") {
+          steps {
+              script {
+                  /*stage("iax/knobs-start") {
+                      catchError {
+                          build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KNOBS", value: "VTdSupport=1,InterruptRemap=1,PcieEnqCmdSupport=1,ProcessorVmxEnable=1"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+                      }
+                  }*/
+                  /*stage("iax/kernel-start") {
+                      catchError {
+                          build(job: "Tests/kernelcli_run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KERNEL_PARAMETERS", value: "intel_iommu=on,intel_iommu=sm_on,iommu=on,no5lvl"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+                      }
+                  }*/
+                  stage("iax test") {
+                      test_list.each { test ->
+                      stage(test) {
+                          catchError {
+                              run_job("${env.WORKSPACE}/${test}.${cluster}")
+                          }
+                      }
+                      }
+                  }
+                  /*stage("iax/kernel-end") {
+                      catchError {
+                          build(job: "Tests/kernelcli_run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KERNEL_PARAMETERS", value: "intel_iommu=on,intel_iommu=sm_on,ats_with_iommu_swizzle"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+                      }
+                  }*/
+                  /*stage("iax/knobs-end") {
+                      catchError {
+                          build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KNOBS", value: "VTdSupport=1,InterruptRemap=2,PcieEnqCmdSupport=0,ProcessorVmxEnable=1"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+                      }
+                  }*/
+              }
+          }
+      }
+
+  }
+}
+
+// Agnostic variables and functions
+def private iter
+def private base
+def run_job(job_file) {
+  base = load "${env.WORKSPACE}/base/base.groovy"
+  job = load(job_file)
+  base.init()
+  env.NS = "spr-test-iax"
+  env.JENKINS_NODE_LABEL = "spr-test-iax"
+  env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+  iter = (env.ITERATIONS as int) ?: (1 as int)
+  for (int i = 0; i < iter; i++) {
+    base.run(env.JOB_RUNTIME)
+  }
+  base.reset()
+}

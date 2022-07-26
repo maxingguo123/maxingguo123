@@ -1,0 +1,66 @@
+// Pipeline specific variables
+
+def cluster="spr"
+def NS="spr-dbg-tests-aeavelar"
+def KUBECONFIG="--kubeconfig=/srv/kube/config.flex"
+def JENKINS_NODE_LABEL="spr-dbg-tests-aeavelar"
+
+pipeline {
+  agent { label 'piv' }
+  stages {
+
+        stage("START KNOBS") {
+                steps {
+                    script {
+                        stage("knobs-start") {
+                            catchError {
+                            build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value:"${NS}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}"), string(name: "KNOBS", value: "AttemptFastBoot=0,AttemptFastBootCold=0"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+                            }
+                        }
+                    }
+                }
+            }
+   
+         stage("COLD RESET") {
+          steps {
+            script {
+              stage("RF-cycles-in-cold") {
+                catchError {
+                  build(job: "Tests/cycle-in-reboot", parameters:  [string(name: "NS", value:"${NS}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}"), string(name: "JENKINS_NODE_LABEL", value:  "${JENKINS_NODE_LABEL}"), string(name: "REBOOT_TYPE", value: "rf_cold"), string(name: "CYCLES", value: "20"), string(name: "SS", value: "FALSE")])
+                }
+              }
+            }
+          }
+        }
+   
+        stage("ROLLBACK KNOBS") {
+                steps {
+                    script {
+                        stage("knobs-Eend") {
+                            catchError {
+                            build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value:"${NS}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}"), string(name: "KNOBS", value: "AttemptFastBoot=1,AttemptFastBootCold=1"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+                            }
+                        }
+                    }
+                }
+            }
+   
+  }
+}
+
+// Agnostic variables and functions
+def private iter
+def private base
+def run_job(job_file) {
+  base = load "${env.WORKSPACE}/base/base.groovy"
+  job = load(job_file)
+  base.init()
+  env.NS = "spr-dbg-tests-aeavelar"
+  env.JENKINS_NODE_LABEL = "spr-dbg-tests-aeavelar"
+  env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.flex"
+  iter = (env.ITERATIONS as int) ?: (1 as int)
+  for (int i = 0; i < iter; i++) {
+    base.run(env.JOB_RUNTIME)
+  }
+  base.reset()
+}

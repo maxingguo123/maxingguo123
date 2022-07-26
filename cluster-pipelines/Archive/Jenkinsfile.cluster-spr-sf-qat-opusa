@@ -1,0 +1,72 @@
+// Pipeline specific variables
+
+def cluster="spr"
+
+def qat_hw = ["hero-OpenSSL-RSAMB/hero-openssl-rsamb-hw"]
+def qat_sw = ["hero-OpenSSL-RSAMB/hero-openssl-rsamb-sw"]
+def qat_list = qat_hw + qat_sw
+
+def NS="spr-sf-qat"
+def KUBECONFIG="--kubeconfig=/srv/kube/config.opus"
+def JENKINS_NODE_LABEL="spr-sf-qat"
+
+pipeline {
+  agent { label 'common' }
+  stages {
+
+      stage("QAT/KERNEL") {
+          steps {
+              script {
+                  stage("qat/knobs-start") {
+                      catchError {
+                          build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KNOBS", value: "VTdSupport=0"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+                      }
+                  }
+                  stage("qat/kernel-start") {
+                      catchError {
+                          build(job: "Tests/kernelcli_run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KERNEL_PARAMETERS", value: "intel_iommu=off,iommu=pt,iommu=on,hugepages=1024"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+                      }
+                  }
+                  stage("qat tests") {
+                      qat_list.each { test ->
+                      stage(test) {
+                          catchError {
+                              run_job("${env.WORKSPACE}/${test}.${cluster}")
+                          }
+                      }
+                      }
+                  }
+                  stage("qat/kernel-end") {
+                      catchError {
+                          build(job: "Tests/kernelcli_run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KERNEL_PARAMETERS", value: "intel_iommu=on,iommu=pt,iommu=on,hugepages=1024"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+                      }
+                  }
+                  stage("qat/knobs-end") {
+                      catchError {
+                          build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KNOBS", value: "VTdSupport=1"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+                      }
+                  }
+              }
+          }
+      }
+
+
+  }
+}
+
+// Agnostic variables and functions
+def private iter
+def private base
+def run_job(job_file) {
+  base = load "${env.WORKSPACE}/base/base.groovy"
+  job = load(job_file)
+  base.init()
+  env.NS = "spr-sf-qat"
+  env.JENKINS_NODE_LABEL = "spr-sf-qat"
+  env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.opus"
+  iter = (env.ITERATIONS as int) ?: (1 as int)
+  for (int i = 0; i < iter; i++) {
+    base.run(env.JOB_RUNTIME)
+  }
+  base.reset()
+}

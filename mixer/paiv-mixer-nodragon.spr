@@ -1,0 +1,4 @@
+load "${env.WORKSPACE}/mixer/paiv-mixer.base"
+
+env.JENKINS_TEST_TAG="paiv-mixer-nodragon-v2.0"
+env.JENKINS_TEST_LABEL="paiv-mixer-nodragon"

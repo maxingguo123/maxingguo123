@@ -1,0 +1,6 @@
+load "${env.WORKSPACE}/shc/shc.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+env.JENKINS_TEST_LABEL="virt-shc"
+env.JENKINS_NODE_LABEL="oss-virt-test"
+env.NS="oss-2"

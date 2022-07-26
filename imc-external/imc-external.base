@@ -1,0 +1,7 @@
+env.JENKINS_TEST_TAG="imc_external_0.5"
+env.JENKINS_TEST_LABEL="imc-external"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/tests\\/scripts\\/shc"
+env.JENKINS_TEST_ARGS="-c"
+env.EXTRA_ARGS_ARG="\\/tests\\/scripts\\/scripts\\/bin\\/imc_runner.py \\/tests\\/scripts\\/cluster_imc_test_case.xml"
+env.JOB_RUNTIME=600

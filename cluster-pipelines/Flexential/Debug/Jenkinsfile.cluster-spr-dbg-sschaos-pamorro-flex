@@ -1,0 +1,74 @@
+// Pipeline specific variables
+
+def cluster="spr"
+def test_list = ["sandstone/sandstone-combo"]
+//def test_list = ["TSL/TSL","sandstone/sandstone-combo","jasper/combo-02-test"]
+//def test_list = ["TSL/TSL","shc/shc","high-freq-sweep/high-freq-sweep"]
+//def list_combo = ["jasper/combo-02-test"]
+def NS="spr-dbg-tests-pamorro"
+def KUBECONFIG="--kubeconfig=/srv/kube/config.flex"
+def JENKINS_NODE_LABEL="spr-dbg-tests-pamorro"
+
+pipeline {
+  agent { label 'piv' }
+  stages {
+
+    stage("WORKLOADS") {
+      steps {
+        script {
+          test_list.each { test ->
+          stage(test) {
+            catchError {
+                run_job("${env.WORKSPACE}/${test}.${cluster}")
+            }
+          }
+          }
+        }
+      }
+    }
+
+       /*stage("WARM RESET HIGH-FREQ") {
+            steps {
+                script {
+                  stage("RF-cycles-in-warm") {
+                      catchError {
+                         build(job: "Tests/cycle-in-reboot", parameters:  [string(name: "NS", value:"${NS}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}"), string(name: "JENKINS_NODE_LABEL", value:  "${JENKINS_NODE_LABEL}"), string(name: "REBOOT_TYPE", value: "rf_warm"), string(name: "CYCLES", value: "1"), string(name: "SS", value: "FALSE")])
+                      }
+                  }
+                }
+            }
+        }
+
+    stage("WORKLOADS2") {
+      steps {
+        script {
+          list_combo.each { test ->
+          stage(test) {
+            catchError {
+                run_job("${env.WORKSPACE}/${test}.${cluster}")
+            }
+          }
+          }
+        }
+      }
+    }*/
+
+  }
+}
+
+// Agnostic variables and functions
+def private iter
+def private base
+def run_job(job_file) {
+  base = load "${env.WORKSPACE}/base/base.groovy"
+  job = load(job_file)
+  base.init()
+  env.NS = "spr-dbg-tests-pamorro"
+  env.JENKINS_NODE_LABEL = "spr-dbg-tests-pamorro"
+  env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.flex"
+  iter = (env.ITERATIONS as int) ?: (1 as int)
+  for (int i = 0; i < iter; i++) {
+    base.run(env.JOB_RUNTIME)
+  }
+  base.reset()
+}

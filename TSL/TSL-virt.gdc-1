@@ -1,0 +1,8 @@
+load "${env.WORKSPACE}/TSL/TSL.base"
+
+env.TEST_RUNTIME="24h"
+env.JOB_RUNTIME=86400
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config"
+env.JENKINS_TEST_LABEL="virt-tsl"
+env.NS="virt"
+env.JENKINS_NODE_LABEL="oss-virt-test"

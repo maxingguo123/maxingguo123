@@ -1,0 +1,9 @@
+env.JENKINS_TEST_TAG="patchload1.24"
+env.JENKINS_TEST_LABEL="patchload"
+env.JENKINS_NODE_LABEL="ospl_mr2" 
+env.JENKINS_TEST_BINARY="\\/tests\\/patchload.sh"
+env.JENKINS_TEST_ARGS="d0002b100000000"
+env.NS="ospl-1"
+env.JOB_RUNTIME=600
+env.SANDSTONE_DEPLOYMENT="${env.WORKSPACE}/ospl_run_specific.yaml"
+env.DEPLOYMENT_YAML_URL="https://gitlab.devtools.intel.com/sghume/prt-int-cluster/-/raw/ospl-to-prt-v1/ospl/ospl_run_specific.yaml"

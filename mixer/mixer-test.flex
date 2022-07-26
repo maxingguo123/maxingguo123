@@ -1,0 +1,9 @@
+env.JENKINS_TEST_TAG="paiv-mixer-v1.2"
+env.JENKINS_TEST_LABEL="paiv-mixer"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/tests\\/scripts\\/run.sh"
+env.JENKINS_TEST_ARGS="-d 4h -l \\/var\\/local\\/logs"
+env.JOB_RUNTIME=255000
+env.DEPLOYMENT_YAML_URL="https://raw.githubusercontent.com/intel-innersource/applications.infrastructure.data-center.jenkins.prt-int-cluster/main/ive/sandstone_run_specific.yaml"
+env.SANDSTONE_DEPLOYMENT="${env.WORKSPACE}/sandstone_run_specific.yaml"
+env.EMAIL="robert.j.miller@intel.com"

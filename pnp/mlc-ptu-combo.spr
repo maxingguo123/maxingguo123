@@ -1,0 +1,5 @@
+load "${env.WORKSPACE}/pnp/mlc-ptu-combo.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+env.JENKINS_NODE_LABEL="npn"
+env.NS="piv-7"

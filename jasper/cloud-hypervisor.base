@@ -1,0 +1,9 @@
+env.JENKINS_TEST_TAG="jasper-cloud-hypervisor-example-v0.7"
+env.JENKINS_TEST_LABEL="jasper-cloud-hypervisor"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/run.sh"
+env.JENKINS_TEST_ARGS="echo 'vm_nproc: `nproc`'"
+env.JOB_RUNTIME=900
+env.ITERATIONS=2
+env.CLH_BOOT_TIMEOUT=90
+env.CLH_BOOT_ALL_CPUS=true

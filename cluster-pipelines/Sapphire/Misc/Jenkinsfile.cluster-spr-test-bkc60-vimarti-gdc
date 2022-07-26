@@ -1,0 +1,73 @@
+// Pipeline specific variables
+
+def cluster="spr"
+//def test_list = ["jasper/kvm-unit-tests"]
+def mixer_list = ["mixer/paiv-mixer"]
+def test_list = ["ive-stressapptest/ive-stressapptest","ive-vt/hybrid-dense"]
+def NS="spr-test-bkc60-vimarti"
+def KUBECONFIG="--kubeconfig=/srv/kube/config.icx-1"
+def JENKINS_NODE_LABEL="spr-test-bkc60-vimarti"
+
+pipeline {
+  agent { label 'piv' }
+  stages {
+
+        stage("MIXER") {
+            steps {
+                script {
+                    mixer_list.each { test ->
+                    stage(test) {
+                        catchError {
+                            run_job("${env.WORKSPACE}/${test}.${cluster}")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+       stage("WARM RESET MIXER") {
+            steps {
+                script {
+                  stage("RF-cycles-in-warm") {
+                      catchError {
+                         build(job: "Tests/cycle-in-reboot", parameters:  [string(name: "NS", value:"${NS}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}"), string(name: "JENKINS_NODE_LABEL", value:  "${JENKINS_NODE_LABEL}"), string(name: "REBOOT_TYPE", value: "rf_warm"), string(name: "CYCLES", value: "1"), string(name: "SS", value: "FALSE")])
+                      }
+                  }
+                }
+            }
+        }
+
+        stage("WORKLOADS") {
+            steps {
+                script {
+                    test_list.each { test ->
+                    stage(test) {
+                        catchError {
+                            run_job("${env.WORKSPACE}/${test}.${cluster}")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+  }     
+}
+
+// Agnostic variables and functions
+def private iter
+def private base
+def run_job(job_file) {
+  base = load "${env.WORKSPACE}/base/base.groovy"
+  job = load(job_file)
+  base.init()
+  env.NS = "spr-test-bkc60-vimarti"
+  env.JENKINS_NODE_LABEL = "spr-test-bkc60-vimarti"
+  env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+  iter = (env.ITERATIONS as int) ?: (1 as int)
+  for (int i = 0; i < iter; i++) {
+    base.run(env.JOB_RUNTIME)
+  }
+  base.reset()
+}

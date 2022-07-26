@@ -1,0 +1,5 @@
+env.JENKINS_TEST_TAG="pmem_v1.3"
+env.JENKINS_TEST_LABEL="pmem"
+env.JENKINS_TEST_BINARY="\\/run.sh"
+
+

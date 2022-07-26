@@ -1,0 +1,3 @@
+load "${env.WORKSPACE}/imc-external/imc-external.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.opus"

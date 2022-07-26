@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ucode-mapping
+  namespace: mgmt
+data:
+  ucode_config.yaml: |-
+    cluster_endpoint: "http://ive-infra04.deacluster.intel.com:5000"
+    location: "l10b2"
+    pools:
+      ICX_XCC-D1_PLN_EXC_DEFAULT_SGX-PIPELINE_DEEPAKKU: "SKIP"
+      ICX_XCC-D1_INF_DEP_FREE_SGX_MACERVAN: "SKIP"

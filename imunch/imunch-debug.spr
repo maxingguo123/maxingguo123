@@ -1,0 +1,6 @@
+load "${env.WORKSPACE}/imunch/imunch.base"
+
+env.JENKINS_TEST_ARGS=""
+env.JOB_RUNTIME=300
+env.JENKINS_TEST_TAG="imunch-2.9.2-debug"
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"

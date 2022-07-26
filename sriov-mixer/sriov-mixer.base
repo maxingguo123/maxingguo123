@@ -1,0 +1,9 @@
+env.JENKINS_TEST_TAG="sriov-random-mix-v1.9"
+env.JENKINS_TEST_LABEL="sriov-random-mix"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/tests\\/run-specific.sh"
+env.JENKINS_TEST_ARGS="-d"
+env.JOB_RUNTIME=30000
+
+env.DEPLOYMENT_YAML_URL="https://raw.githubusercontent.com/intel-innersource/applications.infrastructure.data-center.jenkins.prt-int-cluster/main/sriov-mixer/sriov-mixer.yaml"
+env.SANDSTONE_DEPLOYMENT="${env.WORKSPACE}/sriov-mixer.yaml"

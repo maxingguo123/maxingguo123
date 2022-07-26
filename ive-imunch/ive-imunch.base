@@ -1,0 +1,9 @@
+env.JENKINS_TEST_TAG="ive-genie-generic-imunch-v1p0-22ww14-2"
+env.JENKINS_TEST_LABEL="ive-genie-generic-imunch-v1p0-22ww14-2"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/run_content.sh"
+env.JENKINS_TEST_ARGS="-t 18 -wl 'IMunch'"
+env.JOB_RUNTIME=67800
+env.DEPLOYMENT_YAML_URL="https://gitlab-mirror-fm.devtools.intel.com/sandstone/prt-int-cluster/-/raw/master/ive/sandstone_run_specific.yaml"
+env.SANDSTONE_DEPLOYMENT="${env.WORKSPACE}/sandstone_run_specific.yaml"
+env.EMAIL="ive-genie@intel.com"

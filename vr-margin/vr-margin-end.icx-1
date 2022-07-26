@@ -1,0 +1,3 @@
+load "${env.WORKSPACE}/vr-margin/vr-margin-end.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"

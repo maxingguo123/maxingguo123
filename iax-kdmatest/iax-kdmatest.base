@@ -1,0 +1,12 @@
+//contact: mauricio.rodriguez.yepez@intel.com
+//iax-kdmatest test
+
+env.JENKINS_TEST_TAG="iax-kdmatest-v0.2"
+env.JENKINS_TEST_LABEL="iax-kdmatest"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/tests\\/scripts\\/run-specific.sh"
+env.JENKINS_TEST_ARGS=""
+env.JOB_RUNTIME=600
+
+env.DEPLOYMENT_YAML_URL="https://raw.githubusercontent.com/intel-innersource/applications.infrastructure.data-center.test-cluster.cluster-infra/main/k8s/sandstone_run_specific.yaml"
+env.SANDSTONE_DEPLOYMENT="${env.WORKSPACE}/sandstone_run_specific.yaml"

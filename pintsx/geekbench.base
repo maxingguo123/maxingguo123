@@ -1,0 +1,11 @@
+env.JENKINS_TEST_TAG="ive_geekbench-pintsx"
+env.JENKINS_TEST_LABEL="ive-geekbench-pintsx"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/tests\\/run_content.sh"
+env.JENKINS_TEST_ARGS=""
+env.JOB_RUNTIME=24000
+env.GB_USER_ARG=sh(script: "cat /srv/secrets/GB_USER", returnStdout: true).trim()
+env.GB_KEY_ARG=sh(script: "cat /srv/secrets/GB_LICENSE", returnStdout: true).trim()
+env.GB_ITERATIONS_ARG=120
+env.DEPLOYMENT_YAML_URL="https://gitlab-mirror-fm.devtools.intel.com/sandstone/prt-int-cluster/-/raw/master/geekbench/sandstone_run_specific.yaml"
+env.SANDSTONE_DEPLOYMENT="${env.WORKSPACE}/sandstone_run_specific.yaml"

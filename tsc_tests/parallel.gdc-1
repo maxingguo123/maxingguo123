@@ -1,0 +1,4 @@
+load "${env.WORKSPACE}/tsc_tests/parallel.base"
+
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config"

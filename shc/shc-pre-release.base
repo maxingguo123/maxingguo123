@@ -1,0 +1,12 @@
+env.JENKINS_TEST_TAG="unified_small_hvm_final_test_gdc_small_v8.8.8"
+env.JENKINS_TEST_LABEL="shc-val-pre-release"
+env.JENKINS_NODE_LABEL="shc-pre-release"
+env.JENKINS_TEST_BINARY=""
+env.JENKINS_TEST_ARGS=""
+env.DRAGON_TYPE_ARG=""
+env.DRAGON_ARGS_ARG=""
+env.RUN_DRAGON_ARG=true
+env.EXTRA_ARGS_ARG=""
+env.JOB_RUNTIME=5400
+env.ITERATIONS=2
+env.EMAIL="dpg_fsce_cluster_dl@intel.com"

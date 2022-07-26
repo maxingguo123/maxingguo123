@@ -1,0 +1,6 @@
+env.JENKINS_TEST_TAG="mesh_stress_tests-0.1"
+env.JENKINS_TEST_LABEL="mesh-stress"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/tests\\/scripts\\/run-specific.sh"
+env.JENKINS_TEST_ARGS=""
+env.JOB_RUNTIME=230400

@@ -1,0 +1,14 @@
+import java.lang.Math
+
+env.JENKINS_TEST_TAG="pnp-spr-main-mlc_loaded_latency-v0.11"
+env.JENKINS_TEST_LABEL="paiv-pnp-spr-main-mlc-loaded-latency"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/home\\/MLC_loaded_latency\\/src\\/run_all.sh"
+// Use env.EXTRA_ARGS_ARG to control the test cycles
+env.EXTRA_ARGS_ARG="3"
+// Runtime should be: (1 + buffer) * cycles * basetime round to an integer
+// Here basetiem is 1500, buffer is 30%
+env.JOB_RUNTIME=Math.round(1.3f * env.EXTRA_ARGS_ARG.toInteger() * 1500)
+
+env.DEPLOYMENT_YAML_URL="https://raw.githubusercontent.com/intel-innersource/applications.infrastructure.data-center.jenkins.prt-int-cluster/main/paiv-pnp/paiv_pnp_spr_general.yaml"
+env.SANDSTONE_DEPLOYMENT="${env.WORKSPACE}/paiv_pnp_spr_general.yaml"

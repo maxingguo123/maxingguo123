@@ -1,0 +1,13 @@
+//contact: Javier Torres / Alex Cervantes/ David Claudio
+//pats-mev test content
+
+env.JENKINS_TEST_TAG="pats-ltssm-v0.5"
+env.JENKINS_TEST_LABEL="pats-ltssm-test"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/tests\\/scripts\\/run-specific.sh"
+env.JENKINS_TEST_ARGS=""
+env.JOB_RUNTIME=300
+
+env.DEPLOYMENT_YAML_URL="https://gitlab.devtools.intel.com/sandstone/prt-int-cluster/-/raw/master/pats-ltssm/pats-ltssm.yaml"
+
+env.SANDSTONE_DEPLOYMENT="${env.WORKSPACE}/pats-ltssm.yaml"

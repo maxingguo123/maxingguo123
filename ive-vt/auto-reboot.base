@@ -1,0 +1,7 @@
+env.JENKINS_TEST_TAG="ive-vt-v1p8-22ww08-2"
+env.JENKINS_TEST_LABEL="ive-vt-auto-reboot"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/tests\\/content\\/vt_singlemasterimg\\/run_content_vt_autoreboots.sh"
+env.JENKINS_TEST_ARGS=""
+env.JOB_RUNTIME=64800
+env.DEPLOYMENT_YAML_URL="https://gitlab-mirror-fm.devtools.intel.com/sandstone/prt-int-cluster/-/raw/master/ive/sandstone_run_specific.yaml"

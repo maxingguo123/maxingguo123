@@ -1,0 +1,11 @@
+env.JENKINS_TEST_TAG="cafe_seeds_test"
+env.JENKINS_TEST_LABEL="cafe-dol-unified"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/shc\\/shc"
+env.JENKINS_TEST_ARGS="\\/shc\\/CafeOnLinux"
+env.DRAGON_TYPE_ARG=""
+env.DRAGON_ARGS_ARG="-T -a 1200 -r 1 -O"
+env.RUN_DRAGON_ARG=true
+env.EXTRA_ARGS_ARG="-f FailMask"
+env.JOB_RUNTIME=10800
+env.EMAIL="dpg_fsce_cluster_dl@intel.com"

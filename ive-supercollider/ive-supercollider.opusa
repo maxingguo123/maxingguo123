@@ -1,0 +1,5 @@
+load "${env.WORKSPACE}/ive-supercollider/ive-supercollider.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.opus"
+env.JENKINS_NODE_LABEL="svos-pipeline"
+env.NS="svos"

@@ -1,0 +1,83 @@
+def cluster="flex"
+
+def NS="spr-misc-tdx"
+def KUBECONFIG="--kubeconfig=/srv/kube/config.flex"
+def JENKINS_NODE_LABEL="spr-misc-tdx"
+
+def def_list = ["sandstone/sandstone-release","sandstone/sandstone-combo","sandstone/sandstone","imunch/imunch","imunch-replay/imunch-replay","helpers/idle","google-stressapp/google-stressapp","vss/vss","memory-subsystem/mlc","lemongrass/lemongrass","jasper/combo-01","jasper/combo-02","jasper/combo-03"]
+def jasper_list = ["jasper/povray","jasper/specjbb","jasper/stressapptest","jasper/mprime","jasper/lzbench","jasper/python-data-science","jasper/python-mega-pytest","jasper/nss","jasper/mkl-dnn","jasper/ffmpeg","jasper/fio","jasper/mlc","jasper/gmp"]
+def ive_list = ["ive-fio/ive-fio","ive-benchdnn/ive-benchdnn","ive-stressapptest/ive-stressapptest"]
+def test_list =  def_list + jasper_list + ive_list
+
+pipeline {
+    agent { label 'common' }
+    stages {
+        stage("Tests") {
+            steps {
+                script {
+                    test_list.each { test ->
+                    stage(test) {
+                        catchError {
+                            run_job("${env.WORKSPACE}/${test}.${cluster}")
+                  }
+                }
+              }
+            }
+          }
+        }
+        
+        stage("COLD RESET") {
+            steps {
+                script {
+                    stage("RF-cycles-in-cold") {
+                        catchError(catchInterruptions: false) {
+                           build(job: "Tests/cycle-in-reboot", parameters:  [string(name: "NS", value:"${NS}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}"), string(name: "JENKINS_NODE_LABEL", value:  "${JENKINS_NODE_LABEL}"), string(name: "REBOOT_TYPE", value: "rf_cold"), string(name: "SS", value: "TRUE"), string(name: "CYCLES", value: "50")])
+                        }
+                    }
+                }
+            }
+        }
+
+        stage("WARM RESET") {
+            steps {
+                script {
+                  stage("RF-cycles-in-warm") {
+                      catchError(catchInterruptions: false) {
+                         build(job: "Tests/cycle-in-reboot", parameters:  [string(name: "NS", value:"${NS}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}"), string(name: "JENKINS_NODE_LABEL", value:  "${JENKINS_NODE_LABEL}"), string(name: "REBOOT_TYPE", value: "rf_warm"),  string(name: "SS", value: "TRUE"), string(name: "CYCLES", value: "50")])
+                      }
+                  }
+                }
+            }
+        }
+    }
+    post {
+            aborted {
+                script{
+                    stage("aborted/cancelled tasks from jenkin UI..Huh..Going to call Tests/clean-namespaces") {
+                        catchError(catchInterruptions: false) {
+                            build(job: "Tests/clean-namespaces", parameters:  [string(name: "NS", value: "${NS}"), string(name: "CLUSTER", value: "${cluster}"), string(name: "PO", value: "TRUE")])
+                        }
+                    }
+                }
+            }
+        }
+}
+
+
+// Agnostic variables and functions
+def private iter
+def private base
+def run_job(job_file) {
+  base = load "${env.WORKSPACE}/base/base.groovy"
+  job = load(job_file)
+  base.init("tdx")
+  env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.flex"
+  env.NS = "spr-misc-tdx"
+  env.JENKINS_NODE_LABEL = "spr-misc-tdx"
+  env.JENKINS_TEST_LABEL = "virt-tdx-${env.JENKINS_TEST_LABEL}"
+  iter = (env.ITERATIONS as int) ?: (1 as int)
+  for (int i = 0; i < iter; i++) {
+    base.run(env.JOB_RUNTIME)
+  }
+  base.reset()
+}

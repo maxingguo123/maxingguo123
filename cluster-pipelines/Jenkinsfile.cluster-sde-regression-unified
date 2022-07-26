@@ -1,0 +1,66 @@
+// Pipeline specific variables
+def clusters=["icx-1", "gdc-1"]
+
+def test_list = []
+test_list.add("sandstone/sandstone-sde-regression")
+test_list.add("sandstone/sandstone-sde-regression-new-version-long")
+test_list.add("sandstone/sandstone-sde-regression-prev-version-long")
+test_list.add("TSL/TSL-val-henryroj")
+
+
+def parallel_jobs=[:]
+
+def NS="sde-regression"
+def JENKINS_NODE_LABEL="sde-regression"
+
+
+pipeline {
+  agent { label "common" }
+    stages {
+      stage("Tests") {
+        steps {
+          script {
+            test_list.each { test ->
+              clusters.each { cluster ->
+              parallel_jobs[cluster] = {
+              withEnv(get_envvars("${env.WORKSPACE}/${test}.base", "${cluster}")) {
+                stage(test) {
+                  try {
+                    run_job("${env.WORKSPACE}/${test}.${cluster}")
+                  } 
+                  catch(err) {
+                    console.log(err);
+                    build(job: "Tests/clean-namespaces", parameters:  [string(name: "NS", value: "${NS}"), string(name: "CLUSTER", value: "${cluster}"), string(name: "PO", value: "TRUE")])
+                  }
+                }
+              }
+              }
+            }
+            parallel parallel_jobs
+          }
+        }
+      }
+    }
+  }
+}
+
+def get_envvars(job_file, cluster) {
+  f = readFile(job_file).split('\n') as List
+  f.add("KUBECTL_ARGS=--kubeconfig=/srv/kube/config.${cluster}")
+  return f
+}
+
+def private iter
+// Agnostic variables and functions
+def run_job(job_file) {
+  def base = load "${env.WORKSPACE}/base/base.groovy"
+  base.init()
+  env.NS = "sde-regression"
+  env.JENKINS_NODE_LABEL = "sde-regression"
+
+  iter = ("${env.ITERATIONS}" as int) ?: (1 as int)
+  for (int i = 0; i < iter; i++) {
+    base.run(env.JOB_RUNTIME)
+  }
+  base.reset()
+}

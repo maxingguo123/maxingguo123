@@ -1,0 +1,7 @@
+load "${env.WORKSPACE}/google-stressapp/google-stressapp.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+env.JENKINS_NODE_LABEL="spr-pipeline"
+env.NS="sapphire"
+env.JENKINS_TEST_ARGS="-s 14400 --pause_delay 300 --pause_duration 60 -F -l sat_quanta.log"
+env.JOB_RUNTIME=15000

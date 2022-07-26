@@ -1,0 +1,7 @@
+env.JENKINS_TEST_TAG="jasper-term-signal-May_2022"
+env.JENKINS_TEST_LABEL="jasper-term-signal"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/tests\\/scripts\\/run.sh"
+env.JENKINS_TEST_ARGS="900"
+env.JOB_RUNTIME=2200
+env.EMAIL="alex.v.jaramillo@.intel.com"

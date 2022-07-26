@@ -1,0 +1,13 @@
+#cloud-config
+password: tester
+ssh_pwauth: true
+users:
+  - name: tester
+    lock_passwd: false
+    groups: admin, users, wheel
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+chpasswd:
+  list: |
+    tester:tester
+  expire: false

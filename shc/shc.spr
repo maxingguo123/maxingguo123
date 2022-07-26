@@ -1,0 +1,9 @@
+//required knobs: n/a
+//supported on: SPR
+//description: special container image for SPR
+
+load "${env.WORKSPACE}/shc/shc.base"
+
+env.JENKINS_TEST_TAG="spr_medium_hvm_v4.6.2"
+env.JOB_RUNTIME=19800
+env.ITERATIONS=1

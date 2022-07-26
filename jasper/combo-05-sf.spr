@@ -1,0 +1,5 @@
+load "${env.WORKSPACE}/jasper/combo-05.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+env.JENKINS_TEST_ARGS=900
+env.JOB_RUNTIME=900

@@ -1,0 +1,8 @@
+env.JENKINS_TEST_TAG="sandstone-combo-mode-Mar_2022"
+env.JENKINS_TEST_LABEL="sandstone-chaos"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/tests\\/scripts\\/run.sh"
+env.JENKINS_TEST_ARGS=""
+env.JOB_RUNTIME=4200
+env.ITERATIONS=2
+env.EMAIL="alex.v.jaramillo@intel.com,james.t.kukunas@intel.com"

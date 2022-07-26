@@ -1,0 +1,3 @@
+load "${env.WORKSPACE}/sandstone/sandstone-release-oneoff.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"

@@ -1,0 +1,3 @@
+load "${env.WORKSPACE}/depth_burn_in/depth_burn_in.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"

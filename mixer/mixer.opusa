@@ -1,0 +1,3 @@
+load "${env.WORKSPACE}/mixer/mixer.icx-1"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.opus"

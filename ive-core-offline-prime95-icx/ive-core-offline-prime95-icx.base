@@ -1,0 +1,7 @@
+env.JENKINS_TEST_TAG="ive-core-offline-prime95-icx-v1p4-22ww06-1"
+env.JENKINS_TEST_LABEL="ive-core-offline-prime95-icx-v1p4-22ww06-1"
+env.JENKINS_NODE_LABEL="ive-core-offline-prime95-icx-v1p4-22ww06-1"
+env.JENKINS_TEST_BINARY="\\/ive\\/content\\/ive-watch"
+env.JENKINS_TEST_ARGS="-name=testCoreOff -display=both -t=91800 -- -c 8100"
+env.JOB_RUNTIME=91800
+env.EMAIL="ramprasad.rao@intel.com"

@@ -1,0 +1,7 @@
+load "${env.WORKSPACE}/jasper/mlc.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+env.JENKINS_TEST_LABEL="jasper-mlc-margin"
+env.ITERATIONS=1
+env.JOB_RUNTIME=7200
+env.JENKINS_TEST_ARGS=7200

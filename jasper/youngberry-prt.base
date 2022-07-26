@@ -1,0 +1,7 @@
+env.JENKINS_TEST_TAG="youngberry-jbk-08"
+env.JENKINS_TEST_LABEL="jasper-youngberry-prt"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/tests\\/scripts\\/run-specific.sh"
+env.JENKINS_TEST_ARGS=""
+env.JOB_RUNTIME=10800
+env.ITERATIONS=1

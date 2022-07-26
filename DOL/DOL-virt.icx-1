@@ -1,0 +1,7 @@
+load "${env.WORKSPACE}/DOL/DOL.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+env.JENKINS_NODE_LABEL="oss-virt-test"
+env.NS="oss-2"
+env.JENKINS_TEST_LABEL="virt-dol-unified"
+// Test changes

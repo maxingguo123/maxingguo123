@@ -1,0 +1,3 @@
+load "${env.WORKSPACE}/ive-genie-generic/ive-genie-generic.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"

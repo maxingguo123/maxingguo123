@@ -1,0 +1,6 @@
+load "${env.WORKSPACE}/jasper/mlc.base"
+
+env.JENKINS_NODE_LABEL="oss-virt-test"
+env.NS="virt"
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config"
+env.JENKINS_TEST_LABEL="virt-jasper-mlc"

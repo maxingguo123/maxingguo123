@@ -1,0 +1,3 @@
+load "${env.WORKSPACE}/packer-qemu-mixed/packer-qemu-mixed.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"

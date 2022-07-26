@@ -1,0 +1,6 @@
+load "${env.WORKSPACE}/ive-stressapptest/ive-stressapptest.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.opus"
+env.JENKINS_NODE_LABEL="ospl"
+env.NS="ospl"
+

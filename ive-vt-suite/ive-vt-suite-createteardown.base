@@ -1,0 +1,8 @@
+env.JENKINS_TEST_TAG="ive-vt-suite-createteardown-v2p1"
+env.JENKINS_TEST_LABEL="ive-vt-suite-createteardown-v2p1"
+env.JENKINS_NODE_LABEL="ive-vt-suite-createteardown-v2p1"
+env.JENKINS_TEST_BINARY="\\/ive\\/content\\/ive-watch"
+env.JENKINS_TEST_ARGS="-name=ive-vt-suite-createteardown -- -R createteardown -t 7200"
+env.JOB_RUNTIME=9000
+env.EMAIL="erik.s.stahlman@intel.com"
+

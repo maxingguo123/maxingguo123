@@ -1,0 +1,3 @@
+load "${env.WORKSPACE}/ive-row2cores-disable/ive-row2cores-disable-socket0.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"

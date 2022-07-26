@@ -1,0 +1,4 @@
+load "${env.WORKSPACE}/ive-mobilenet-amx-b16/ive-mobilenet-amx-b16.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+

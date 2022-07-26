@@ -1,0 +1,6 @@
+load "${env.WORKSPACE}/ospl/ospl.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.opus"
+env.JENKINS_TEST_ARGS="7002302"
+env.JENKINS_TEST_TAG="IPU_patchload1.24"
+env.NS="cpx6"

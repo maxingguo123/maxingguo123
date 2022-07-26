@@ -1,0 +1,79 @@
+// Pipeline specific variables
+
+def cluster="base"
+def NS="${params.NS}"
+def KUBECONFIG="--kubeconfig=/srv/kube/config.flex"
+def JENKINS_NODE_LABEL="${params.JENKINS_NODE_LABEL}"
+
+//def def_list = ["sandstone/sandstone-release","sandstone/sandstone-combo","sandstone/sandstone","imunch/imunch","imunch-replay/imunch-replay","helpers/idle","google-stressapp/google-stressapp","vss/vss","memory-subsystem/mlc","lemongrass/lemongrass"]
+//def def_list = ["sandstone/sandstone-combo"]
+def def_list = ["jasper/term-signal"]
+//def jasper_list = ["jasper/povray","jasper/specjbb","jasper/stressapptest","jasper/mprime","jasper/lzbench","jasper/python-data-science","jasper/python-mega-pytest","jasper/nss","jasper/mkl-dnn","jasper/ffmpeg","jasper/fio","jasper/mlc","jasper/gmp"]
+//def ive_list = ["ive-fio/ive-fio","ive-benchdnn/ive-benchdnn","ive-stressapptest/ive-stressapptest"]
+//def sgx_list = ["sgx/sgx-sdk","sgx/sgx-graphene-mlc"]
+def test_list =  def_list
+
+pipeline {
+  agent { label 'common' }
+  environment {
+       KUBECTL_ARGS = "${KUBECONFIG}"
+       JENKINS_NODE_LABEL = "${JENKINS_NODE_LABEL}"
+       NS = "${NS}"
+   }
+  stages {
+    stage("Tests") {
+      steps {
+        script {
+          test_list.each { test ->
+          stage(test) {
+            catchError {
+                run_job("${env.WORKSPACE}/${test}.${cluster}")
+            }
+          }
+        }
+       }
+      }
+    }
+    
+   /*   stage("COLD RESET") {
+            steps {
+                script {
+                    stage("RF-cycles-in-cold") {
+                        catchError(catchInterruptions: false) {
+                           build(job: "Tests/cycle-in-reboot", parameters:  [string(name: "NS", value:"${NS}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}"), string(name: "JENKINS_NODE_LABEL", value:  "${JENKINS_NODE_LABEL}"), string(name: "REBOOT_TYPE", value: "rf_cold"), string(name: "CYCLES", value: "50")])
+                        }
+                    }
+                }
+            }
+        }
+
+        stage("WARM RESET") {
+            steps {
+                script {
+                  stage("RF-cycles-in-warm") {
+                      catchError(catchInterruptions: false) {
+                         build(job: "Tests/cycle-in-reboot", parameters:  [string(name: "NS", value:"${NS}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}"), string(name: "JENKINS_NODE_LABEL", value:  "${JENKINS_NODE_LABEL}"), string(name: "REBOOT_TYPE", value: "rf_warm"), string(name: "CYCLES", value: "50")])
+                      }
+                  }
+                }
+            }
+        }
+        */
+  }     
+}
+
+// Agnostic variables and functions
+def private iter
+def private base
+def run_job(job_file) {
+  base = load "${env.WORKSPACE}/base/base.groovy"
+  job = load(job_file)
+  base.init("tdx")
+  env.JENKINS_TEST_LABEL = "virt-tdx-${env.JENKINS_TEST_LABEL}"
+  iter = (env.ITERATIONS as int) ?: (1 as int)
+  for (int i = 0; i < iter; i++) {
+    base.run(env.JOB_RUNTIME)
+  }
+  base.reset()
+}
+

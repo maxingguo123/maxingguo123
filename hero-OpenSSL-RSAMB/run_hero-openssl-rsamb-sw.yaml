@@ -1,0 +1,361 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  namespace: NAMESPACE
+  name: SANDSTONE_NAME
+spec:
+  selector:
+    matchLabels:
+      name: SANDSTONE_NAME
+  template:
+    metadata:
+      labels:
+        name: SANDSTONE_NAME
+    spec:
+      nodeSelector:
+        SANDSTONE_NODE_LABEL: "true"
+      volumes:
+        - name: dshm
+          emptyDir:
+            medium: Memory
+        - name: aesmd
+          emptyDir:
+            medium: Memory
+        - name: hostroot
+          hostPath:
+            path: /
+            type: Directory
+        - name: sgx
+          hostPath:
+            path: /dev/sgx
+            type: Directory
+        - name: devlog
+          hostPath:
+            path: /dev/log
+            type: Socket
+        - name: varlog
+          hostPath:
+            path: /var/log
+        - name: ai-datasets
+          hostPath:
+            path: /home/dataset
+            type: Directory
+        - name: sys
+          hostPath:
+            path: /sys
+            type: Directory
+        - name: hugepages
+          hostPath:
+            path: /dev/hugepages
+            type: Directory
+        - name: qat
+          hostPath:
+            path: /opt/intel/QAT
+            type: Directory
+      initContainers:
+        - name: create-metadata
+          image: REGISTRY/cluster-scope:v0.41
+          command: ["/bin/bash"]
+          args: ["-c", "mkdir -p /var/log/atscale; (echo '{\"name\": \"SANDSTONE_NAME\", \"runid\": \"ATSCALE_RUNID\"}' | tee -a /var/log/atscale/test-metadata.ndjson  | jq -c '. += {\"type\": \"test-metadata\"}'>/hostroot/dev/console &); \
+                  sleep 5; \
+                  echo run-start-indicator"]
+          securityContext:
+            privileged: true
+            allowPrivilegeEscalation: true
+          volumeMounts:
+          - name: varlog
+            mountPath: /var/log
+          - name: hostroot
+            mountPath: /hostroot
+
+      containers:
+# Config 1
+      - name: qat-sw-rsa
+        image: REGISTRY/sandstone:openssl-rsamb-qat-sw-debug
+        imagePullPolicy: Always
+        volumeMounts:
+            - name: hugepages
+              mountPath: /dev/hugepages
+            - name: qat
+              mountPath: /opt/intel/QAT
+        #run-specific uses env vars for params
+        command: ["/tests/scripts/run-specific.sh"]
+        env:
+          - name: CONFIG
+            value: "qathw-rsa"
+          - name: ASYNC_JOBS
+            value: "64"
+          - name: PROCESSES
+            value: "8"
+        readinessProbe:
+          exec:
+            command:
+              - cat
+              - /tmp/testdone
+            # Wait for 30s before checking for the first time
+            # then probe for completion every 5 seconds
+          initialDelaySeconds: 30
+          periodSeconds: 5
+        securityContext:
+          privileged: true
+# Config 2
+      - name: qat-sw-dsa
+        image: REGISTRY/sandstone:openssl-rsamb-qat-sw-debug
+        imagePullPolicy: Always
+        volumeMounts:
+            - name: hugepages
+              mountPath: /dev/hugepages
+            - name: qat
+              mountPath: /opt/intel/QAT
+        #run-specific uses env vars for params
+        command: ["/tests/scripts/run-specific.sh"]
+        env:
+          - name: CONFIG
+            value: "qathw-dsa"
+          - name: ASYNC_JOBS
+            value: "64"
+          - name: PROCESSES
+            value: "8"
+        readinessProbe:
+          exec:
+            command:
+              - cat
+              - /tmp/testdone
+            # Wait for 30s before checking for the first time
+            # then probe for completion every 5 seconds
+          initialDelaySeconds: 30
+          periodSeconds: 5
+        securityContext:
+          privileged: true
+# Config 3
+      - name: qat-sw-ecdsa
+        image: REGISTRY/sandstone:openssl-rsamb-qat-sw-debug
+        imagePullPolicy: Always
+        volumeMounts:
+            - name: hugepages
+              mountPath: /dev/hugepages
+            - name: qat
+              mountPath: /opt/intel/QAT
+        #run-specific uses env vars for params
+        command: ["/tests/scripts/run-specific.sh"]
+        env:
+          - name: CONFIG
+            value: qathw-ecdsa
+          - name: ASYNC_JOBS
+            value: "64"
+          - name: PROCESSES
+            value: "8"
+        readinessProbe:
+          exec:
+            command:
+              - cat
+              - /tmp/testdone
+            # Wait for 30s before checking for the first time
+            # then probe for completion every 5 seconds
+          initialDelaySeconds: 30
+          periodSeconds: 5
+        securityContext:
+          privileged: true
+# Config 4
+      - name: qat-sw-ecdh
+        image: REGISTRY/sandstone:openssl-rsamb-qat-sw-debug
+        imagePullPolicy: Always
+        volumeMounts:
+            - name: hugepages
+              mountPath: /dev/hugepages
+            - name: qat
+              mountPath: /opt/intel/QAT
+        #run-specific uses env vars for params
+        command: ["/tests/scripts/run-specific.sh"]
+        env:
+          - name: CONFIG
+            value: "qatsw-ecdh"
+          - name: ASYNC_JOBS
+            value: "64"
+          - name: PROCESSES
+            value: "8"
+        readinessProbe:
+          exec:
+            command:
+              - cat
+              - /tmp/testdone
+            # Wait for 30s before checking for the first time
+            # then probe for completion every 5 seconds
+          initialDelaySeconds: 30
+          periodSeconds: 5
+        securityContext:
+          privileged: true
+# Config 5
+      - name: qat-sw-aes-sha
+        image: REGISTRY/sandstone:openssl-rsamb-qat-sw-debug
+        imagePullPolicy: Always
+        volumeMounts:
+            - name: hugepages
+              mountPath: /dev/hugepages
+            - name: qat
+              mountPath: /opt/intel/QAT
+        #run-specific uses env vars for params
+        command: ["/tests/scripts/run-specific.sh"]
+        env:
+          - name: CONFIG
+            value: "qatsw-aes-sha"
+          - name: ASYNC_JOBS
+            value: "64"
+          - name: PROCESSES
+            value: "8"
+        readinessProbe:
+          exec:
+            command:
+              - cat
+              - /tmp/testdone
+            # Wait for 30s before checking for the first time
+            # then probe for completion every 5 seconds
+          initialDelaySeconds: 30
+          periodSeconds: 5
+        securityContext:
+          privileged: true
+# Config 6
+      - name: sw-rsa
+        image: REGISTRY/sandstone:openssl-rsamb-qat-sw-debug
+        imagePullPolicy: Always
+        volumeMounts:
+            - name: hugepages
+              mountPath: /dev/hugepages
+            - name: qat
+              mountPath: /opt/intel/QAT
+        #run-specific uses env vars for params
+        command: ["/tests/scripts/run-specific.sh"]
+        env:
+          - name: CONFIG
+            value: "sw-rsa"
+          - name: ASYNC_JOBS
+            value: "64"
+          - name: PROCESSES
+            value: "8"
+        readinessProbe:
+          exec:
+            command:
+              - cat
+              - /tmp/testdone
+            # Wait for 30s before checking for the first time
+            # then probe for completion every 5 seconds
+          initialDelaySeconds: 30
+          periodSeconds: 5
+        securityContext:
+          privileged: true
+# Config 7
+      - name: sw-dsa
+        image: REGISTRY/sandstone:openssl-rsamb-qat-sw-debug
+        imagePullPolicy: Always
+        volumeMounts:
+            - name: hugepages
+              mountPath: /dev/hugepages
+            - name: qat
+              mountPath: /opt/intel/QAT
+        #run-specific uses env vars for params
+        command: ["/tests/scripts/run-specific.sh"]
+        env:
+          - name: CONFIG
+            value: "sw-dsa"
+          - name: ASYNC_JOBS
+            value: "64"
+          - name: PROCESSES
+            value: "8"
+        readinessProbe:
+          exec:
+            command:
+              - cat
+              - /tmp/testdone
+            # Wait for 30s before checking for the first time
+            # then probe for completion every 5 seconds
+          initialDelaySeconds: 30
+          periodSeconds: 5
+        securityContext:
+          privileged: true
+# Config 8
+      - name: sw-ecdsa
+        image: REGISTRY/sandstone:openssl-rsamb-qat-sw-debug
+        imagePullPolicy: Always
+        volumeMounts:
+            - name: hugepages
+              mountPath: /dev/hugepages
+            - name: qat
+              mountPath: /opt/intel/QAT
+        #run-specific uses env vars for params
+        command: ["/tests/scripts/run-specific.sh"]
+        env:
+          - name: CONFIG
+            value: "sw-ecdsa"
+          - name: ASYNC_JOBS
+            value: "64"
+          - name: PROCESSES
+            value: "8"
+        readinessProbe:
+          exec:
+            command:
+              - cat
+              - /tmp/testdone
+            # Wait for 30s before checking for the first time
+            # then probe for completion every 5 seconds
+          initialDelaySeconds: 30
+          periodSeconds: 5
+        securityContext:
+          privileged: true
+# Config 9
+      - name: sw-ecdh
+        image: REGISTRY/sandstone:openssl-rsamb-qat-sw-debug
+        imagePullPolicy: Always
+        volumeMounts:
+            - name: hugepages
+              mountPath: /dev/hugepages
+            - name: qat
+              mountPath: /opt/intel/QAT
+        #run-specific uses env vars for params
+        command: ["/tests/scripts/run-specific.sh"]
+        env:
+          - name: CONFIG
+            value: "sw-ecdh"
+          - name: ASYNC_JOBS
+            value: "64"
+          - name: PROCESSES
+            value: "8"
+        readinessProbe:
+          exec:
+            command:
+              - cat
+              - /tmp/testdone
+            # Wait for 30s before checking for the first time
+            # then probe for completion every 5 seconds
+          initialDelaySeconds: 30
+          periodSeconds: 5
+        securityContext:
+          privileged: true
+# Config 10
+      - name: sw-aes-sha
+        image: REGISTRY/sandstone:openssl-rsamb-qat-sw-debug
+        imagePullPolicy: Always
+        volumeMounts:
+            - name: hugepages
+              mountPath: /dev/hugepages
+            - name: qat
+              mountPath: /opt/intel/QAT
+        #run-specific uses env vars for params
+        command: ["/tests/scripts/run-specific.sh"]
+        env:
+          - name: CONFIG
+            value: "sw-aes-sha"
+          - name: ASYNC_JOBS
+            value: "64"
+          - name: PROCESSES
+            value: "8"
+        readinessProbe:
+          exec:
+            command:
+              - cat
+              - /tmp/testdone
+            # Wait for 30s before checking for the first time
+            # then probe for completion every 5 seconds
+          initialDelaySeconds: 30
+          periodSeconds: 5
+        securityContext:
+          privileged: true

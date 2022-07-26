@@ -1,0 +1,5 @@
+env.JENKINS_TEST_TAG="jasper-nasm-v0.1"
+env.JENKINS_TEST_LABEL="jasper-nasm"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/run.sh"
+env.JOB_RUNTIME=900

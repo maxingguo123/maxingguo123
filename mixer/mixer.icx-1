@@ -1,0 +1,6 @@
+load "${env.WORKSPACE}/mixer/mixer.base"
+
+env.JENKINS_TEST_TAG="ive-mixer-icx-21ww40-5"
+env.JENKINS_TEST_LABEL="ive-mixer-icx-21ww40-5"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"

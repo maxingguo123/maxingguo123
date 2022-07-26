@@ -1,0 +1,4 @@
+load "${env.WORKSPACE}/jasper/oasis.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+env.JENKINS_TEST_TAG="jasper-oasis-v0.25.1"

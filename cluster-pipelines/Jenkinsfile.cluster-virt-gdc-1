@@ -1,0 +1,40 @@
+// Pipeline specific variables
+
+def cluster="gdc-1"
+def def_list = ["sandstone/sandstone-release", "sandstone/sandstone-combo", "imunch/imunch","shc/shc", "cafe-dol/cafe-dol", "TSL/TSL", "vss/vss", "spec2017/spec2017", "ive-prime95/ive-prime95", "google-stressapp/google-stressapp","stream/stream", "xhpl-linkpack/xhpl-linpack", "sysbench/sysbench"]
+// def pts_list = ["pts/pts-coremark-v0.1", "pts/pts-cryptography-v0.1", "pts/pts-database-v0.1", "pts/pts-machine-learning-v0.1", "pts/pts-memory-v0.1", "pts/pts-mkl-dnn-v0.1", "pts/pts-multicore-v0.1", "pts/pts-oneapi-v0.1", "pts/pts-video-encoding-v0.1", "pts/pts-y-cruncher-v0.1"]
+def jasper_list = ["jasper/mlc","jasper/fio","jasper/iperf","jasper/specjbb"]
+def test_list = jasper_list + def_list 
+
+pipeline {
+  agent { label 'common' }
+  stages {
+    stage("Tests") {
+      steps {
+        script {
+          test_list.each { test ->
+          stage(test) {
+            catchError {
+                run_job("${env.WORKSPACE}/${test}-virt.${cluster}")
+            }
+          }
+        }}
+      }
+    }
+  }
+}
+
+// Agnostic variables and functions
+def private iter
+def private base
+def run_job(job_file) {
+  base = load "${env.WORKSPACE}/base/base.groovy"
+  job = load(job_file)
+  base.init("virt")
+  iter = (env.ITERATIONS as int) ?: (1 as int)
+  for (int i = 0; i < iter; i++) {
+    base.run(env.JOB_RUNTIME)
+  }
+  base.reset()
+}
+

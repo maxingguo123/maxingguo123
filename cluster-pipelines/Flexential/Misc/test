@@ -1,0 +1,23 @@
+pipeline {
+    agent { label 'common' }
+    stages {
+        stage('test') {
+            steps {
+                script {
+                    sleep 60
+                }
+                echo "helloworld"
+            }
+            post {
+                aborted{
+                    echo "test stage has been aborted--1"
+                }
+            }            
+        }
+    }
+    post {
+        aborted {
+            echo "pipeline has been aborted--2"
+        }
+    }
+}

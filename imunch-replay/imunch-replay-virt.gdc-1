@@ -1,0 +1,5 @@
+load "${env.WORKSPACE}/imunch-replay/imunch-replay.base"
+env.JENKINS_NODE_LABEL="oss-virt-test"
+env.NS="virt"
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config"
+env.JENKINS_TEST_LABEL="virt-imunch-replay"

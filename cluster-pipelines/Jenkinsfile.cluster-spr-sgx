@@ -1,0 +1,154 @@
+// Pipeline specific variables
+
+def cluster="spr"
+//def def_list = ["DOL/DOL","sandstone/sandstone-combo", "sandstone/sandstone-release"]
+//def jasper_list = ["jasper/mlc","jasper/fio","posted-interrupts/posted-interrupts","google-stressapp/google-stressapp","imunch/imunch","imunch-replay/imunch-replay","vss/vss","helpers/idle","jasper/iperf"]
+//def test_list = def_list
+def test_list = []
+
+def KUBECONFIG="--kubeconfig=/srv/kube/config.icx-1"
+def JENKINS_NODE_LABEL="spr-sgx"
+def NS="spr-sgx"
+
+pipeline {
+  agent { label "common" }
+  stages {
+    stage("Tests") {
+      steps {
+        script {
+          test_list.each { test ->
+          stage(test) {
+            catchError {
+                run_job("${env.WORKSPACE}/${test}.${cluster}")
+            }
+          }
+        }}
+      }
+    }
+    stage("SGX") {
+      steps {
+        script {
+    //      stage("sgx/knobs-start") {
+    //        catchError {
+    //            build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value:"sgx-ras"), string(name: "KUBECONFIG", value:"--kubeconfig=/srv/kube/config.icx-1"), string(name: "KNOBS", value: "UmaBasedClustering=0,EnableTme=1,EnableSgx=1,PrmrrSize=0x400000000"), string(name: "JENKINS_NODE_LABEL", value: "sgx-ras-pipeline")])
+    //        }
+    //      }
+          stage("sgx/sgx-sandstone-graphene") {
+            catchError {
+                run_job("${env.WORKSPACE}/sgx/sgx-sandstone-graphene.${cluster}")
+            }
+          }
+    //      stage("sgx/sgx-sandstone") {
+    //        catchError {
+    //            run_job("${env.WORKSPACE}/sgx/sgx-sandstone.${cluster}")
+    //        }
+    //      }
+	//	  stage("sgx/sgx-fortanix-nginx") {
+    //        catchError {
+    //            run_job("${env.WORKSPACE}/sgx/sgx-fortanix-nginx.${cluster}")
+    //        }
+    //      }
+	//	  stage("sgx/sgx-fortanix-mariadb") {
+    //        catchError {
+    //            run_job("${env.WORKSPACE}/sgx/sgx-fortanix-mariadb.${cluster}")
+    //        }
+    //      }
+	//	  stage("sgx/clean-namespaces") {
+    //        catchError {
+    //            build(job: "Tests/clean-namespaces", parameters:  [string(name: "NS", value:"sgx-ras"), string(name: "CLUSTER", value:"icx-1"), string(name: "PO", value: "TRUE")])
+    //        }
+    //      }
+    //      stage("sgx/sgx-fortanix-mlc-32g") {
+    //        catchError {
+    //            run_job("${env.WORKSPACE}/sgx/sgx-fortanix-mlc-32g.${cluster}")
+    //        }
+    //      }
+    //      stage("sgx/sgx-fortanix-mlc-64g") {
+    //        catchError {
+    //            run_job("${env.WORKSPACE}/sgx/sgx-fortanix-mlc-64g.${cluster}")
+    //        }
+    //      }
+          stage("sgx/sgx-graphene-mlc") {
+            catchError {
+                run_job("${env.WORKSPACE}/sgx/sgx-graphene-mlc.${cluster}")
+            }
+          }
+    //      stage("sgx/sgx-sdk") {
+    //        catchError {
+    //          run_job("${env.WORKSPACE}/sgx/sgx-sdk.${cluster}")
+    //        }
+    //      }
+    //      stage("sgx/sgx-virt") {
+    //        catchError {
+    //            run_job("${env.WORKSPACE}/sgx/sgx-virt.${cluster}")
+    //        }
+    //      }
+    //      stage("sgx/sgx-virt-win") {
+    //        catchError {
+    //          run_job("${env.WORKSPACE}/sgx/sgx-virt-win.${cluster}")
+    //        }
+    //     }
+    //      stage("sgx/knobs-end") {
+    //        catchError {
+    //            build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value:"sgx-ras"), string(name: "KUBECONFIG", value:"--kubeconfig=/srv/kube/config.icx-1"), string(name: "KNOBS", value: "UmaBasedClustering=2,EnableTme=0,EnableSgx=0,PrmrrSize=0x80000000"), string(name: "JENKINS_NODE_LABEL", value: "sgx-ras-pipeline")])
+    //        }
+    //      }
+       }
+      }
+    }
+    //stage("CYCLING") {
+    //  steps {
+    //    script {
+    //      stage("RF-cycles-in-warm") {
+    //        catchError {
+    //          build(job: "Tests/cycle-in-reboot", parameters:  [string(name: "NS", value:"${NS}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}"), string(name: "JENKINS_NODE_LABEL", value:  "${JENKINS_NODE_LABEL}"), string(name: "REBOOT_TYPE", value: "rf_warm"), string(name: "CYCLES", value: "100"), string(name: "SS", value: "FALSE")])
+    //        }
+    //      }
+    //      stage("RF-cycles-in-cold") {
+    //        catchError {
+    //          build(job: "Tests/cycle-in-reboot", parameters:  [string(name: "NS", value:"${NS}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}"), string(name: "JENKINS_NODE_LABEL", value:  "${JENKINS_NODE_LABEL}"), string(name: "REBOOT_TYPE", value: "rf_cold"), string(name: "CYCLES", value: "100"), string(name: "SS", value: "FALSE")])
+    //        }
+    //      }
+    //    }
+    //  }
+    //}
+    //stage("CYCLING") {
+    //  steps {
+    //    script {
+    //      stage("sgx/knobs-start") {
+    //        catchError {
+    //            build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value:"sgx-ras"), string(name: "KUBECONFIG", value:"--kubeconfig=/srv/kube/config.icx-1"), string(name: "KNOBS", value: "UmaBasedClustering=0,EnableTme=1,EnableSgx=1,PrmrrSize=0x80000000,C6Enable=0"), string(name: "JENKINS_NODE_LABEL", value: "sgx-ras-pipeline")])
+    //        }
+    //      }
+    //      stage("cycles-in-warm") {
+    //        catchError {
+    //           build(job: "Tests/cycle-in-reboot", parameters:  [string(name: "NS", value:"sgx-ras"), string(name: "KUBECONFIG", value:"--kubeconfig=/srv/kube/config.icx-1"), string(name: "JENKINS_NODE_LABEL", value:  "sgx-warm"), string(name: "REBOOT_TYPE", value: "warm"), string(name: "CYCLES", value: "60"), string(name: "SS", value: "FALSE")])
+    //        }
+    //      }
+    //      stage("sgx/knobs-end") {
+    //        catchError {
+    //            build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value:"sgx-ras"), string(name: "KUBECONFIG", value:"--kubeconfig=/srv/kube/config.icx-1"), string(name: "KNOBS", value: "UmaBasedClustering=0,EnableTme=1,EnableSgx=1,PrmrrSize=0x400000000,C6Enable=0xFF"), string(name: "JENKINS_NODE_LABEL", value: "sgx-ras-pipeline")])
+    //        }
+    //      }
+    //    }
+    //  }
+    //}
+  }
+}
+
+// Agnostic variables and functions
+def private iter
+def private base
+def run_job(job_file) {
+  base = load "${env.WORKSPACE}/base/base.groovy"
+  job = load(job_file)
+  base.init()
+  env.NS = "spr-sgx"
+  env.JENKINS_NODE_LABEL = "spr-sgx"
+  iter = (env.ITERATIONS as int) ?: (1 as int)
+  for (int i = 0; i < iter; i++) {
+    base.run(env.JOB_RUNTIME)
+  }
+  base.reset()
+}
+

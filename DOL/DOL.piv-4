@@ -1,0 +1,6 @@
+load "${env.WORKSPACE}/DOL/DOL.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+env.JENKINS_NODE_LABEL="piv-4"
+env.NS="piv-4"
+

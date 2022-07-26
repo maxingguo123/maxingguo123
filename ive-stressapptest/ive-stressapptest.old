@@ -1,0 +1,10 @@
+env.JENKINS_TEST_TAG="ive-genie-stressapptestpintsx-v1p0-21ww33-4"
+env.JENKINS_TEST_LABEL="ive-genie-stressapptestpintsx-v1p0-21ww33-4"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/run_content.sh -t 12"
+env.JENKINS_TEST_ARGS=""
+env.EXTRA_ARGS_ARG=""
+env.JOB_RUNTIME=48600
+env.DEPLOYMENT_YAML_URL="https://gitlab-mirror-fm.devtools.intel.com/sandstone/prt-int-cluster/-/raw/master/ive/sandstone_run_specific.yaml"
+env.SANDSTONE_DEPLOYMENT="${env.WORKSPACE}/sandstone_run_specific.yaml"
+env.EMAIL="vittal.siddaiah@intel.com"

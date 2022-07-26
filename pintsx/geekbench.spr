@@ -1,0 +1,5 @@
+load "${env.WORKSPACE}/pintsx/geekbench.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+env.JENKINS_NODE_LABEL="spr-pipeline"
+env.NS="sapphire"

@@ -1,0 +1,7 @@
+env.JENKINS_TEST_TAG="ive-corefreq-prime95-v1p3-22ww08-1"
+env.JENKINS_TEST_LABEL="ive-corefreq-prime95-v1p3-22ww08-1"
+env.JENKINS_NODE_LABEL="ive-corefreq-prime95-v1p3-22ww08-1"
+env.JENKINS_TEST_BINARY="\\/ive\\/content\\/ive-watch"
+env.JENKINS_TEST_ARGS="-name=ive-corefrq-prime95 -display=error -- -t 86400"
+env.JOB_RUNTIME=90000
+env.EMAIL="ramprasad.rao@intel.com"

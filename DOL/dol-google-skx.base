@@ -1,0 +1,7 @@
+env.JENKINS_TEST_TAG="dol_icx_debug_single_seed"
+env.JENKINS_TEST_LABEL="dol-google-skx"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/run.sh"
+env.JOB_RUNTIME=12600
+
+//this is a content for ICX using SKX

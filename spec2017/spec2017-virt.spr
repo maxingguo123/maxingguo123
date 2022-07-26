@@ -1,0 +1,5 @@
+load "${env.WORKSPACE}/spec2017/spec2017.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+env.JENKINS_TEST_LABEL="virt-spec2017"
+env.JENKINS_NODE_LABEL="oss-virt-test"

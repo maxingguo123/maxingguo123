@@ -1,0 +1,6 @@
+env.JENKINS_TEST_TAG="jasper-glib-v0.1"
+env.JENKINS_TEST_LABEL="jasper-glib"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/run.sh"
+env.JOB_RUNTIME=3600
+

@@ -1,0 +1,8 @@
+# Please review opus_spr config. This was made before opus standard finalization from execution team.
+load "${env.WORKSPACE}/ive-mobilenet-amx-b16/ive-mobilenet-amx-b16-v1p0.base"
+
+env.JENKINS_TEST_LABEL="ive-mobilenet-amx-b16-spr-v1p0"
+env.JENKINS_NODE_LABEL="ive-mobilenet-amx-b16-spr-v1p0"
+
+export KUBECTL_ARGS="--kubeconfig=/srv/kube/config.opus"
+

@@ -1,0 +1,7 @@
+env.JENKINS_TEST_TAG="jasper-fio-Mar_2022"
+env.JENKINS_TEST_LABEL="jasper-fio"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/run.sh"
+env.JENKINS_TEST_ARGS="300"
+env.JOB_RUNTIME=660
+env.ITERATIONS=6

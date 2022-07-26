@@ -1,0 +1,74 @@
+// Pipeline specific variables
+
+def cluster="spr"
+//def NS="spr-core"
+def NS="${params.NS}"
+def KUBECONFIG="--kubeconfig=/srv/kube/config.icx-1"
+//def JENKINS_NODE_LABEL="spr-core"
+def JENKINS_NODE_LABEL="${params.JENKINS_NODE_LABEL}"
+
+def def_list = ["sandstone/sandstone-release","sandstone/sandstone","sandstone/sandstone-combo","jasper/cpu-check","ive-povray/ive-povray","ive-corefreq-v1p1/ive-corefreq-v1p1","ive-bert-large-inference-amx/ive-bert-large-inference-amx","dsa-stress/dsa-stress","tmul-amx/tmul-amx","sandstone/sandstone-release700m","lemongrass/lemongrass"]
+def combo_list = ["jasper/combo-01","jasper/combo-02","jasper/combo-03","jasper/combo-05"]
+def test_list = combo_list + def_list
+
+pipeline {
+  agent { label 'common' }
+    environment {
+    KUBECTL_ARGS = "${KUBECONFIG}"
+    JENKINS_NODE_LABEL = "${JENKINS_NODE_LABEL}"
+    NS = "${NS}"
+    }
+  stages {
+
+    stage("WORKLOADS") {
+      steps {
+        script {
+          test_list.each { test ->
+          stage(test) {
+            catchError {
+              run_job("${env.WORKSPACE}/${test}.${cluster}")
+            }
+          }
+          }
+        }
+      }
+    }
+  
+  }
+
+post {
+       always {
+          script {
+                    def looprequired="${params.LOOP_REQUIRED}"
+                    if ("${looprequired}"=="true" && "${currentBuild.result}"!="ABORTED")
+                    {
+                    stage("Going to run pipeline in loop now...") {
+                   catchError {
+                     build(job: "/Sapphire/Main pipelines/SPR-Core-Custom-LPC-Pipeline-GDC", parameters: [string(name: "NS", value:"${params.NS}"), string(name: "JENKINS_NODE_LABEL", value:  "${params.JENKINS_NODE_LABEL}"), string(name: "LOOP_REQUIRED", value: "${params.LOOP_REQUIRED}")],wait:false)
+                     currentBuild.result = 'SUCCESS'
+                     return
+                    }
+                  }
+                }
+             }
+           }
+      }
+
+}
+
+// Agnostic variables and functions
+def private iter
+def private base
+def run_job(job_file) {
+  base = load "${env.WORKSPACE}/base/base.groovy"
+  job = load(job_file)
+  base.init()
+  //env.NS = "spr-core"
+  //env.JENKINS_NODE_LABEL = "spr-core"
+  //env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+  iter = (env.ITERATIONS as int) ?: (1 as int)
+  for (int i = 0; i < iter; i++) {
+    base.run(env.JOB_RUNTIME)
+  }
+  base.reset()
+}

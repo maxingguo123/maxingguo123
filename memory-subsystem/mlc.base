@@ -1,0 +1,6 @@
+env.JENKINS_TEST_TAG="mss-mlc-v1.7-b1"
+env.JENKINS_TEST_LABEL="mss-mlc"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/root\\/apps\\/mlc\\/mem-mlc.py"
+env.JENKINS_TEST_ARGS="--test=MSS-MEM-MLC-ALL"
+env.JOB_RUNTIME=30000

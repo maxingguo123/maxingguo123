@@ -1,0 +1,6 @@
+env.JENKINS_TEST_TAG="pts-memory-v0.2"
+env.JENKINS_TEST_LABEL="pts-memory"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/tests\\/scripts\\/run.sh"
+env.JENKINS_TEST_ARGS="5400"
+env.JOB_RUNTIME=5400

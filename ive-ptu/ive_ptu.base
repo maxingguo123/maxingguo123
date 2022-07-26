@@ -1,0 +1,7 @@
+env.JENKINS_TEST_TAG="ive-ptu-v1p0"
+env.JENKINS_TEST_LABEL="ive-ptu-v1p0"
+env.JENKINS_NODE_LABEL="ive-ptu-v1p0"
+env.JENKINS_TEST_BINARY="\\/ive\\/content\\/source\\/ive_wrapper.sh"
+env.JENKINS_TEST_ARGS="\\/ive\\/content\\/source\\/content-run.sh --time 36000 --container"
+env.JOB_RUNTIME=36100
+env.EMAIL="Audel.Rouhi@intel.com"

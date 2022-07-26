@@ -1,0 +1,47 @@
+// Pipeline specific variables
+
+def cluster="spr"
+def def_list = ["sandstone/sandstone-release","sandstone/sandstone-combo"]
+//def jasper_list = ["jasper/cpu-check","jasper/povray","jasper/hackbench","jasper/specjbb","jasper/unixbench","jasper/stressapptest","jasper/mprime","jasper/lzbench","jasper/python-data-science","jasper/python-mega-pytest","jasper/nss","jasper/mkl-dnn","jasper/ffmpeg","jasper/fio","jasper/mlc","jasper/gmp","jasper/openblas","jasper/eigen","google-stressapp/google-stressapp","imunch/imunch","imunch-replay/imunch-replay","helpers/idle"]
+//def ive_list = ["ive-fio/ive-fio","ive-benchdnn/ive-benchdnn","ive-stressng/ive-stressng","ive-mprime/ive-mprime","ive-geekbench/ive-geekbench","ive-stressapptest/ive-stressapptest"]
+def test_list =  def_list
+def NS="spr-dbg-e3-tdx"
+def KUBECONFIG="--kubeconfig=/srv/kube/config.icx-1"
+def JENKINS_NODE_LABEL="spr-dbg-e3-tdx"
+
+pipeline {
+  agent { label 'common' }
+  stages {
+    stage("Tests") {
+      steps {
+        script {
+          test_list.each { test ->
+          stage(test) {
+            catchError {
+                run_job("${env.WORKSPACE}/${test}.${cluster}")
+            }
+          }
+        }
+       }
+      }
+    }
+  }
+}
+
+// Agnostic variables and functions
+def private iter
+def private base
+def run_job(job_file) {
+  base = load "${env.WORKSPACE}/base/base.groovy"
+  job = load(job_file)
+  base.init("tdx")
+  env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+  env.NS = "spr-dbg-e3-tdx"
+  env.JENKINS_NODE_LABEL = "spr-dbg-e3-tdx"
+  env.JENKINS_TEST_LABEL = "virt-tdx-${env.JENKINS_TEST_LABEL}"
+  iter = (env.ITERATIONS as int) ?: (1 as int)
+  for (int i = 0; i < iter; i++) {
+    base.run(env.JOB_RUNTIME)
+  }
+  base.reset()
+}

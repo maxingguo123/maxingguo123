@@ -1,0 +1,9 @@
+//owner: Victor Bahena, David Claudio
+//AMX-INT8 and AMX-BF16 tests
+
+env.JENKINS_TEST_TAG="benchdnn_amx_tmul-0.1"
+env.JENKINS_TEST_LABEL="benchdnn-test"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/tests\\/scripts\\/run-specific.sh"
+env.JENKINS_TEST_ARGS=""
+env.JOB_RUNTIME=8400

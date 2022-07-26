@@ -1,0 +1,7 @@
+env.JENKINS_TEST_TAG="dcdiag-540"
+env.JENKINS_TEST_LABEL="dcdiag"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/tests\\/scripts\\/run-test.sh"
+env.JENKINS_TEST_ARGS="\\/usr\\/bin\\/dcdiag 9000"
+env.JOB_RUNTIME=9000
+env.EMAIL="alex.v.jaramillo@intel.com,arzhan.i.kinzhalin@intel.com"

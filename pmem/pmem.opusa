@@ -1,0 +1,5 @@
+load "${env.WORKSPACE}/pmem/pmem.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.opus"
+env.JENKINS_NODE_LABEL="ddrt1"
+env.NS="ddrt1"

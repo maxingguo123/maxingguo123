@@ -1,0 +1,5 @@
+env.JENKINS_TEST_TAG="packer-qemu-mixed-workload-v1.0"
+env.JENKINS_TEST_LABEL="packer-qemu-mixed-workload"
+env.JENKINS_NODE_LABEL="unifiednode" 
+env.JENKINS_TEST_BINARY="\\/run.sh"
+env.JOB_RUNTIME=87000

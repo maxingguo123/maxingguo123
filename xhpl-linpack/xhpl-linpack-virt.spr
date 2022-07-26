@@ -1,0 +1,5 @@
+load "${env.WORKSPACE}/xhpl-linpack/xhpl-linpack.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+env.JENKINS_TEST_LABEL="virt-xhpl-linpack"
+env.JENKINS_NODE_LABEL="oss-virt-test"

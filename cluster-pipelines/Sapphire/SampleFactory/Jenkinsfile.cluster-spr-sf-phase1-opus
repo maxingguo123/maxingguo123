@@ -1,0 +1,245 @@
+// Pipeline specific variables
+
+def cluster="spr"
+def NS="spr-e3-sf-sdsi"
+def KUBECONFIG="--kubeconfig=/srv/kube/config.opus"
+def JENKINS_NODE_LABEL="spr-e3-sf-sdsi"
+
+//QAT tests
+def qat_hw = ["hero-OpenSSL-RSAMB/hero-openssl-rsamb-hw"]
+def qat_sw = ["hero-OpenSSL-RSAMB/hero-openssl-rsamb-sw"]
+def qat_list = qat_hw + qat_sw
+
+//DSA test
+def dsa_list = ["dsa-spdk/dsa-spdk"]
+
+//IAX test
+def iax_list = ["iax-kdmatest/iax-kdmatest"]
+
+//DLB test
+def dlb_list = ["dlb-dpdk/dlb-dpdk"]
+
+//Workloads
+//def test_list = ["jasper/kvm-unit-tests","jasper/cloud-hypervisor"]
+
+//RAS test
+//TEST_BINARY=""
+//def bin_list = [".\\/sandstone-breadth-poison.sh",".\\/multi-workload-mem-correctable.sh",".\\/mprime-correctable+uncorrectable.sh",".\\/llr-data-poison.sh",".\\/stream-prefetch-poison.sh",".\\/stress-ng-2MiB-hugepage-patrol-scrub.sh"]
+
+//Workloads2
+//def test_list2 = ["LTSSM/LTSSM","dtaf-core-upi/dtaf-core-upi"]
+
+pipeline {
+  agent { label 'common' }
+  stages {
+
+      stage("QAT/KERNEL") {
+          steps {
+              script {
+                  stage("qat/knobs-start") {
+                      catchError {
+                          build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KNOBS", value: "VTdSupport=0,ProcessorX2apic=0"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+                      }
+                  }
+                  stage("qat/kernel-start") {
+                      catchError {
+                          build(job: "Tests/kernelcli_run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KERNEL_PARAMETERS", value: "intel_iommu=off,iommu=pt,iommu=on,hugepages=1024"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+                      }
+                  }
+                  stage("qat tests") {
+                      qat_list.each { test ->
+                      stage(test) {
+                          catchError {
+                              run_job("${env.WORKSPACE}/${test}.${cluster}")
+                          }
+                      }
+                      }
+                  }
+                  stage("qat/kernel-end") {
+                      catchError {
+                          build(job: "Tests/kernelcli_run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KERNEL_PARAMETERS", value: "intel_iommu=on,iommu=pt,iommu=on,hugepages=1024"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+                      }
+                  }
+                  stage("qat/knobs-end") {
+                      catchError {
+                          build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KNOBS", value: "VTdSupport=1,ProcessorX2apic=1"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+                      }
+                  }
+              }
+          }
+      }
+
+    stage("DSA/KERNEL") {
+      steps {
+        script {
+          stage("dsa/knobs-start") {
+            catchError {
+              build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KNOBS", value: "VTdSupport=1,PcieEnqCmdSupport=1"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+            }
+          }
+          stage("dsa/kernel-start") {
+            catchError {
+              build(job: "Tests/kernelcli_run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KERNEL_PARAMETERS", value: "intel_iommu=on,intel_iommu=sm_on,iommu=pt,hugepages=512"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+            }
+          }
+          stage("dsa test") {
+            dsa_list.each { test ->
+            stage(test) {
+              catchError {
+                run_job("${env.WORKSPACE}/${test}.${cluster}")
+              }
+            }
+            }
+          }
+          stage("dsa/kernel-end") {
+            catchError {
+              build(job: "Tests/kernelcli_run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KERNEL_PARAMETERS", value: "intel_iommu=on,sm_on"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+            }
+          }
+          stage("dsa/knobs-end") {
+            catchError {
+              build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KNOBS", value: "VTdSupport=1,PcieEnqCmdSupport=0"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+            }
+          }
+        }
+      }
+    }
+
+  stage("IAX") {
+      steps {
+        script {
+          stage("iax/knobs-start") {
+            catchError {
+              build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KNOBS", value: "VTdSupport=1,InterruptRemap=1,PcieEnqCmdSupport=1,ProcessorVmxEnable=1"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+              }
+          }
+          stage("iax/kernel-start") {
+            catchError {
+              build(job: "Tests/kernelcli_run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KERNEL_PARAMETERS", value: "intel_iommu=on,sm_on iommu=on no5lvl"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+            }
+          }
+          stage("iax test") {
+            iax_list.each { test ->
+            stage(test) {
+              catchError {
+                run_job("${env.WORKSPACE}/${test}.${cluster}")
+              }
+              }
+            }
+          }
+          stage("iax/knobs-end") {
+            catchError {
+              build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KNOBS", value: "VTdSupport=1,InterruptRemap=2,PcieEnqCmdSupport=0,ProcessorVmxEnable=1"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+            }
+          }
+          stage("iax/kernel-end") {
+            catchError {
+              build(job: "Tests/kernelcli_run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KERNEL_PARAMETERS", value: "intel_iommu=on,sm_on"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+            }
+          }
+        }
+      }
+    }
+
+    stage("DLB-SPDK") {
+      steps {
+        script {
+          dlb_list.each { test ->
+          stage(test) {
+            catchError {
+              run_job("${env.WORKSPACE}/${test}.${cluster}")
+            }
+          }
+          }
+        }
+      }
+    }
+
+    /*stage("WORKLOADS") {
+      steps {
+        script {
+          test_list.each { test ->
+          stage(test) {
+            catchError {
+              run_job("${env.WORKSPACE}/${test}.${cluster}")
+            }
+          }
+          }
+        }
+      }
+    }*/
+
+    /*stage("RAS INITIAL KNOBS") {
+      steps {
+        script {
+          stage("ras/knobs-start") {
+            catchError {
+                build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KNOBS", value: "WheaErrorInjSupportEn=1,WheaErrInjEn=1,RasLogLevel=0,serialDebugMsgLvl=0"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+            }
+          }
+        }
+      }
+    }
+          stage("RAS TEST") {
+            steps {
+              script {
+                bin_list.each { binary ->
+                stage("binary-list") {
+                  catchError {
+                    TEST_BINARY = "${binary}"
+                    run_job("${env.WORKSPACE}/ras/ras-sf.${cluster}")
+                  }
+                }
+                }
+              }
+            }
+          }
+    stage("RAS ROLLBACK KNOBS") {
+      steps {
+        script {
+          stage("ras/knobs-end") {
+            catchError {
+                build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KNOBS", value: "WheaErrorInjSupportEn=0,WheaErrInjEn=1,RasLogLevel=1,serialDebugMsgLvl=4"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+            }
+          }
+        }
+      }
+    }*/
+
+    /*stage("WORKLOADS2") {
+      steps {
+        script {
+          test_list2.each { test ->
+          stage(test) {
+            catchError {
+              run_job("${env.WORKSPACE}/${test}.${cluster}")
+            }
+          }
+          }
+        }
+      }
+    }*/
+
+  }
+}
+
+// Agnostic variables and functions
+def private iter
+def private base
+def run_job(job_file) {
+  base = load "${env.WORKSPACE}/base/base.groovy"
+  job = load(job_file)
+  base.init()
+  env.NS = "spr-e3-sf-sdsi"
+  env.JENKINS_NODE_LABEL = "spr-e3-sf-sdsi"
+  env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.opus"
+  if (job_file == "${env.WORKSPACE}/ras/ras-sf.spr") {
+    echo "inside if"
+    env.JENKINS_TEST_BINARY = "${TEST_BINARY}"
+  }
+  iter = (env.ITERATIONS as int) ?: (1 as int)
+  for (int i = 0; i < iter; i++) {
+    base.run(env.JOB_RUNTIME)
+  }
+  base.reset()
+}

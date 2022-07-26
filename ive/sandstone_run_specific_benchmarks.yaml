@@ -1,0 +1,207 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: access-SANDSTONE_NAME
+  namespace: NAMESPACE
+spec:
+  podSelector:
+    matchLabels:
+      app: SANDSTONE_NAME
+  # default deny ALL egress
+  policyTypes:
+  - Egress
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  namespace: NAMESPACE
+  name: SANDSTONE_NAME
+spec:
+  selector:
+    matchLabels:
+      name: SANDSTONE_NAME
+  template:
+    metadata:
+      labels:
+        name: SANDSTONE_NAME
+        runid: ATSCALE_RUNID
+    spec:
+      hostNetwork: false
+      hostIPC: false
+      hostPID: false
+      nodeSelector:
+        SANDSTONE_NODE_LABEL: "true"
+      volumes:
+        - name: dshm
+          emptyDir:
+            medium: Memory
+        - name: data
+          emptyDir: {}
+        - name: hostroot
+          hostPath:
+            path: /
+            type: Directory
+        - name: modules
+          hostPath:
+            path: /lib/modules
+        - name: journal
+          hostPath:
+            path: /var/log/journal
+        - name: varlog
+          hostPath:
+            path: /var/log
+        - name: machineid
+          hostPath:
+            path: /etc/machine-id
+        - name: sys
+          hostPath:
+            path: /sys
+        - name: dbus
+          hostPath:
+            path: /var/run/dbus
+        - name: systemd
+          hostPath:
+            path: /run/systemd
+        - name: ucodefolder
+          hostPath:
+            path: /lib/firmware/intel-ucode
+        - name: logsfolder
+          hostPath:
+            path: /pub/logs
+      initContainers:
+        - name: create-metadata
+          image: REGISTRY/cluster-scope:v0.41
+          command: ["/bin/bash"]
+          args: ["-c", "mkdir -p /var/log/atscale; (echo '{\"name\": \"SANDSTONE_NAME\", \"runid\": \"ATSCALE_RUNID\"}' | tee -a /var/log/atscale/test-metadata.ndjson  | jq -c '. += {\"type\": \"test-metadata\"}'>/hostroot/dev/console &); \
+                  sleep 5; \
+                  echo run-start-indicator"]
+          securityContext:
+            privileged: true
+            allowPrivilegeEscalation: true
+          volumeMounts:
+          - name: varlog
+            mountPath: /var/log
+          - name: hostroot
+            mountPath: /hostroot
+        - name: init-container
+          image: REGISTRY/sandstone-init-container:27
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: INIT_MSR_SET
+              value: "INIT_MSR_SET_VAL"
+            - name: INIT_MSR_CPU
+              value: "INIT_MSR_CPU_VAL"
+          securityContext:
+            privileged: true
+        - name: node-details-msrs
+          image: REGISTRY/sandstone-init-container:27
+          command: ["/usr/bin/bash"]
+          args: ["-c", "rdmsr -0 -a 0x8b; exit 0"]
+          securityContext:
+            privileged: true
+            allowPrivilegeEscalation: true
+        - name: node-details-ppin
+          image: REGISTRY/sandstone-init-container:27
+          command: ["/usr/bin/bash"]
+          args: ["-c", "rdmsr -0 -a 0x4f; exit 0"]
+          securityContext:
+            privileged: true
+            allowPrivilegeEscalation: true
+        - name: node-fingerprint
+          image: mcastelino/hwinfo
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            privileged: true
+            allowPrivilegeEscalation: true
+          command: ["/usr/bin/bash", "-c"]
+          # make single line json
+          # Use grep to tag every line with the source of data and line number
+          # Helps interpreting the data in ES
+          args:
+          - lscpu -eJ | jq -c;
+            lscpu -J | jq -c;
+            lshw -json -notime | jq -c;
+            dmidecode > dmidecode.out; grep -e '.' -Hn dmidecode.out --color=never;
+            grep -e '.' -Hn /proc/cpuinfo --color=never;
+            exit 0
+          volumeMounts:
+          - name: dbus
+            mountPath: /var/run/dbus
+            readOnly: true
+          - name: systemd
+            mountPath: /run/systemd
+            readOnly: true
+          - name: journal
+            mountPath: /journal
+            readOnly: true
+      containers:
+      - name: SANDSTONE_NAME
+        image: REGISTRY/sandstone:DOCKER_TAG
+        imagePullPolicy: Always
+        # The below CPU number would allow us to deploy the same yaml on both
+        # our whitley and purley clusters where our smallest of systems have 96
+        # cores in them. Any increase in the CPU request would block the pod
+        # from landing on the system.
+        resources:
+          requests:
+            cpu: 65000m
+        volumeMounts:
+          - mountPath: /data
+            name: data
+          - mountPath: /dev/shm
+            name: dshm
+          - mountPath: /hostroot
+            name: hostroot
+            readOnly: false
+          - mountPath: /lib/modules
+            name: modules
+            readOnly: true
+          - mountPath: /var/log/journal
+            name: journal
+            readOnly: true
+          - mountPath: /etc/machine-id
+            name: machineid
+            readOnly: true
+          - mountPath: /sys
+            name: sys
+            readOnly: false
+          - mountPath: /lib/firmware/intel-ucode
+            name: ucodefolder
+            readOnly: false
+          - mountPath: /var/local/logs
+            name: logsfolder
+            readOnly: false
+        #run-specific uses env vars for params
+        command: ["/tests/scripts/run-specific.sh"]
+        env:
+          - name: SANDSTONE_BIN
+            value: "SANDSTONE_BIN_PATH"
+          - name: SANDSTONE_ARGS
+            value: "SANDSTONE_TEST_ARGS"
+          # Dragon Environment Variables
+          - name: RUN_DRAGON
+            value: "RUN_DRAGON_ARG"
+          - name: DRAGON_ARGS
+            value: "DRAGON_ARGS_ARG"
+          - name: DRAGON_TYPE
+            value: "DRAGON_TYPE_ARG"
+          - name: EXTRA_ARGS
+            value: "EXTRA_ARGS_ARG"
+          # GeekBench Env Variables
+          - name: GB_USER
+            value: "GB_USER_ARG"
+          - name: GB_KEY
+            value: "GB_KEY_ARG"
+          - name: GB_ITERATIONS
+            value: "GB_ITERATIONS_ARG"
+        readinessProbe:
+          exec:
+            command:
+              - cat
+              - /tmp/testdone
+            # Wait for 30s before checking for the first time
+            # then probe for completion every 5 seconds
+          initialDelaySeconds: 30
+          periodSeconds: 5
+        securityContext:
+          privileged: true

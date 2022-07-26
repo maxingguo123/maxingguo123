@@ -1,0 +1,3 @@
+load "${env.WORKSPACE}/seamless/4-1.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"

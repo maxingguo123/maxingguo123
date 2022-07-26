@@ -1,0 +1,4 @@
+load "${env.WORKSPACE}/sysbench/sysbench.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.gdc-1"
+

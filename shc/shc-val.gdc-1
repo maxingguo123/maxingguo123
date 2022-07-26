@@ -1,0 +1,5 @@
+load "${env.WORKSPACE}/shc/shc-val-gdc.base"
+
+env.JENKINS_TEST_TAG="unified_small_hvm_shc3726test_v3_unified_small_v4.7.2"
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.gdc-1"
+env.ITERATIONS=1

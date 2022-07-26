@@ -1,0 +1,7 @@
+env.JENKINS_TEST_TAG="jasper-mlc-v0.2"
+env.JENKINS_TEST_LABEL="jasper-mlc"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/run.sh"
+env.JENKINS_TEST_ARGS="2700"
+env.JOB_RUNTIME=2700
+env.ITERATIONS=2

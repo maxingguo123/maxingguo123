@@ -1,0 +1,50 @@
+// Pipeline specific variables
+
+def cluster="spr"
+//def test_list = ["dsa-iax-bkc/dsa-iax-bkc","sriov-mixer/sriov-mixer"]
+//def test_list = ["dram-bank-stress/dram-bank-stress","dsa-iax-bkc/dsa-iax-bkc","sriov-mixer/sriov-mixer"]
+//def test_list = ["high-freq-sweep/high-freq-sweep"]
+//def test_list = ["mixer/paiv-mixer"]
+//def test_list = ["jasper/combo-02"]
+//def KINGKONG_IMG="kingkong_sqrt-v0.95.2.1"
+//def SPEEDVALUE='"25"'
+//def test_list2 = ["TSL/TSL","jasper/cpu-check","ive-resnet50-legacy/ive-resnet50-legacy","ive-resnet50-amx/ive-resnet50-amx","ive-mobilenet-amx-b16/ive-mobilenet-amx-b16","ive-corefreq-v1p1/ive-corefreq-v1p1","ive-gromacs/ive-gromacs","ive-vt-suite/ive-vt-suite-createteardown"]
+
+def KUBECONFIG="--kubeconfig=/srv/kube/config.opus"
+def JENKINS_NODE_LABEL="spr-dev-mev-test-mcervan"
+def NS="spr-dev-mev-test-mcervan"
+
+pipeline {
+  agent { label "common" }
+  stages {
+      
+     stage("MEV-LSPCI") {
+      steps {
+        script {
+          stage("mev-lspci") {
+            catchError {
+                run_job("${env.WORKSPACE}/mev-lspci/mev-lspci.${cluster}")
+            }
+          }
+        }
+      }
+    } 
+  }
+} 
+
+// Agnostic variables and functions
+def private iter
+def private base
+def run_job(job_file) {
+  base = load "${env.WORKSPACE}/base/base.groovy"
+  job = load(job_file)
+  base.init()
+  env.NS = "spr-dev-mev-test-mcervan"
+  env.JENKINS_NODE_LABEL = "spr-dev-mev-test-mcervan"
+  env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.opus"
+  iter = (env.ITERATIONS as int) ?: (1 as int)
+  for (int i = 0; i < iter; i++) {
+      base.run(env.JOB_RUNTIME)
+  }
+  base.reset()
+}

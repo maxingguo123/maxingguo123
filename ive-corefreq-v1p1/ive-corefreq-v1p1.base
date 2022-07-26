@@ -1,0 +1,8 @@
+env.JENKINS_TEST_TAG="ive-corefreq-v1p2-21ww40-2"
+env.JENKINS_TEST_LABEL="ive-corefreq-v1p2-21ww40-2"
+env.JENKINS_NODE_LABEL="ive-corefreq-v1p2-21ww40-2"
+env.JENKINS_TEST_BINARY="\\/ive\\/content\\/ive-watch"
+env.JENKINS_TEST_ARGS="-name=ive-corefreq -- -t 86400"
+env.JOB_RUNTIME=90000
+env.EMAIL="ramprasad.rao@intel.com"
+

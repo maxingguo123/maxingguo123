@@ -1,0 +1,5 @@
+env.JENKINS_TEST_TAG="jasper-spec2017-v0.3"
+env.JENKINS_TEST_LABEL="spec2017"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/tests\\/scripts\\/run.sh"
+env.JOB_RUNTIME=43200

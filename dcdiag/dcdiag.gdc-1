@@ -1,0 +1,4 @@
+load "${env.WORKSPACE}/dcdiag/dcdiag.base"
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.gdc-1"
+env.JENKINS_TEST_ARGS="\\/usr\\/bin\\/dcdiag 15400"
+env.JOB_RUNTIME=15400

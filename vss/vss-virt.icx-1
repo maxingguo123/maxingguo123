@@ -1,0 +1,6 @@
+load "${env.WORKSPACE}/vss/vss.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+env.JENKINS_NODE_LABEL="virt-oss-virt"
+env.NS="oss-2"
+env.JENKINS_TEST_LABEL="virt-vss"

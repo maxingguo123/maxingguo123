@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: network-test-service
+  namespace: NAMESPACE
+spec:
+  clusterIP: None
+  selector:
+    name: SANDSTONE_NAME
+  ports:
+    - protocol: TCP
+      port: 5001
+      targetPort: 5001

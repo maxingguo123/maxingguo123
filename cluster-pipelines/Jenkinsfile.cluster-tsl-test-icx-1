@@ -1,0 +1,55 @@
+// Pipeline specific variables
+def cluster="icx-1"
+def def_test = ["TSL/TSL-val"]
+def test_list = def_test
+ 
+def KUBECONFIG="--kubeconfig=/srv/kube/config.icx-1"
+def JENKINS_NODE_LABEL="tsl-test"
+def NS="tsl-test"
+ 
+pipeline {
+  agent { label "common" }
+    stages {
+      stage("Tests") {
+        steps {
+          script {
+            test_list.each { test ->
+              stage(test) {
+                catchError {
+                  run_job("${env.WORKSPACE}/${test}.${cluster}")
+                }
+              }
+            } 
+          }
+        }
+      } 
+    }
+    post {  
+      aborted {
+        script{
+          stage("Cleanning aborted tasks") {
+            catchError {
+              build(job: "Tests/clean-namespaces", parameters:  [string(name: "NS", value: "${NS}"), string(name: "CLUSTER", value: "${cluster}"), string(name: "PO", value: "TRUE")])
+            }
+          }
+        }
+      }
+    }
+}
+ 
+// Agnostic variables and functions
+def private iter
+def private base
+def run_job(job_file) {
+  base = load "${env.WORKSPACE}/base/base.groovy"
+  job = load(job_file)
+  base.init()
+  env.NS = "tsl-test"
+  env.JENKINS_NODE_LABEL = "tsl-test"
+  env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+  iter = (env.ITERATIONS as int) ?: (1 as int)
+  for (int i = 0; i < iter; i++) {
+    base.run(env.JOB_RUNTIME)
+  }
+  base.reset()
+}

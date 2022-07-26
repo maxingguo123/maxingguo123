@@ -1,0 +1,3 @@
+load "${env.WORKSPACE}/ive-resnet50-amx/ive-resnet50-amx.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"

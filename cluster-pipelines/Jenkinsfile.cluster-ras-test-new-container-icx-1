@@ -1,0 +1,52 @@
+// Pipeline specific variables
+def cluster="icx-1"
+// def def_test = ["ras/ras"]
+// def test_list = def_test
+ 
+def KUBECONFIG="--kubeconfig=/srv/kube/config.icx-1"
+def JENKINS_NODE_LABEL="ras-test"
+def NS="ras-test"
+ 
+pipeline {
+    agent { label "common" }
+        stages {
+            stage("RAS") {
+                steps {
+                    script {
+                        stage("ras/knobs-start") {
+                            catchError {
+                                build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value:"ras-test"), string(name: "KUBECONFIG", value:"--kubeconfig=/srv/kube/config.icx-1"), string(name: "KNOBS", value: "WheaErrorInjSupportEn=1,McaBankErrInjEn=1,EmcaCsmiEn=0,EmcaMsmiEn=0,RasLogLevel=0,serialDebugMsgLvl=0"), string(name: "JENKINS_NODE_LABEL", value: "ras-test")])
+                            }
+                        }
+                        stage("ras/ras") {
+                            catchError {
+                                run_job("${env.WORKSPACE}/ras/ras.${cluster}")
+                        }
+                        }
+                        stage("ras/knobs-end") {
+                            catchError {
+                                build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value:"ras-test"), string(name: "KUBECONFIG", value:"--kubeconfig=/srv/kube/config.icx-1"), string(name: "KNOBS", value: "WheaErrorInjSupportEn=0,McaBankErrInjEn=0,EmcaCsmiEn=2,EmcaMsmiEn=2,RasLogLevel=1,serialDebugMsgLvl=4"), string(name: "JENKINS_NODE_LABEL", value: "ras-test")])
+                            }
+                        }
+                    }
+                }
+            }
+        }
+}
+ 
+// Agnostic variables and functions
+def private iter
+def private base
+def run_job(job_file) {
+  base = load "${env.WORKSPACE}/base/base.groovy"
+  job = load(job_file)
+  base.init()
+  env.NS = "ras-test"
+  env.JENKINS_NODE_LABEL = "ras-test"
+  env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+  iter = (env.ITERATIONS as int) ?: (1 as int)
+  for (int i = 0; i < iter; i++) {
+    base.run(env.JOB_RUNTIME)
+  }
+  base.reset()
+}

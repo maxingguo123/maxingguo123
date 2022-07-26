@@ -1,0 +1,53 @@
+// Pipeline specific variables
+
+def cluster="spr"
+//def def_list = ["memory-subsystem/mlc","sandstone/sandstone-release","sandstone/sandstone","sandstone/sandstone-combo","DOL/DOL","tmul-amx/tmul-amx","benchdnn/benchdnn","shc/shc","ive-povray/ive-povray","dsa-stress/dsa-stress","sandstone/sandstone-release700m"]
+def def_list = ["memory-subsystem/mlc","jasper/mlc","jasper/fio","posted-interrupts/posted-interrupts","google-stressapp/google-stressapp","imunch/imunch","imunch-replay/imunch-replay","helpers/idle","dpdk-vfio/dpdk-vfio"]
+def ive_list = ["ive-ycruncher/ive-ycruncher","ive-mprime/ive-mprime","ive-geekbench/ive-geekbench","ive-stressapptest/ive-stressapptest"]
+def serv_list = ["service-framework-workloads/perf_ip_cpu","service-framework-workloads/qat-aes","service-framework-workloads/qat-rsa"]
+def mesh_list = ["mesh-stress/mesh-stress"]
+def ss_list = ["sandstone/sandstone-release","sandstone/sandstone-combo"]
+def combo_list = ["jasper/combo-01","jasper/combo-02","jasper/combo-03","jasper/combo-05"]
+def test_list = combo_list + ss_list + mesh_list + serv_list + def_list + ive_list
+
+def NS="spr-test-kvm-content"
+def KUBECONFIG="--kubeconfig=/srv/kube/config.icx-1"
+def JENKINS_NODE_LABEL="spr-test-kvm-content"
+
+pipeline {
+  agent { label 'common' }
+  stages {
+    stage("Tests") {
+      steps {
+        script {
+          test_list.each { test ->
+          stage(test) {
+            catchError {
+                run_job("${env.WORKSPACE}/${test}.${cluster}")
+            }
+          }
+        }
+       }
+      }
+    }
+  }
+}
+
+// Agnostic variables and functions
+def private iter
+def private base
+def run_job(job_file) {
+  base = load "${env.WORKSPACE}/base/base.groovy"
+  job = load(job_file)
+  base.init("virt")
+  env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+  env.NS = "spr-test-kvm-content"
+  env.JENKINS_NODE_LABEL = "spr-test-kvm-content"
+  env.JENKINS_TEST_LABEL = "virt-${env.JENKINS_TEST_LABEL}"
+  iter = (env.ITERATIONS as int) ?: (1 as int)
+  for (int i = 0; i < iter; i++) {
+    base.run(env.JOB_RUNTIME)
+  }
+  base.reset()
+}
+

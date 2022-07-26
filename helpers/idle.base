@@ -1,0 +1,6 @@
+env.JENKINS_TEST_TAG="idle-1"
+env.JENKINS_TEST_LABEL="idle"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="sleep"
+env.JENKINS_TEST_ARGS="2h"
+env.JOB_RUNTIME=7800

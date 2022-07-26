@@ -1,0 +1,5 @@
+env.JENKINS_TEST_TAG="pts-cachebench-v0.1"
+env.JENKINS_TEST_LABEL="pts-cachebench"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/tests\\/scripts\\/run.sh"
+env.JOB_RUNTIME=5400

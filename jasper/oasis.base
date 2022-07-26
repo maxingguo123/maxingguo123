@@ -1,0 +1,7 @@
+env.JENKINS_TEST_TAG="jasper-oasis-v0.27.1"
+env.JENKINS_TEST_LABEL="jasper-oasis"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/run.py"
+env.JENKINS_TEST_ARGS="4500"
+env.JOB_RUNTIME=9500
+env.ITERATIONS=2

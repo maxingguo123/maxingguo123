@@ -1,0 +1,44 @@
+// Pipeline specific variables
+
+def cluster="spr"
+def def_list = ["ive-vt/hybrid-dense"]
+def test_list = def_list
+def NS="spr-dbg-hybrid-renteria"
+def KUBECONFIG="--kubeconfig=/srv/kube/config.icx-1"
+def JENKINS_NODE_LABEL="spr-dbg-hybrid-renteria"
+
+pipeline {
+  agent { label 'piv' }
+  stages {
+    stage("WORKLOADS") {
+      steps {
+        script {
+          test_list.each { test ->
+          stage(test) {
+            catchError {
+                run_job("${env.WORKSPACE}/${test}.${cluster}")
+            }
+          }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Agnostic variables and functions
+def private iter
+def private base
+def run_job(job_file) {
+  base = load "${env.WORKSPACE}/base/base.groovy"
+  job = load(job_file)
+  base.init()
+  env.NS = "spr-dbg-hybrid-renteria"
+  env.JENKINS_NODE_LABEL="spr-dbg-hybrid-renteria"
+  env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+  iter = (env.ITERATIONS as int) ?: (1 as int)
+  for (int i = 0; i < iter; i++) {
+    base.run(env.JOB_RUNTIME)
+  }
+  base.reset()
+}

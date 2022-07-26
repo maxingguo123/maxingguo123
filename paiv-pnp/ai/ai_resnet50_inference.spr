@@ -1,0 +1,14 @@
+import java.lang.Math
+
+env.JENKINS_TEST_TAG="pnp-spr-main-ai_resnet50-v0.02"
+env.JENKINS_TEST_LABEL="paiv-pnp-spr-main-ai-resnet50-inference"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/home\\/AI_Resnet50\\/src\\/run_all.sh"
+// Use env.EXTRA_ARGS_ARG to control the test cycles
+env.EXTRA_ARGS_ARG="3"
+// Runtime should be: (1 + buffer) * cycles * basetime round to an integer
+// Here basetiem is 1440, buffer is 30%
+env.JOB_RUNTIME=Math.round(1.3f * env.EXTRA_ARGS_ARG.toInteger() * 1440)
+
+env.DEPLOYMENT_YAML_URL="https://raw.githubusercontent.com/intel-innersource/applications.infrastructure.data-center.jenkins.prt-int-cluster/main/paiv-pnp/paiv_pnp_spr_general.yaml"
+env.SANDSTONE_DEPLOYMENT="${env.WORKSPACE}/paiv_pnp_spr_general.yaml"

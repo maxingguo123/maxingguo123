@@ -1,0 +1,6 @@
+env.JENKINS_TEST_TAG="ifs-cli-v2.0.0"
+env.JENKINS_TEST_LABEL="ifs-cli-tool"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/tests\\/scripts\\/run-saf.sh"
+env.JENKINS_TEST_ARGS=""
+env.JOB_RUNTIME=12000

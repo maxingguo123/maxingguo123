@@ -1,0 +1,11 @@
+env.JENKINS_TEST_TAG="unified_hvm_unified_v4.7.2"
+env.JENKINS_TEST_LABEL="shc-val"
+env.JENKINS_TEST_BINARY=""
+env.JENKINS_TEST_ARGS=""
+env.DRAGON_TYPE_ARG=""
+env.DRAGON_ARGS_ARG=""
+env.RUN_DRAGON_ARG=true
+env.EXTRA_ARGS_ARG=""
+env.JOB_RUNTIME=10800
+env.ITERATIONS=1
+env.EMAIL="dpg_fsce_cluster_dl@intel.com"

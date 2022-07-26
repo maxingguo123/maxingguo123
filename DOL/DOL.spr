@@ -1,0 +1,9 @@
+load "${env.WORKSPACE}/DOL/DOL.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+env.JENKINS_NODE_LABEL="spr-pipeline"
+env.NS="sapphire"
+env.JENKINS_TEST_TAG="spr_gdc"
+env.TEST_RUNTIME="4h"
+env.DRAGON_TYPE_ARG="breadth"
+env.JOB_RUNTIME=14400

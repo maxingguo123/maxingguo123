@@ -1,0 +1,6 @@
+env.JENKINS_TEST_TAG="passmark-burnin-4.1v2.0"
+env.JENKINS_TEST_LABEL="passmark-burnin"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/burnin_test.sh"
+env.JENKINS_TEST_ARGS="noload"
+env.JOB_RUNTIME=2400

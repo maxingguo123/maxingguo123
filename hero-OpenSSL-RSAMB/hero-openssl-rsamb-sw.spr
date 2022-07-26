@@ -1,0 +1,3 @@
+load "${env.WORKSPACE}/hero-OpenSSL-RSAMB/hero-openssl-rsamb-sw.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"

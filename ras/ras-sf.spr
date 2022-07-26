@@ -1,0 +1,5 @@
+load "${env.WORKSPACE}/ras/ras.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+env.JENKINS_TEST_BINARY=".\\/run-all.sh"
+env.JOB_RUNTIME=3900

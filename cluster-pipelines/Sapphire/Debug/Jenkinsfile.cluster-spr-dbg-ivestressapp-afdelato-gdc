@@ -1,0 +1,42 @@
+// Pipeline specific variables
+
+def cluster="spr"
+def NS="spr-dbg-ivestressapp-afdelato"
+def KUBECONFIG="--kubeconfig=/srv/kube/config.icx-1"
+def JENKINS_NODE_LABEL="spr-dbg-ivestressapp-afdelato"
+
+pipeline {
+  agent { label 'piv' }
+  stages {
+    stage("WORKLOADS") {
+      steps {
+        script {          
+          stage("IVE STRESSAPPTEST") {
+            catchError {
+                run_job("${env.WORKSPACE}/ive-stressapptest/ive-stressapptest.${cluster}")
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Agnostic variables and functions
+def private iter
+def private base
+def run_job(job_file) {
+  base = load "${env.WORKSPACE}/base/base.groovy"
+  job = load(job_file)
+  base.init()
+  env.NS = "spr-dbg-ivestressapp-afdelato"
+  env.JENKINS_NODE_LABEL = "spr-dbg-ivestressapp-afdelato"
+  env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+  env.JOB_RUNTIME = 259200
+  iter = (env.ITERATIONS as int) ?: (1 as int)
+  for (int i = 0; i < iter; i++) {
+    base.run(env.JOB_RUNTIME)
+  }
+  base.reset()
+}
+

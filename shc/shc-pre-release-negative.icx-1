@@ -1,0 +1,4 @@
+load "${env.WORKSPACE}/shc/shc-pre-release-negative.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+env.ITERATIONS=2

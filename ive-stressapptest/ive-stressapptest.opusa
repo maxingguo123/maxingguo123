@@ -1,0 +1,3 @@
+load "${env.WORKSPACE}/ive-stressapptest/ive-stressapptest.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.opus"

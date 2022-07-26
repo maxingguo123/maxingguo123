@@ -1,0 +1,6 @@
+load "${env.WORKSPACE}/sandstone/sandstone-combo.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config"
+env.JENKINS_TEST_LABEL="virt-sandstone-chaos"
+env.NS="virt"
+env.JENKINS_NODE_LABEL="oss-virt-test"

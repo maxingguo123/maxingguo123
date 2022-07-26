@@ -1,0 +1,10 @@
+env.JENKINS_TEST_TAG="ive-resnet50-amx-int8"
+env.JENKINS_TEST_LABEL="ive-resnet50-amx-int8"
+env.JENKINS_NODE_LABEL="ive-resnet50-amx-int8"
+env.JENKINS_TEST_BINARY="\\/ive\\/content\\/source\\/ive_wrapper.sh"
+env.JENKINS_TEST_ARGS="\\/ive\\/content\\/source\\/resnet_amx-run.sh --batch-size 32 --time 10800"
+env.JOB_RUNTIME=11100
+env.EMAIL="ghazal.f.nasri.shandiz@intel.com"
+
+env.DEPLOYMENT_YAML_URL="https://gitlab-mirror-fm.devtools.intel.com/sandstone/prt-int-cluster/-/raw/master/ive/sandstone_run_specific.yaml"
+env.SANDSTONE_DEPLOYMENT="${env.WORKSPACE}/sandstone_run_specific.yaml"

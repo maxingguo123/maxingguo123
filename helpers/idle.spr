@@ -1,0 +1,7 @@
+load "${env.WORKSPACE}/helpers/idle.base"
+
+env.JENKINS_NODE_LABEL="spr-pipeline"
+env.NS="sapphire"
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+env.JENKINS_TEST_ARGS="1h"
+env.JOB_RUNTIME=3600

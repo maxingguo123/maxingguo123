@@ -1,0 +1,11 @@
+//Owner: Mauricio Rodriguez Yepez
+//PTG: PCIe traffic generator
+//HW: MAXIO systems
+//First arg is card vendorID:deviceID, and second arg iterations
+
+env.JENKINS_TEST_TAG="ptg-v0.1"
+env.JENKINS_TEST_LABEL="ptg-test"
+env.JENKINS_NODE_LABEL="unifiednode" 
+env.JENKINS_TEST_BINARY="\\/tests\\/run-test.sh"
+env.JENKINS_TEST_ARGS="8085:0d52 100"
+env.JOB_RUNTIME=173000

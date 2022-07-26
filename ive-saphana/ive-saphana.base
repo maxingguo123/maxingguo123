@@ -1,0 +1,9 @@
+env.JENKINS_TEST_TAG="GenieSaphana_21ww27_1"
+env.JENKINS_TEST_TAG="ive-saphana-21ww27-1"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/run_content.sh -t 18"
+env.JENKINS_TEST_ARGS=""
+env.JOB_RUNTIME=68400
+env.DEPLOYMENT_YAML_URL="https://gitlab-mirror-fm.devtools.intel.com/sandstone/prt-int-cluster/-/raw/master/ive/sandstone_run_specific.yaml"
+env.SANDSTONE_DEPLOYMENT="${env.WORKSPACE}/sandstone_run_specific.yaml"
+env.EMAIL="vittal.siddaiah@intel.com"

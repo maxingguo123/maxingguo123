@@ -1,0 +1,8 @@
+JENKINS_TEST_TAG=nightly
+JENKINS_TEST_LABEL=ss-nightly-july23
+JENKINS_NODE_LABEL=sde-regression
+JENKINS_TEST_BINARY=\/tests\/sandstone
+JENKINS_TEST_ARGS=
+ITERATIONS=1
+JOB_RUNTIME=1000
+EMAIL=brad.a.kelly@intel.com

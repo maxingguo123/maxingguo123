@@ -1,0 +1,6 @@
+env.JENKINS_TEST_TAG=""
+env.JENKINS_TEST_LABEL="dram-bank-stress-ras"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JOB_RUNTIME=75600
+env.DEPLOYMENT_YAML_URL="https://raw.githubusercontent.com/intel-innersource/applications.infrastructure.data-center.jenkins.prt-int-cluster/main/dram-bank-stress/dram-bank-stress.yaml"
+env.SANDSTONE_DEPLOYMENT="${env.WORKSPACE}/dram-bank-stress.yaml"

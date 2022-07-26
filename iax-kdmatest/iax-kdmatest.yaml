@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  namespace: NAMESPACE
+  name: SANDSTONE_NAME
+spec:
+  selector:
+    matchLabels:
+      name: SANDSTONE_NAME
+  template:
+    metadata:
+      labels:
+        name: SANDSTONE_NAME
+    spec:
+      nodeSelector:
+        SANDSTONE_NODE_LABEL: "true"
+      volumes:
+        - name: modules
+          hostPath:
+            path: /lib/modules
+            type: Directory
+
+      containers:
+      - name: SANDSTONE_NAME
+        image: REGISTRY/sandstone:DOCKER_TAG
+        command: ["/tests/scripts/run-specific.sh"]
+        imagePullPolicy: Always
+        volumeMounts:
+          - name: modules
+            mountPath: /lib/modules
+            
+        readinessProbe:
+          exec:
+            command:
+              - cat
+              - /tmp/testdone
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        securityContext:
+          privileged: true

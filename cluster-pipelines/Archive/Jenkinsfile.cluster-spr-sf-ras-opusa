@@ -1,0 +1,80 @@
+// Pipeline specific variables
+
+def cluster="spr"
+
+def NS="spr-test-ras-sf"
+def KUBECONFIG="--kubeconfig=/srv/kube/config.opus"
+def JENKINS_NODE_LABEL="spr-test-ras-sf"
+//def JENKINS_TEST_BINARY=""
+TEST_BINARY=""
+
+def bin_list = [".\\/sandstone-breadth-poison.sh",".\\/multi-workload-mem-correctable.sh",".\\/mprime-correctable+uncorrectable.sh",".\\/llr-data-poison.sh",".\\/stream-prefetch-poison.sh",".\\/stress-ng-2MiB-hugepage-patrol-scrub.sh"]
+
+pipeline {
+  agent { label 'common' }
+  stages {
+
+    stage("RAS INITIAL KNOBS") {
+      steps {
+        script {
+          stage("ras/knobs-start") {
+            catchError {
+                build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KNOBS", value: "WheaErrorInjSupportEn=1,WheaErrInjEn=1,RasLogLevel=0,serialDebugMsgLvl=0"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+            }
+          }
+        }
+      }
+    }
+
+          stage("RAS TEST") {
+            steps {
+              script {
+                bin_list.each { binary ->
+                stage("binary-list") {
+                  catchError {
+                    TEST_BINARY = "${binary}"
+                    run_job("${env.WORKSPACE}/ras/ras-sf.${cluster}")
+                  }
+                }
+                }
+              }
+            }
+          }
+
+    stage("RAS ROLLBACK KNOBS") {
+      steps {
+        script {
+          stage("ras/knobs-end") {
+            catchError {
+                build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KNOBS", value: "WheaErrorInjSupportEn=0,WheaErrInjEn=1,RasLogLevel=1,serialDebugMsgLvl=4"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+            }
+          }
+        }
+      }
+    }
+  
+  }
+}
+
+// Agnostic variables and functions
+def private iter
+def private base
+def run_job(job_file) {
+  base = load "${env.WORKSPACE}/base/base.groovy"
+  job = load(job_file)
+  base.init()
+  env.NS = "spr-test-ras-sf"
+  env.JENKINS_NODE_LABEL = "spr-test-ras-sf"
+  env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.opus"
+  //echo job_file
+  //echo TEST_BINARY
+  if (job_file == "${env.WORKSPACE}/ras/ras-sf.spr") {
+    echo "inside if"
+    env.JENKINS_TEST_BINARY = "${TEST_BINARY}"
+  }
+  iter = (env.ITERATIONS as int) ?: (1 as int)
+  for (int i = 0; i < iter; i++) {
+    base.run(env.JOB_RUNTIME)
+  }
+  base.reset()
+}

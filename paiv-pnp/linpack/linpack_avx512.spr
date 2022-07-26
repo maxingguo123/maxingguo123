@@ -1,0 +1,15 @@
+import java.lang.Math
+
+env.JENKINS_TEST_TAG="pnp-spr-main-linpack-v0.01"
+env.JENKINS_TEST_LABEL="paiv-pnp-spr-main-linpack-avx512"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/home\\/run_linpack.sh"
+env.JENKINS_TEST_ARGS="AVX512"
+// Use env.EXTRA_ARGS_ARG to control the test cycles
+env.EXTRA_ARGS_ARG="3"
+// Runtime should be: (1 + buffer) * cycles * basetime round to an integer
+// Here basetiem is 420, buffer is 30%
+env.JOB_RUNTIME=Math.round(1.3f * env.EXTRA_ARGS_ARG.toInteger() * 420)
+
+env.DEPLOYMENT_YAML_URL="https://raw.githubusercontent.com/intel-innersource/applications.infrastructure.data-center.jenkins.prt-int-cluster/main/paiv-pnp/paiv_pnp_spr_general.yaml"
+env.SANDSTONE_DEPLOYMENT="${env.WORKSPACE}/paiv_pnp_spr_general.yaml"

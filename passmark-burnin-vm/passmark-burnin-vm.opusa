@@ -1,0 +1,3 @@
+load "${env.WORKSPACE}/passmark-burnin-vm/passmark-burnin-vm.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.opus"

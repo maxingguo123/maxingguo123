@@ -1,0 +1,10 @@
+//test which exercises PCIe flow, SRIOV, VT-d, NUMA and Remote DDIO
+
+env.JENKINS_TEST_TAG=""
+env.JENKINS_TEST_LABEL="dpdk-vfio"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY=""
+env.JENKINS_TEST_ARGS=""
+env.JOB_RUNTIME=7500
+env.DEPLOYMENT_YAML_URL="https://gitlab.devtools.intel.com/sandstone/prt-int-cluster/-/raw/master/dpdk-vfio/dpdk.yaml"
+env.SANDSTONE_DEPLOYMENT="${env.WORKSPACE}/dpdk.yaml"

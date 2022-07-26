@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: machine-owners-list
+  namespace: mgmt
+data:
+  owner_file.yaml: |-
+    cdc:
+    infra:
+    ive:
+      r13s15.zp31l10b01:
+    oss:
+    piv:

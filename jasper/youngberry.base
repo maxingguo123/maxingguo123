@@ -1,0 +1,7 @@
+env.JENKINS_TEST_TAG="jasper-llr-v0.1"
+env.JENKINS_TEST_LABEL="jasper-youngberry"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/run.sh"
+env.JENKINS_TEST_ARGS=""
+env.JOB_RUNTIME=4000
+env.ITERATIONS=3

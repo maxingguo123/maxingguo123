@@ -1,0 +1,5 @@
+load "${env.WORKSPACE}/mesh-stress/sscombo-iperf.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+env.JENKINS_NODE_LABEL="spr-network-mesh"
+env.NS="spr-network-mesh"

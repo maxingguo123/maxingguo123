@@ -1,0 +1,8 @@
+env.JENKINS_TEST_TAG="jasper-unixbench-v0.1"
+env.JENKINS_TEST_LABEL="jasper-unixbench"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/tests\\/scripts\\/run-specific.sh"
+env.JENKINS_TEST_ARGS=3600
+env.EXTRA_ARGS_ARG=""
+env.JOB_RUNTIME=3600
+env.ITERATIONS=1

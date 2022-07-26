@@ -1,0 +1,4 @@
+load "${env.WORKSPACE}/jasper/cloud-hypervisor.base"
+
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.opus"

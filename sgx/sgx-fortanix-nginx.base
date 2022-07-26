@@ -1,0 +1,8 @@
+env.JENKINS_TEST_TAG="navlok-nginx-wrk"
+env.JENKINS_TEST_LABEL="sgx-fortanix-nginx"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/root\\/run.sh"
+env.JENKINS_TEST_ARGS="localhost 80 443"
+env.JOB_RUNTIME=1200
+env.DEPLOYMENT_YAML_URL="https://gitlab-mirror-fm.devtools.intel.com/deepakku/prt-int-cluster/-/raw/master/sgx/run_sgx.yaml"
+env.SANDSTONE_DEPLOYMENT="${env.WORKSPACE}/run_sgx.yaml"

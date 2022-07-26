@@ -1,0 +1,6 @@
+load "${env.WORKSPACE}/google-stressapp/google-stressapp.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config"
+env.JENKINS_TEST_LABEL="virt-stressapptest"
+env.JENKINS_NODE_LABEL="oss-virt-test"
+env.NS="virt"

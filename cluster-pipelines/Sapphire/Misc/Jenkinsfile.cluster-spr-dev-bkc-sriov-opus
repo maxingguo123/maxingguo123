@@ -1,0 +1,114 @@
+// Pipeline specific variables
+
+def cluster="spr"
+//def test_list = ["dsa-iax-bkc/dsa-iax-bkc","sriov-mixer/sriov-mixer"]
+//def test_list = ["dram-bank-stress/dram-bank-stress","dsa-iax-bkc/dsa-iax-bkc","sriov-mixer/sriov-mixer"]
+//def test_list = ["high-freq-sweep/high-freq-sweep"]
+//def test_list = ["mixer/paiv-mixer"]
+//def test_list = ["jasper/combo-02"]
+//def KINGKONG_IMG="kingkong_sqrt-v0.95.2.1"
+//def SPEEDVALUE='"25"'
+//def test_list2 = ["TSL/TSL","jasper/cpu-check","ive-resnet50-legacy/ive-resnet50-legacy","ive-resnet50-amx/ive-resnet50-amx","ive-mobilenet-amx-b16/ive-mobilenet-amx-b16","ive-corefreq-v1p1/ive-corefreq-v1p1","ive-gromacs/ive-gromacs","ive-vt-suite/ive-vt-suite-createteardown"]
+
+def KUBECONFIG="--kubeconfig=/srv/kube/config.opus"
+def JENKINS_NODE_LABEL="spr-test-content-opus"
+def NS="spr-test-content-opus"
+
+pipeline {
+  agent { label "common" }
+  stages {
+      
+     /*stage("RAS-DRAM-BANK") {
+      steps {
+        script {
+          stage("ras/knobs-start") {
+            catchError {
+                build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KNOBS", value: "WheaErrorInjSupportEn=1,WheaErrInjEn=1,RasLogLevel=0,serialDebugMsgLvl=0"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+            }
+          }
+          stage("dram-bank-stress-ras") {
+            catchError {
+                run_job("${env.WORKSPACE}/dram-bank-stress/dram-bank-stress-ras.${cluster}")
+            }
+          }
+          stage("ras/knobs-end") {
+            catchError {
+                build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KNOBS", value: "WheaErrorInjSupportEn=0,WheaErrInjEn=1,RasLogLevel=1,serialDebugMsgLvl=4"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+            }
+          }
+        }
+      }
+    } */
+    
+    stage("DSA-IAX-BKC") {
+      steps {
+        script {
+          stage("dsa-iax-bkc/knobs-start") {
+            catchError {
+                build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KNOBS", value: "VTdSupport=0x1,PcieEnqCmdSupport=0x1,InterruptRemap=0x1,ProcessorVmxEnable=0x1"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+            }
+          }
+          stage("dsa-iax-bkc/kernel-start") {
+            catchError {
+                build(job: "Tests/kernelcli_run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KERNEL_PARAMETERS", value: "intel_iommu=on,sm_on,iommu=pt,iommu=on no5lvl,hugepages=512"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+            }
+          }
+          
+          stage("dsa-iax-bkc") {
+            catchError {
+                run_job("${env.WORKSPACE}/dsa-iax-bkc/dsa-iax-bkc.${cluster}")
+            }
+          }
+          
+          stage("dsa-perf-micros") {
+            catchError {
+                run_job("${env.WORKSPACE}/jasper/dsa-perf-micros.${cluster}")
+            }
+          }
+          
+          stage("dsa-iax-bkc/kernel-end") {
+            catchError {
+                build(job: "Tests/kernelcli_run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KERNEL_PARAMETERS", value: "intel_iommu=on,iommu=pt,iommu=on,hugepages=1024"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+            }
+         }
+          
+          stage("dsa-iax-bkc/knobs-end") {
+            catchError {
+                build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KNOBS", value: "VTdSupport=0x1,PcieEnqCmdSupport=0x0,InterruptRemap=0x2,ProcessorVmxEnable=0x1"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+            }
+          }
+        }
+      }
+    } 
+    
+    /*stage("SRIOV-RANDOM-MIX") {
+      steps {
+        script {
+          stage("sriov-random-mix") {
+            catchError {
+                run_job("${env.WORKSPACE}/sriov-mixer/sriov-mixer.${cluster}")
+            }
+          }
+        }
+      }
+    } */
+    
+  }
+}
+
+// Agnostic variables and functions
+def private iter
+def private base
+def run_job(job_file) {
+  base = load "${env.WORKSPACE}/base/base.groovy"
+  job = load(job_file)
+  base.init()
+  env.NS = "spr-test-content-opus"
+  env.JENKINS_NODE_LABEL = "spr-test-content-opus"
+  env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.opus"
+  iter = (env.ITERATIONS as int) ?: (1 as int)
+  for (int i = 0; i < iter; i++) {
+      base.run(env.JOB_RUNTIME)
+  }
+  base.reset()
+}

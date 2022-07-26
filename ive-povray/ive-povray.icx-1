@@ -1,0 +1,6 @@
+load "${env.WORKSPACE}/ive-povray/ive-povray.base"
+
+env.NS="default"
+
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"

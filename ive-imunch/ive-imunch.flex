@@ -1,0 +1,3 @@
+load "${env.WORKSPACE}/ive-imunch/ive-imunch.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.flex"

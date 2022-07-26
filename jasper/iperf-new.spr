@@ -1,0 +1,9 @@
+load "${env.WORKSPACE}/jasper/iperf.base"
+
+env.DEPLOYMENT_YAML_URL="https://raw.githubusercontent.com/intel-innersource/applications.infrastructure.data-center.jenkins.prt-int-cluster/main/jasper/iperf-mev-nic.yaml"
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+env.JENKINS_TEST_TAG="jasper-iperf-v0.4.4"
+env.JENKINS_TEST_ARGS="2100"
+env.JOB_RUNTIME=2200
+env.SANDSTONE_DEPLOYMENT="${env.WORKSPACE}/iperf-mev-nic.yaml"
+env.EMAIL="alex.v.jaramillo@.intel.com"

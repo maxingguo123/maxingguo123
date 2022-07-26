@@ -1,0 +1,10 @@
+//owner: Victor Bahena, David Claudio
+//description: Benchdnn-based regression tests consisting of a correctness run followed by a performance one
+//Sets DNNL_MAX_CPU_ISA to "" so that  AVX512_CORE_VNNI is chosen by the cpu dispatcher.
+
+env.JENKINS_TEST_TAG="benchdnn_regression-0.2"
+env.JENKINS_TEST_LABEL="benchdnn-regression-test"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/tests\\/scripts\\/run-specific.sh"
+env.JENKINS_TEST_ARGS=""
+env.JOB_RUNTIME=8400

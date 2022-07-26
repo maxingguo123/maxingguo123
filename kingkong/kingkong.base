@@ -1,0 +1,10 @@
+env.SANDSTONE_DEPLOYMENT="./sandstone_run_specific.yaml"
+env.JENKINS_TEST_BINARY="\\/tests\\/scripts\\/run-specific.sh"
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+env.JENKINS_NODE_LABEL="spr-kingkong"
+env.NS="unifiednode"
+
+env.JENKINS_TEST_TAG="kingkongspr-v0.1"
+env.JENKINS_TEST_LABEL="kingkong"
+env.JENKINS_TEST_BINARY="\\/tests\\/run-test.sh"
+env.JENKINS_TEST_ARGS="900"

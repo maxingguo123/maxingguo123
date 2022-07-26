@@ -1,0 +1,8 @@
+env.JENKINS_TEST_TAG="sgx-gramine-sandstone-v0.2"
+env.JENKINS_TEST_LABEL="sgx-sandstone-gramine"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/tests\\/scripts\\/run-specific.sh"
+env.JENKINS_TEST_ARGS=""
+env.JOB_RUNTIME=87000
+env.DEPLOYMENT_YAML_URL="https://gitlab-mirror-fm.devtools.intel.com/deepakku/prt-int-cluster/-/raw/master/sgx/run_sgx.yaml"
+env.SANDSTONE_DEPLOYMENT="${env.WORKSPACE}/run_sgx.yaml"

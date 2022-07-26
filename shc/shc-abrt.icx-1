@@ -1,0 +1,5 @@
+load "${env.WORKSPACE}/shc/shc-val.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+env.ITERATIONS=1
+env.JOB_RUNTIME=70

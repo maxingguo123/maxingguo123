@@ -1,0 +1,6 @@
+load "${env.WORKSPACE}/posted-interrupts/posted-interrupts.base"
+
+env.JENKINS_TEST_TAG="posted-interrupts-0.4"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+env.ITERATIONS=2

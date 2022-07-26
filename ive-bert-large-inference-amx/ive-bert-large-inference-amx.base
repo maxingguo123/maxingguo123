@@ -1,0 +1,10 @@
+env.JENKINS_TEST_TAG="spr-bert-large-atscale-0.5"
+env.JENKINS_TEST_LABEL="spr-bert-large-atscale"
+env.JENKINS_NODE_LABEL="sfval"
+env.JENKINS_TEST_BINARY="\\/tests\\/scripts\\/run-specific.sh"
+env.JENKINS_TEST_ARGS="--privileged -e MODE=accuracy -e TOPOLOGY=bert_large -e PRECISION=amx_bfloat16 -e FUNCTION=inference -e DATA_TYPE=real -e DNNL_CPU_ISA=AVX512_CORE_AMX -e STEPS="
+env.JOB_RUNTIME=900
+env.EMAIL="ghazal.f.nasri.shandiz@intel.com"
+
+//env.DEPLOYMENT_YAML_URL="https://gitlab-mirror-fm.devtools.intel.com/sandstone/prt-int-cluster/-/raw/master/ive/sandstone_run_specific.yaml"
+//env.SANDSTONE_DEPLOYMENT="${env.WORKSPACE}/sandstone_run_specific.yaml"

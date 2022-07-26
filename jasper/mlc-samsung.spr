@@ -1,0 +1,6 @@
+load "${env.WORKSPACE}/jasper/mlc.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+env.ITERATIONS=1
+env.JOB_RUNTIME=21600
+env.JENKINS_TEST_ARGS=21600

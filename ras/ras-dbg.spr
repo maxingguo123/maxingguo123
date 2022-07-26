@@ -1,0 +1,7 @@
+load "${env.WORKSPACE}/ras/ras.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+env.JENKINS_TEST_TAG="ras-v0.5.3-latest"
+env.JENKINS_TEST_BINARY=".\\/run-all.sh"
+//env.JENKINS_TEST_BINARY=".\\/tests\\/sandstone-movdir-poison"
+env.JOB_RUNTIME=75600

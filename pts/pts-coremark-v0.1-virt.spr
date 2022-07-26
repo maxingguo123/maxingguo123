@@ -1,0 +1,5 @@
+load "${env.WORKSPACE}/pts/pts-coremark-v0.1.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+env.JENKINS_TEST_LABEL="virt-pts-coremark"
+env.JENKINS_NODE_LABEL="oss-virt-test"

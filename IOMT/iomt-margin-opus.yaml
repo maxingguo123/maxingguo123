@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  namespace: NAMESPACE
+  name: SANDSTONE_NAME
+spec:
+  selector:
+    matchLabels:
+      name: SANDSTONE_NAME
+  template:
+    metadata:
+      labels:
+        name: SANDSTONE_NAME
+        runid: ATSCALE_RUNID
+    spec:
+      hostNetwork: true
+      shareProcessNamespace: true
+      nodeSelector:
+        SANDSTONE_NODE_LABEL: "true"
+      volumes:
+      - name: dshm
+        emptyDir:
+          medium: Memory
+      - name: data
+        emptyDir: {}
+      - name: hostroot
+        hostPath:
+          path: /
+          type: Directory
+      - name: modules
+        hostPath:
+          path: /lib/modules
+      - name: journal
+        hostPath:
+          path: /var/log/journal
+      - name: machineid
+        hostPath:
+          path: /etc/machine-id
+      - name: netns 
+        hostPath:
+          path: /var/run/netns
+      - name: dbus
+        hostPath:
+          path: /var/run/dbus
+      - name: systemd
+        hostPath:
+          path: /run/systemd
+      - name: sys
+        hostPath:
+          path: /sys
+      - name: config
+        emptyDir: {}
+      containers:
+      - name: SANDSTONE_NAME
+        image: REGISTRY/sandstone:DOCKER_TAG
+        env:
+          - name: ESHOST
+            value: "https://10.250.0.197:9200"
+          - name: ESINDEX
+            value: "iomt-margin"
+          - name: ESAUTH
+            value: "paiv_admin:password"
+        volumeMounts:
+        - name: sys
+          mountPath: /sys
+          readOnly: false
+        - name: config
+          mountPath: /config
+          readOnly: false
+        - mountPath: /hostroot
+          name: hostroot
+          readOnly: false
+        - mountPath: /lib/modules
+          name: modules
+          readOnly: true
+        - mountPath: /var/log/journal
+          name: journal
+          readOnly: true
+        - mountPath: /etc/machine-id
+          name: machineid
+          readOnly: true
+        #run-specific uses env vars for params
+        command: ["/tests/scripts/run-specific.sh"]
+        env:
+          - name: SANDSTONE_BIN
+            value: "SANDSTONE_BIN_PATH"
+          - name: SANDSTONE_ARGS
+            value: "SANDSTONE_TEST_ARGS"
+        securityContext:
+          privileged: true
+        readinessProbe:
+          exec:
+            command:
+              - cat
+              - /tmp/testdone
+            # Wait for 30s before checking for the first time
+          initialDelaySeconds: 30
+          periodSeconds: 30
+

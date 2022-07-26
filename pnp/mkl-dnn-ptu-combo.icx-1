@@ -1,0 +1,3 @@
+load "${env.WORKSPACE}/pnp/mkl-dnn-ptu-combo.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"

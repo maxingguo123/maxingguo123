@@ -1,0 +1,6 @@
+load "${env.WORKSPACE}/ive-bert-large-inference-amx/ive-bert-large-inference-amx.base"
+
+env.JENKINS_TEST_LABEL="ive-bert-large-inference-amx"
+env.JENKINS_NODE_LABEL="unifiednode"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"

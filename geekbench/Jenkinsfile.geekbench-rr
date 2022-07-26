@@ -1,0 +1,33 @@
+def private base
+
+pipeline {
+    agent { label 'master' }
+    environment {
+        KUBECTL_ARGS="--kubeconfig=/srv/kube/config.rr"
+        JENKINS_TEST_TAG="gb-prod-v2p1"
+        JENKINS_TEST_LABEL="geekbench-unified"
+        JENKINS_NODE_LABEL="unifiednode"
+        JENKINS_TEST_BINARY="python3.8"
+        JENKINS_TEST_ARGS="run_geekbench.py"
+        GB_USER_ARG="echo \$GB_USER"
+        GB_KEY_ARG="echo \$GB_LICENSE"
+        GB_ITERATIONS=5
+    }
+    stages {
+        stage ('Setup') {
+            steps {
+                script {
+                    base = load "${env.WORKSPACE}/base/base.groovy"
+                    base.init("specific")
+                }
+            }
+        }
+        stage ('Run Geekbench') {
+            steps {
+                script {
+                    base.run(1800)
+                }
+            }
+        }
+    }
+}

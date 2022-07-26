@@ -1,0 +1,12 @@
+//contact: David Claudio/Javier Torres
+//hero-openssl-rsamb test content
+
+env.JENKINS_TEST_TAG=""
+env.JENKINS_TEST_LABEL="qatsw-test"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY=""
+env.JENKINS_TEST_ARGS=""
+env.JOB_RUNTIME=600
+
+env.DEPLOYMENT_YAML_URL="https://gitlab-mirror-fm.devtools.intel.com/sandstone/prt-int-cluster/-/raw/master/hero-OpenSSL-RSAMB/run_hero-openssl-rsamb-sw.yaml"
+env.SANDSTONE_DEPLOYMENT="${env.WORKSPACE}/run_hero-openssl-rsamb-sw.yaml"

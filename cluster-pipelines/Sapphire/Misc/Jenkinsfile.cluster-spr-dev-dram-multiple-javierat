@@ -1,0 +1,84 @@
+// Pipeline specific variables
+
+def cluster="spr"
+//def test_list = ["dsa-iax-bkc/dsa-iax-bkc","sriov-mixer/sriov-mixer"]
+//def test_list = ["dram-bank-stress/dram-bank-stress","dsa-iax-bkc/dsa-iax-bkc","sriov-mixer/sriov-mixer"]
+//def test_list = ["high-freq-sweep/high-freq-sweep"]
+//def test_list = ["mixer/paiv-mixer"]
+//def test_list = ["jasper/combo-02"]
+//def KINGKONG_IMG="kingkong_sqrt-v0.95.2.1"
+//def SPEEDVALUE='"25"'
+//def test_list2 = ["TSL/TSL","jasper/cpu-check","ive-resnet50-legacy/ive-resnet50-legacy","ive-resnet50-amx/ive-resnet50-amx","ive-mobilenet-amx-b16/ive-mobilenet-amx-b16","ive-corefreq-v1p1/ive-corefreq-v1p1","ive-gromacs/ive-gromacs","ive-vt-suite/ive-vt-suite-createteardown"]
+
+def KUBECONFIG="--kubeconfig=/srv/kube/config.icx-1"
+def JENKINS_NODE_LABEL="spr-dev-container-development-gdc"
+def NS="spr-dev-container-development-gdc"
+
+pipeline {
+  agent { label "common" }
+  stages {
+      
+     stage("TGEN") {
+      steps {
+        script {
+          stage("tgen-stress-test") {
+            catchError {
+                run_job("${env.WORKSPACE}/tgen/tgen.${cluster}")
+            }
+          }
+        }
+      }
+    } 
+    
+    /*stage("PYTORCH-INFERENCE") {
+      steps {
+        script {
+          stage("pytorch-inference") {
+            catchError {
+                run_job("${env.WORKSPACE}/pytorch-fp32/pytorch-fp32.${cluster}")
+            }
+          }
+        }
+      }
+    } */
+     /* stage("RAS-DRAM-BANK-MULTIPLE") {
+        steps {
+          script {
+            stage("ras/knobs-start") {
+              catchError {
+                  build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KNOBS", value: "WheaErrorInjSupportEn=1,WheaErrInjEn=1,RasLogLevel=0,serialDebugMsgLvl=0"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+              }
+            }
+            stage("dram-bank-stress-multiple") {
+              catchError {
+                  run_job("${env.WORKSPACE}/dram-bank-stress/dram-bank-stress-multiple.${cluster}")
+              }
+            }
+            stage("ras/knobs-end") {
+              catchError {
+                  build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KNOBS", value: "WheaErrorInjSupportEn=0,WheaErrInjEn=1,RasLogLevel=1,serialDebugMsgLvl=4"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+              }
+            }
+          }
+        }
+      }*/
+      
+  }
+}
+
+// Agnostic variables and functions
+def private iter
+def private base
+def run_job(job_file) {
+  base = load "${env.WORKSPACE}/base/base.groovy"
+  job = load(job_file)
+  base.init()
+  env.NS = "spr-dev-container-development-gdc"
+  env.JENKINS_NODE_LABEL = "spr-dev-container-development-gdc"
+  env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+  iter = (env.ITERATIONS as int) ?: (1 as int)
+  for (int i = 0; i < iter; i++) {
+      base.run(env.JOB_RUNTIME)
+  }
+  base.reset()
+}

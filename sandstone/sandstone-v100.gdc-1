@@ -1,0 +1,5 @@
+load "${env.WORKSPACE}/sandstone/sandstone.base"
+
+env.JENKINS_TEST_TAG="100"
+env.JENKINS_TEST_ARGS="-vv -T 180m"
+env.JOB_RUNTIME=11000

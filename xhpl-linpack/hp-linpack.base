@@ -1,0 +1,6 @@
+env.JENKINS_TEST_TAG="jasper-hp-linpack-MAR_2022"
+env.JENKINS_TEST_LABEL="hp-linpack"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/tests\\/scripts\\/run.sh"
+env.JENKINS_TEST_ARGS="4500"
+env.JOB_RUNTIME=4500

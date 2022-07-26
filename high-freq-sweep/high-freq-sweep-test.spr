@@ -1,0 +1,3 @@
+load "${env.WORKSPACE}/high-freq-sweep/high-freq-sweep.base"
+
+env.JENKINS_TEST_TAG="highf-sweep-v1.2"

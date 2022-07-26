@@ -1,0 +1,11 @@
+env.JENKINS_TEST_TAG="jasper-iperf-Mar_2022"
+env.JENKINS_TEST_LABEL="jasper-iperf"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/run.sh"
+env.JENKINS_TEST_ARGS="2100"
+env.JOB_RUNTIME=2200
+env.ITERATIONS=6
+env.PRE_YAML="iperf/network-headless-svc.yaml"
+env.DEPLOYMENT_YAML_URL="https://raw.githubusercontent.com/intel-innersource/applications.infrastructure.data-center.jenkins.prt-int-cluster/main/jasper/iperf-mev-nic.yaml"
+env.SANDSTONE_DEPLOYMENT="${env.WORKSPACE}/iperf-mev-nic.yaml"
+env.EMAIL="alex.v.jaramillo@.intel.com"

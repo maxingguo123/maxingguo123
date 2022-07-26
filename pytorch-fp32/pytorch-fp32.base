@@ -1,0 +1,9 @@
+env.JENKINS_TEST_TAG="pytorch-fp32-interence"
+env.JENKINS_TEST_LABEL="pytorch-fp32-interence"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/tests\\/run-specific.sh"
+env.JENKINS_TEST_ARGS=""
+env.JOB_RUNTIME=1500
+
+env.DEPLOYMENT_YAML_URL="https://raw.githubusercontent.com/intel-innersource/applications.infrastructure.data-center.jenkins.prt-int-cluster/main/pytorch-fp32/pytorch-fp32.yaml"
+env.SANDSTONE_DEPLOYMENT="${env.WORKSPACE}/pytorch-fp32.yaml"

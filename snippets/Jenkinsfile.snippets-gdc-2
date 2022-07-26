@@ -1,0 +1,30 @@
+def private base
+
+pipeline {
+    agent { label 'master' }
+    environment {
+        KUBECTL_ARGS="--kubeconfig=/srv/kube/config.gdc-2"
+        JENKINS_TEST_TAG="snippets_v1.38"
+        JENKINS_TEST_LABEL="snippets-unified" 
+        JENKINS_NODE_LABEL="unifiednode"
+        JENKINS_TEST_BINARY="\\/tests\\/snippets.py"
+        JENKINS_TEST_ARGS="900"
+    }
+    stages {
+        stage ('Setup') {
+            steps {
+                script {
+                    base = load "${env.WORKSPACE}/base/base.groovy"
+                    base.init("specific")
+                }
+            }
+        }
+        stage ('Run Snippets') {
+            steps {
+                script {
+                    base.run(900)
+                }
+            }
+        }
+    }
+}

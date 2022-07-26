@@ -1,0 +1,5 @@
+load "${env.WORKSPACE}/shc/shc.base"
+
+env.JENKINS_TEST_TAG="spr_medium_hvm_spr_beta_gdc_v4.8.5"
+env.JOB_RUNTIME=19800
+env.ITERATIONS=1

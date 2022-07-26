@@ -1,0 +1,93 @@
+// Pipeline specific variables
+
+def cluster="spr"
+def NS="spr-sf-phase1-isolated"
+def KUBECONFIG="--kubeconfig=/srv/kube/config.icx-1"
+def JENKINS_NODE_LABEL="spr-sf-phase1-isolated"
+
+//Workloads
+def test_list = ["jasper/kvm-unit-tests","jasper/cloud-hypervisor","LTSSM/LTSSM","dtaf-core-upi/dtaf-core-upi"]
+
+//RAS test
+TEST_BINARY=""
+def bin_list = [".\\/sandstone-breadth-poison.sh",".\\/multi-workload-mem-correctable.sh",".\\/mprime-correctable+uncorrectable.sh",".\\/llr-data-poison.sh",".\\/stream-prefetch-poison.sh",".\\/stress-ng-2MiB-hugepage-patrol-scrub.sh"]
+
+pipeline {
+  agent { label 'common' }
+  stages {
+
+    stage("WORKLOADS") {
+      steps {
+        script {
+          test_list.each { test ->
+          stage(test) {
+            catchError {
+              run_job("${env.WORKSPACE}/${test}.${cluster}")
+            }
+          }
+          }
+        }
+      }
+    }
+
+    stage("RAS INITIAL KNOBS") {
+      steps {
+        script {
+          stage("ras/knobs-start") {
+            catchError {
+                build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KNOBS", value: "WheaErrorInjSupportEn=1,WheaErrInjEn=1,RasLogLevel=0,serialDebugMsgLvl=0"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+            }
+          }
+        }
+      }
+    }
+          stage("RAS TEST") {
+            steps {
+              script {
+                bin_list.each { binary ->
+                stage("binary-list") {
+                  catchError {
+                    TEST_BINARY = "${binary}"
+                    run_job("${env.WORKSPACE}/ras/ras-sf.${cluster}")
+                  }
+                }
+                }
+              }
+            }
+          }
+    stage("RAS ROLLBACK KNOBS") {
+      steps {
+        script {
+          stage("ras/knobs-end") {
+            catchError {
+                build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KNOBS", value: "WheaErrorInjSupportEn=0,WheaErrInjEn=1,RasLogLevel=1,serialDebugMsgLvl=4"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+            }
+          }
+        }
+      }
+    }
+
+
+
+  }
+}
+
+// Agnostic variables and functions
+def private iter
+def private base
+def run_job(job_file) {
+  base = load "${env.WORKSPACE}/base/base.groovy"
+  job = load(job_file)
+  base.init()
+  env.NS = "spr-sf-phase1-isolated"
+  env.JENKINS_NODE_LABEL = "spr-sf-phase1-isolated"
+  env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+  if (job_file == "${env.WORKSPACE}/ras/ras-sf.spr") {
+    env.JENKINS_TEST_BINARY = "${TEST_BINARY}"
+  }
+  iter = (env.ITERATIONS as int) ?: (1 as int)
+  for (int i = 0; i < iter; i++) {
+    base.run(env.JOB_RUNTIME)
+  }
+  base.reset()
+}

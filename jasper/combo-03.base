@@ -1,0 +1,8 @@
+env.DEPLOYMENT_YAML_URL="https://raw.githubusercontent.com/intel-innersource/applications.infrastructure.data-center.jenkins.prt-int-cluster/main/jasper/combo-03.yaml"
+env.JENKINS_TEST_TAG=""
+env.JENKINS_TEST_LABEL="jasper-combo-03"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_ARGS=86400
+env.JOB_RUNTIME=86400
+env.SANDSTONE_DEPLOYMENT="${env.WORKSPACE}/combo-03.yaml"
+env.EMAIL="alex.v.jaramillo@.intel.com"

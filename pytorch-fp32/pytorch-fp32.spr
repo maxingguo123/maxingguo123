@@ -1,0 +1,3 @@
+load "${env.WORKSPACE}/pytorch-fp32/pytorch-fp32.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"

@@ -1,0 +1,6 @@
+env.JENKINS_TEST_TAG="seamless4.1"
+env.JENKINS_TEST_LABEL="seamless4-1"
+env.JENKINS_NODE_LABEL="unifiednode" 
+env.JENKINS_TEST_BINARY="\\/python3.8 \\/tests\\/stage_capsule.py"
+env.JOB_RUNTIME=600
+env.JENKINS_TEST_ARGS="expected_ver=WLYDCRB1.SYS.0020.P01.2012201706\\/capsule_path=WLYDCRB.SYS.WR.64.2020.51.7.05.1706_0020.P01_P801b2_LBG_SPS_ICX_Production_SMLS.cap"

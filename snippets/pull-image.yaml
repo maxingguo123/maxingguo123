@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: node-pull-image
+  namespace: mgmt
+  labels:
+    k8s-app: node-pull-image
+spec:
+  selector:
+    matchLabels:
+      name: node-pull-image
+  template:
+    metadata:
+      labels:
+        name: node-pull-image
+    spec:
+      nodeSelector:
+        node-pull-image: "true"
+      hostNetwork: true
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+      initContainers:
+      - name: sandstone-release
+        image: prt-registry.sova.intel.com/sandstone:64
+        command: ["sh"]
+        args: ["-c", "echo Success!!"]
+      - name: jenkins-latest
+        image: prt-registry.sova.intel.com/sandstone:jenkins-latest
+        command: ["sh"]
+        args: ["-c", "echo Success!!"]
+      - name: ss-combo
+        image: prt-registry.sova.intel.com/sandstone:sandstone-combo-mode-v0.6
+        command: ["sh"]
+        args: ["-c", "echo Success!!"]
+      - name: imunch
+        image: prt-registry.sova.intel.com/sandstone:imunch-2.9.0
+        command: ["sh"]
+        args: ["-c", "echo Success!!"]
+      - name: imunch-replay
+        image: prt-registry.sova.intel.com/sandstone:imunch-replay-38
+        command: ["sh"]
+        args: ["-c", "echo Success!!"]
+      - name: dol
+        image: prt-registry.sova.intel.com/sandstone:dol_latest_3.0.0
+        command: ["sh"]
+        args: ["-c", "echo Success!!"]
+      - name: shc
+        image: prt-registry.sova.intel.com/sandstone:shc_unified_4.0.3
+        command: ["sh"]
+        args: ["-c", "echo Success!!"]
+      - name: mixer
+        image: prt-registry.sova.intel.com/sandstone:IVE_Mixer_21ww09_4
+        command: ["sh"]
+        args: ["-c", "echo Success!!"]
+      - name: tsl
+        image: prt-registry.sova.intel.com/sandstone:tsl-3.1.0
+        command: ["sh"]
+        args: ["-c", "echo Success!!"]
+      containers:
+        - name: sandstone-init-container
+          image: prt-registry.sova.intel.com/sandstone-init-container:27
+          command: ["/usr/bin/bash"]
+          args: ["-c", "echo node-pull-image finished.; sleep infinity"]

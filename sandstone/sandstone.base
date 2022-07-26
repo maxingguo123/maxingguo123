@@ -1,0 +1,7 @@
+env.JENKINS_TEST_TAG="latest"
+env.JENKINS_TEST_LABEL="sandstone"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/tests\\/sandstone"
+env.JENKINS_TEST_ARGS="-vv -T 3600000"
+env.JOB_RUNTIME=4500
+env.EMAIL="alex.v.jaramillo@intel.com,james.t.kukunas@intel.com"

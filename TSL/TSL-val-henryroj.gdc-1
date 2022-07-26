@@ -1,0 +1,13 @@
+load "${env.WORKSPACE}/TSL/TSL-val-henryroj.base"
+
+env.DRAGON_TYPE_ARG="depth"
+env.TEST_RUNTIME="2h"
+env.JOB_RUNTIME=7200
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.gdc-1"
+env.JENKINS_TEST_TAG="tsl-3.9.1_v2"
+env.JENKINS_TEST_LABEL="sde-tsl"
+env.JENKINS_NODE_LABEL="sde-regression-tsl"
+env.RUN_DRAGON_ARG="true"
+env.EXTRA_ARGS_ARG="-f FailMask"
+env.DRAGON_ARGS_ARG="-a 30 -O -L500"
+env.EMAIL="ricardo.bonilla.cordero@intel.com"

@@ -1,0 +1,9 @@
+env.JENKINS_TEST_TAG="highf-sweep-v2.0"
+env.JENKINS_TEST_LABEL="highf-sweep"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/tests\\/scripts\\/run.sh"
+env.JENKINS_TEST_ARGS="--rungroup all --dragontime 3h --sstime 1h --imunchtime 30m --cpuoffset -0.030 --meshoffset -0.050 --meshfreq 25 --logdir \\/var\\/local\\/logs"
+env.JOB_RUNTIME=212400
+env.DEPLOYMENT_YAML_URL="https://raw.githubusercontent.com/intel-innersource/applications.infrastructure.data-center.jenkins.prt-int-cluster/main/ive/sandstone_run_specific.yaml"
+env.SANDSTONE_DEPLOYMENT="${env.WORKSPACE}/sandstone_run_specific.yaml"
+env.EMAIL="robert.j.miller@intel.com"

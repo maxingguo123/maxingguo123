@@ -1,0 +1,14 @@
+env.JENKINS_TEST_TAG="tsl-3.9.1_v2"
+env.JENKINS_TEST_LABEL="sde-tsl"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/shc\\/shc"
+env.JENKINS_TEST_ARGS="\\/shc\\/tslengine"
+env.TEST_RUNTIME="10h"
+env.DRAGON_TYPE_ARG="depth"
+env.DRAGON_ARGS_ARG="-a 30 -O"
+env.RUN_DRAGON_ARG=true
+env.EXTRA_ARGS_ARG="-f FailMask"
+env.JOB_RUNTIME=36000
+env.EMAIL="ricardo.bonilla.cordero@intel.com"
+env.SANDSTONE_DEPLOYMENT="${env.WORKSPACE}/TSLval_run_specific.yaml"
+env.DEPLOYMENT_YAML_URL="https://raw.githubusercontent.com/intel-innersource/applications.infrastructure.data-center.jenkins.prt-int-cluster/main/TSL/TSLval_run_specific.yaml"

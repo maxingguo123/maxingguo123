@@ -1,0 +1,5 @@
+load "${env.WORKSPACE}/imunch-replay/imunch-replay.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.opus"
+env.JENKINS_NODE_LABEL="cloud-pipeline"
+env.NS="cloud"

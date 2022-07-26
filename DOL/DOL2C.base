@@ -1,0 +1,5 @@
+env.JENKINS_TEST_TAG="highf_sweep_v0.2"
+env.JENKINS_TEST_LABEL="dol2c"
+env.JENKINS_TEST_BINARY="\\/tests\\/scripts\\/highf_sweep.sh"
+env.JENKINS_TEST_ARGS="-d \\/tests\\/seeds -o -0.030"
+env.JOB_RUNTIME=734400

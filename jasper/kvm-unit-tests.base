@@ -1,0 +1,7 @@
+env.JENKINS_TEST_TAG="jasper-kvm-unit-tests-MAR_2022"
+env.JENKINS_TEST_LABEL="jasper-kvm-unit-tests"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/run.sh"
+env.JENKINS_TEST_ARGS=""
+env.JOB_RUNTIME=1800
+env.ITERATIONS=1

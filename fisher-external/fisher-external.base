@@ -1,0 +1,9 @@
+env.JENKINS_TEST_TAG="fisher_external_v0.3"
+env.JENKINS_TEST_LABEL="fisher-external"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/tests\\/scripts\\/fisher"
+env.JENKINS_TEST_ARGS="--help"
+env.EXTRA_ARGS_ARG=""
+env.JOB_RUNTIME=200
+env.ITERATIONS=36
+//KNOBS: WheaErrorInjSupportEn=1

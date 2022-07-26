@@ -1,0 +1,4 @@
+load "${env.WORKSPACE}/pts/pts-mkl-dnn-v0.1.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+env.JENKINS_TEST_LABEL="virt-pts-mkl-dnn"

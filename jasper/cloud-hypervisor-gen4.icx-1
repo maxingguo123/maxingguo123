@@ -1,0 +1,5 @@
+load "${env.WORKSPACE}/jasper/cloud-hypervisor.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+env.JENKINS_NODE_LABEL="gen4-pipeline"
+env.NS="gen4"

@@ -1,0 +1,5 @@
+env.JENKINS_TEST_TAG="jasper-python-data-science-Mar_2022"
+env.JENKINS_TEST_LABEL="jasper-python-data-science"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/run.sh"
+env.JOB_RUNTIME=900

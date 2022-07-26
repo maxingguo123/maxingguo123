@@ -1,0 +1,7 @@
+env.JENKINS_TEST_TAG="ive-benchdnn-ptu-v1p1-22ww19-1"
+env.JENKINS_TEST_LABEL="ive-benchdnn-ptu-v1p1-22ww19-1"
+env.JENKINS_NODE_LABEL="ive-benchdnn-ptu-v1p1-22ww19-1"
+env.JENKINS_TEST_BINARY="\\/ive\\/content\\/ive-watch"
+env.JENKINS_TEST_ARGS="-name=ive-ptu -display=error -- -t=86400"
+env.JOB_RUNTIME=87000
+env.EMAIL="ramprasad.rao@intel.com"

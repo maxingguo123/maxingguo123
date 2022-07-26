@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  namespace: NAMESPACE
+  name: SANDSTONE_NAME
+spec:
+  selector:
+    matchLabels:
+      name: SANDSTONE_NAME
+  template:
+    metadata:
+      labels:
+        name: SANDSTONE_NAME
+    spec:
+      nodeSelector:
+        SANDSTONE_NODE_LABEL: "true"
+      volumes:
+        - name: dshm
+          emptyDir:
+            medium: Memory
+        - name: aesmd
+          hostPath:
+            path: /var/run/aesmd
+            type: Directory
+        - name: sgx
+          hostPath:
+            path: /dev/sgx
+            type: Directory
+        - name: hostroot
+          hostPath:
+            path: /
+            type: Directory
+        - name: devlog
+          hostPath:
+            path: /dev/log
+            type: Socket
+        - name: varlog
+          hostPath:
+            path: /var/log
+      initContainers:
+        - name: create-metadata
+          image: REGISTRY/cluster-scope:v0.41
+          command: ["/bin/bash"]
+          args: ["-c", "mkdir -p /var/log/atscale; (echo '{\"name\": \"SANDSTONE_NAME\", \"runid\": \"ATSCALE_RUNID\"}' | tee -a /var/log/atscale/test-metadata.ndjson  | jq -c '. += {\"type\": \"test-metadata\"}'>/hostroot/dev/console &); \
+                  sleep 5; \
+                  echo run-start-indicator"]
+          securityContext:
+            privileged: true
+            allowPrivilegeEscalation: true
+          volumeMounts:
+          - name: varlog
+            mountPath: /var/log
+          - name: hostroot
+            mountPath: /hostroot
+      containers:
+      - name: SANDSTONE_NAME
+        image: REGISTRY/sandstone:DOCKER_TAG
+        imagePullPolicy: Always
+        volumeMounts:
+          - mountPath: /dev/shm
+            name: dshm
+          - mountPath: /var/run/aesmd
+            name: aesmd
+          - mountPath: /dev/sgx
+            name: sgx
+        #run-specific uses env vars for params
+        command: ["/tests/scripts/run-specific.sh"]
+        env:
+          - name: SANDSTONE_BIN
+            value: "SANDSTONE_BIN_PATH"
+          - name: SANDSTONE_ARGS
+            value: "SANDSTONE_TEST_ARGS"
+          # Dragon Environment Variables
+          - name: RUN_DRAGON
+            value: "RUN_DRAGON_ARG"
+          - name: DRAGON_ARGS
+            value: "DRAGON_ARGS_ARG"
+          - name: DRAGON_TYPE
+            value: "DRAGON_TYPE_ARG"
+          - name: EXTRA_ARGS
+            value: "EXTRA_ARGS_ARG"
+          # GeekBench Env Variables
+          - name: GB_USER
+            value: "GB_USER_ARG"
+          - name: GB_KEY
+            value: "GB_KEY_ARG"
+          - name: GB_ITERATIONS
+            value: "GB_ITERATIONS_ARG"
+          # IPU Env Variables
+          - name: TIMEOUT
+            value: "TEST_TIMEOUT_ARG"
+        readinessProbe:
+          exec:
+            command:
+              - cat
+              - /tmp/testdone
+            # Wait for 30s before checking for the first time
+            # then probe for completion every 5 seconds
+          initialDelaySeconds: 30
+          periodSeconds: 5
+        securityContext:
+          privileged: true

@@ -1,0 +1,8 @@
+//test_openssl_rsamb_qat_aes.env
+//test_openssl_rsamb_qat_rsa.env
+
+env.JENKINS_TEST_TAG="openssl-rsamb-atscale-0.4"
+env.JENKINS_TEST_LABEL="test-openssl-rsamb-qat"
+env.JENKINS_NODE_LABEL="sfval"
+env.JENKINS_TEST_BINARY="\\/tests\\/scripts\\/run-specific.sh"
+env.JOB_RUNTIME=300

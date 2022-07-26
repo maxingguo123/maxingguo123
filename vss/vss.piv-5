@@ -1,0 +1,7 @@
+load "${env.WORKSPACE}/vss/vss.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.opus"
+env.JENKINS_NODE_LABEL="piv-5"
+env.NS="piv-5"
+env.JENKINS_TEST_ARGS="EST_10"
+env.JOB_RUNTIME=39600

@@ -1,0 +1,270 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: scripts
+  namespace: NAMESPACE
+data:
+  setup_vfio.sh: |-
+     #!/bin/bash
+     
+     set -o errexit
+     set -o pipefail
+     set -o nounset
+     set -x
+     
+     OPTIND=1
+     bind="false"
+     
+     while getopts ":b" opt; do
+             case ${opt} in
+             b)
+                     bind="true"
+                     ;;
+             \?)
+                     echo "Usage: sriov.sh [-b] ens785f0 ens785f1 ..."
+                     echo "-b        Bind to vfio-pci"
+                     exit
+                     ;;
+             esac
+     done
+     shift $((OPTIND - 1))
+     
+     setup_pf() {
+             local pf=$1
+             echo "Resetting PF $pf"
+             echo 0 | tee /sys/class/net/$pf/device/sriov_numvfs
+             #local NUM_VFS=$(cat /sys/class/net/$pf/device/sriov_totalvfs)
+             local NUM_VFS=2
+             echo "Enabling $NUM_VFS VFs for $pf"
+             echo $NUM_VFS | tee /sys/class/net/$pf/device/sriov_numvfs
+             sleep 30
+             ip link set $pf up
+             sleep 1
+     }
+     
+     setup_vfs() {
+             local pf=$1
+             local pfpci=$(readlink /sys/devices/pci*/*/*/net/$pf/device | awk '{print substr($1,10)}')
+             local NUM_VFS=$(cat /sys/class/net/$pf/device/sriov_numvfs)
+             for ((idx = 0; idx < NUM_VFS; idx++)); do
+                     ip link set dev $pf vf $idx state enable
+                     if [ $bind != "true" ]; then continue; fi
+     
+                     local vfn="virtfn$idx"
+                     local vfpci=$(ls -l /sys/devices/pci*/*/$pfpci | awk -v vfn=$vfn 'vfn==$9 {print substr($11,4)}')
+                     # Capture and set MAC of the VF before unbinding from linux, for later use in CNI
+                     #local mac=$(cat /sys/bus/pci*/*/$vfpci/net/*/address)
+                     ip link set dev $pf vf $idx mac "ca:fe:ba:ba:00:$idx"
+                     # Bind VF to vfio-pci
+                     echo $vfpci >/sys/bus/pci*/*/$vfpci/driver/unbind
+                     echo "vfio-pci" >/sys/devices/pci*/*/$vfpci/driver_override
+                     echo $vfpci >/sys/bus/pci/drivers/vfio-pci/bind
+             done
+     }
+     
+     for pf in "$@"; do
+             setup_pf $pf
+             sleep 60
+             setup_vfs $pf
+     done
+  get_vfs.sh: |-
+     #!/bin/bash
+     
+     set -o errexit
+     set -o pipefail
+     set -o nounset
+     set -x
+     
+     pf=$1
+     idx=$2
+     filename=$3
+     pfpci=$(readlink /sys/devices/pci*/*/*/net/$pf/device | awk '{print substr($1,10)}')
+     vfn="virtfn$idx"
+     vfpci=$(ls -l /sys/devices/pci*/*/$pfpci | awk -v vfn=$vfn 'vfn==$9 {print substr($11,4)}')
+     echo $vfpci > $filename
+
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  namespace: NAMESPACE
+  name: SANDSTONE_NAME
+spec:
+  selector:
+    matchLabels:
+      name: SANDSTONE_NAME
+  template:
+    metadata:
+      labels:
+        name: SANDSTONE_NAME
+        runid: ATSCALE_RUNID
+    spec:
+      hostNetwork: true
+      hostIPC: false
+      hostPID: false
+      nodeSelector:
+        SANDSTONE_NODE_LABEL: "true"
+      volumes:
+      - name: dshm
+        emptyDir:
+          medium: Memory
+      - name: data
+        emptyDir: {}
+      - name: hostroot
+        hostPath:
+          path: /
+          type: Directory
+      - name: modules
+        hostPath:
+          path: /lib/modules
+      - name: journal
+        hostPath:
+          path: /var/log/journal
+      - name: machineid
+        hostPath:
+          path: /etc/machine-id
+      - name: dbus
+        hostPath:
+          path: /var/run/dbus
+      - name: systemd
+        hostPath:
+          path: /run/systemd
+      - name: sys
+        hostPath:
+          path: /sys
+      - name: scripts
+        configMap:
+          name: scripts
+          defaultMode: 493
+      - name: config
+        emptyDir: {}
+      initContainers:
+      - name: SANDSTONE_NAME-setup-vfio
+        image: mcastelino/nethwinfo
+        imagePullPolicy: IfNotPresent
+        stdin: true
+        tty: true
+        securityContext:
+          privileged: true
+          allowPrivilegeEscalation: true
+        command: ["/bin/bash", "-xc"]
+        args:
+        - lshw -class network -businfo;
+          nic100g=$(lshw -class network -businfo | grep "Ethernet Controller E810-C for QSFP" | head -1 | awk '{print $2}');
+          if [ -z "$nic100g" ]; then nic100g="none"; fi;
+          defaultnic=$(ip route get 1.1.1.1 | awk 'NR==1 {print $5}');
+          nic25g=$(lshw -class network -businfo | grep "XXV710" | grep -v $defaultnic | awk '{print $2}');
+          if [ -z "$nic25g" ]; then nic25g="none"; fi;
+          echo "Network Profile  100G=$nic100g default=$defaultnic 25G=$nic25g";
+          testnic=$nic100g;
+          if [ "$testnic" = "none" ]; then testnic=$nic25g; fi;
+          if [ "$testnic" = "none" ]; then echo "not ok, No free Network cards available"; sleep 300; exit 1; fi;
+          echo "Best network port free for test = $testnic";
+          modprobe vfio-pci;
+          modprobe iavf;
+          lsmod | grep vfio;
+          lsmod | grep ia;
+          /scripts/setup_vfio.sh -b $testnic;
+          /scripts/get_vfs.sh $testnic 0 /config/rxbdf;
+          /scripts/get_vfs.sh $testnic 1 /config/txbdf;
+          lscpu | awk '$2 == "node0" {split($4,a,","); print a[1];}' > /config/rxcpus;
+          lscpu | awk '$2 == "node1" {split($4,a,","); print a[1];}' > /config/txcpus;
+          cat /config/*;
+          exit 0;
+        volumeMounts:
+        - name: sys
+          mountPath: /sys
+          readOnly: false
+        - name: scripts
+          mountPath: /scripts
+        - name: config
+          mountPath: /config
+          readOnly: false
+        - mountPath: /hostroot
+          name: hostroot
+          readOnly: false
+        - mountPath: /lib/modules
+          name: modules
+          readOnly: true
+        - mountPath: /var/log/journal
+          name: journal
+          readOnly: true
+        - mountPath: /etc/machine-id
+          name: machineid
+          readOnly: true
+      containers:
+      - name: SANDSTONE_NAME-rx
+        image: krsna1729/dpdk:19.11
+        stdin: true
+        tty: true
+        command: [ "/bin/bash", "-c"]
+        args:
+        - echo "test-start-indicator"
+          ls -l /dev/vfio;
+          BDF=$(cat /config/rxbdf);
+          CPUS=$(cat /config/rxcpus);
+          testpmd -l $CPUS -w $BDF --no-huge -m 2048 -- --stats-period=10 --nb-port=1 --port-topology=chained --auto-start --total-num-mbufs=2048 --forward-mode=rxonly;
+          echo "test-end-indicator"
+        volumeMounts:
+        - name: sys
+          mountPath: /sys
+          readOnly: false
+        - name: scripts
+          mountPath: /scripts
+        - name: config
+          mountPath: /config
+          readOnly: false
+        - mountPath: /hostroot
+          name: hostroot
+          readOnly: false
+        - mountPath: /lib/modules
+          name: modules
+          readOnly: true
+        - mountPath: /var/log/journal
+          name: journal
+          readOnly: true
+        - mountPath: /etc/machine-id
+          name: machineid
+          readOnly: true
+        securityContext:
+          privileged: true
+          capabilities:
+            add:
+            - IPC_LOCK
+      - name: SANDSTONE_NAME-tx
+        image: krsna1729/dpdk:19.11
+        stdin: true
+        tty: true
+        command: [ "/bin/bash", "-c"]
+        args:
+        - ls -l /dev/vfio;
+          BDF=$(cat /config/txbdf);
+          CPUS=$(cat /config/txcpus);
+          testpmd -l $CPUS -w $BDF --no-huge -m 2048 -- --stats-period=10 --nb-port=1 --port-topology=chained --auto-start --total-num-mbufs=2048 --forward-mode=txonly --eth-peer=0,ca:fe:ba:ba:00:00;
+        volumeMounts:
+        - name: sys
+          mountPath: /sys
+          readOnly: false
+        - name: scripts
+          mountPath: /scripts
+        - name: config
+          mountPath: /config
+          readOnly: false
+        - mountPath: /hostroot
+          name: hostroot
+          readOnly: false
+        - mountPath: /lib/modules
+          name: modules
+          readOnly: true
+        - mountPath: /var/log/journal
+          name: journal
+          readOnly: true
+        - mountPath: /etc/machine-id
+          name: machineid
+          readOnly: true
+        securityContext:
+          privileged: true
+          capabilities:
+            add:
+            - IPC_LOCK

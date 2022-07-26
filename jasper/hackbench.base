@@ -1,0 +1,7 @@
+env.JENKINS_TEST_TAG="jasper-hackbench-Apr_2022"
+env.JENKINS_TEST_LABEL="jasper-hackbench"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/tests\\/scripts\\/run-specific.sh"
+env.EXTRA_ARGS_ARG="-s 512 -l 200 -g 15 -f 25 -P"
+env.JOB_RUNTIME=180
+env.ITERATIONS=1

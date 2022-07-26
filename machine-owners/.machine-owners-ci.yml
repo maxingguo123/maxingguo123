@@ -1,0 +1,11 @@
+#update-icx-machine-owners:
+ # stage: update-machine-owners
+  #only:
+  #- master
+  #only:
+   # changes:
+    #  - machine-owners/machine-owners-icx.yaml
+ # tags:
+  #- k8s
+  #script:
+  #- machine-owners/apply_machine_owners.sh /srv/kube/config.icx-1

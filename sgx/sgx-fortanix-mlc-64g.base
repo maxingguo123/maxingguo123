@@ -1,0 +1,8 @@
+env.JENKINS_TEST_TAG="fortanix-mlc-64g-enclave"
+env.JENKINS_TEST_LABEL="sgx-fortanix-mlc-64g"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/root\\/mlc_external\\/run_mlc.sh"
+env.JENKINS_TEST_ARGS=""
+env.JOB_RUNTIME=5000
+env.DEPLOYMENT_YAML_URL="https://gitlab-mirror-fm.devtools.intel.com/deepakku/prt-int-cluster/-/raw/master/sgx/run_sgx.yaml"
+env.SANDSTONE_DEPLOYMENT="${env.WORKSPACE}/run_sgx.yaml"

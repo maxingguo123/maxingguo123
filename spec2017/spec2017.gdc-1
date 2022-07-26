@@ -1,0 +1,3 @@
+load "${env.WORKSPACE}/spec2017/spec2017.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.gdc-1"

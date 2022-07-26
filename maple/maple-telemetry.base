@@ -1,0 +1,11 @@
+env.JENKINS_TEST_TAG="maple-telemetry-counter-scale-v3"
+env.JENKINS_TEST_LABEL="maple-telemetry"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/tests\\/scripts\\/run.sh"
+env.JENKINS_TEST_ARGS=""
+
+
+env.JOB_RUNTIME=
+
+env.ITERATIONS=2
+env.EMAIL=""

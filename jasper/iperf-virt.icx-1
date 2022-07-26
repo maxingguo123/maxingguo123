@@ -1,0 +1,5 @@
+load "${env.WORKSPACE}/jasper/iperf.base"
+
+env.JENKINS_NODE_LABEL="oss-virt-test"
+env.NS="oss-2"
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"

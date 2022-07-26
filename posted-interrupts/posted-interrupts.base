@@ -1,0 +1,8 @@
+env.JENKINS_TEST_TAG="posted-interrupts-0.4"
+env.JENKINS_TEST_LABEL="posted-interrupts"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/run.sh"
+env.JENKINS_TEST_ARGS=""
+env.JOB_RUNTIME=3600
+env.DEPLOYMENT_YAML_URL="https://raw.githubusercontent.com/intel-innersource/containers.validation.stress.jasper.core/main/io/posted-interrupts/workload.yaml"
+env.SANDSTONE_DEPLOYMENT="${env.WORKSPACE}/workload.yaml"

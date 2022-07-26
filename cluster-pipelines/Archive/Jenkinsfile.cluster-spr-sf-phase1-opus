@@ -1,0 +1,364 @@
+// Pipeline specific variables
+
+def cluster="spr"
+
+def test_list = ["jasper/kvm-unit-tests","jasper/cloud-hypervisor","LTSSM/LTSSM"]
+//def KINGKONG_IMG="kingkong_sqrt-v0.95.2.1"
+//def SPEEDVALUE='"25"'
+//def mixer_list = ["mixer/mixer"]
+//def iax_list = ["iax-kdmatest/iax-kdmatest"]
+//def dsa_list = ["dsa-spdk/dsa-spdk"]
+
+def NS="spr-sf-phase1"
+def KUBECONFIG="--kubeconfig=/srv/kube/config.opus"
+def JENKINS_NODE_LABEL="spr-sf-phase1"
+
+//RAS - list of arguments
+TEST_BINARY=""
+def bin_list = [".\\/sandstone-breadth-poison.sh",".\\/multi-workload-mem-correctable.sh",".\\/mprime-correctable+uncorrectable.sh",".\\/llr-data-poison.sh",".\\/stream-prefetch-poison.sh",".\\/stress-ng-2MiB-hugepage-patrol-scrub.sh"]
+
+pipeline {
+  agent { label 'common' }
+  stages {
+
+    stage("RAS INITIAL KNOBS") {
+      steps {
+        script {
+          stage("ras/knobs-start") {
+            catchError {
+                build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KNOBS", value: "WheaErrorInjSupportEn=1,WheaErrInjEn=1,RasLogLevel=0,serialDebugMsgLvl=0"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+            }
+          }
+        }
+      }
+    }
+    stage("RAS TEST") {
+      steps {
+        script {
+          bin_list.each { binary ->
+          stage("binary-list") {
+            catchError {
+              TEST_BINARY = "${binary}"
+              run_job("${env.WORKSPACE}/ras/ras-sf.${cluster}")
+            }
+          }
+          }
+        }
+      }
+    }
+    stage("RAS ROLLBACK KNOBS") {
+      steps {
+        script {
+          stage("ras/knobs-end") {
+            catchError {
+                build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KNOBS", value: "WheaErrorInjSupportEn=0,WheaErrInjEn=1,RasLogLevel=1,serialDebugMsgLvl=4"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+            }
+          }
+        }
+      }
+    }
+
+      /*stage("KK INITIAL KNOBS") {
+          steps {
+              script {
+                  stage("kk/knobs-start") {
+                      catchError {
+                          build (job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KNOBS", value: "DFXEnable=0x1,DfxDisableBiosDone=0x0"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+                      }
+                  }
+              }
+          }
+      }
+      stage("READ/RUN KK") {
+          steps {
+              script {
+                  stage("Reading - pre kong") {
+                      catchError {
+                          build(job: "Tests/Development/kong-test-read-registers", parameters:  [string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}"), string(name: "NS", value: "${NS}"), string(name: "JENKINS_TEST_TAG", value: "${KINGKONG_IMG}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}")])
+                      }
+                  }
+                  stage("Running KK") {
+                      catchError {
+                          build(job:"Tests/Development/kingkong-test", parameters:  [string(name: "TEST", value: "kong"), string(name: "JENKINS_TEST_TAG", value: "${KINGKONG_IMG}"), string(name: "NS", value: "${NS}"), string(name: "JENKINS_NODE_LABEL", value:"${JENKINS_NODE_LABEL}"), string(name: "KUBECTL_ARGS", value:"${KUBECONFIG}")])
+                      }
+                  }
+                  stage("Reading - post kong") {
+                      catchError {
+                          build(job: "Tests/Development/kong-test-read-registers", parameters:  [string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}"), string(name: "NS", value: "${NS}"), string(name: "JENKINS_TEST_TAG", value: "${KINGKONG_IMG}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}")])                      
+                      }
+                  }
+              }
+          }
+      }
+      stage("KK ROLLBACK KNOBS") {
+          steps {
+              script {
+                  stage("kk/knobs-end") {
+                      catchError {
+                          build (job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KNOBS", value: "DFXEnable=0x0,DfxDisableBiosDone=0x0"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+                      }
+                  }
+              }
+          }
+      } */
+
+    stage("WORKLOADS") {
+      steps {
+        script {
+          test_list.each { test ->
+          stage(test) {
+            catchError {
+              run_job("${env.WORKSPACE}/${test}.${cluster}")
+            }
+          }
+          }
+        }
+      }
+    }
+    
+  /*stage("IAX/KERNEL") {
+      steps {
+        script {
+          stage("iax/knobs-start") {
+            catchError {
+              build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KNOBS", value: "VTdSupport=1,InterruptRemap=1,PcieEnqCmdSupport=1,ProcessorVmxEnable=1"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+              }
+          }
+          stage("iax test") {
+            iax_list.each { test ->
+            stage(test) {
+              catchError {
+                run_job("${env.WORKSPACE}/${test}.${cluster}")
+              }
+              }
+            }
+          }
+          stage("iax/knobs-end") {
+            catchError {
+              build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KNOBS", value: "VTdSupport=1,InterruptRemap=2,PcieEnqCmdSupport=0,ProcessorVmxEnable=1"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+            }
+          }
+        }
+      }
+    }*/
+
+      /*stage("KK INITIAL KNOBS") {
+          steps {
+              script {
+                  stage("kk/knobs-start") {
+                      catchError {
+                          build (job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KNOBS", value: "DFXEnable=0x1,DfxDisableBiosDone=0x0"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+                      }
+                  }
+              }
+          }
+      }
+
+      stage("READ/SET FAN") {
+          steps {
+              script {
+                  stage("Reading - pre fan") {
+                      catchError {
+                          build(job: "Tests/Development/kong-test-read-registers", parameters:  [string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}"), string(name: "NS", value: "${NS}"), string(name: "JENKINS_TEST_TAG", value: "${KINGKONG_IMG}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}")])                      
+                      }
+                  }
+                  stage("Changing Fan Speed - pre kong") {
+                      catchError {
+                          build(job: "Tests/Development/ipmi-fan-speed", parameters:  [string(name: "SPEEDMODE", value: "set"), string(name: "SPEEDVALUE", value: "${SPEEDVALUE}"), string(name: "NODELABEL", value: "${JENKINS_NODE_LABEL}"), string(name: "NS", value:"${NS}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}")])
+                      }
+                  }
+              }
+          }
+      }
+
+      stage("READ/RUN KK") {
+          steps {
+              script {
+                  stage("Reading - pre kong") {
+                      catchError {
+                          build(job: "Tests/Development/kong-test-read-registers", parameters:  [string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}"), string(name: "NS", value: "${NS}"), string(name: "JENKINS_TEST_TAG", value: "${KINGKONG_IMG}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}")])
+                      }
+                  }
+                  stage("Running KK") {
+                      catchError {
+                          build(job:"Tests/Development/kingkong-test", parameters:  [string(name: "TEST", value: "kong"), string(name: "JENKINS_TEST_TAG", value: "${KINGKONG_IMG}"), string(name: "NS", value: "${NS}"), string(name: "JENKINS_NODE_LABEL", value:"${JENKINS_NODE_LABEL}"), string(name: "KUBECTL_ARGS", value:"${KUBECONFIG}")])
+                      }
+                  }
+                  stage("Reading - post kong") {
+                      catchError {
+                          build(job: "Tests/Development/kong-test-read-registers", parameters:  [string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}"), string(name: "NS", value: "${NS}"), string(name: "JENKINS_TEST_TAG", value: "${KINGKONG_IMG}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}")])                      
+                      }
+                  }
+              }
+          }
+      }
+
+      stage("FAN RESET/REBOOT/RUN PTU") {
+          steps {
+              script {
+                  stage("Resetting Fan Speed - post kong") {
+                      catchError {
+                          build(job: "Tests/Development/ipmi-fan-speed", parameters:[string(name: "NODELABEL", value: "${JENKINS_NODE_LABEL}"), string(name: "NS", value:"${NS}"), string(name: "SPEEDMODE", value: "reset"), string(name: "SPEEDVALUE", value: "${SPEEDVALUE}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}")])
+                      }
+                  }
+                  stage("Reading - 4 - pre reboot") {
+                      catchError {
+                          build(job: "Tests/Development/kong-test-read-registers", parameters:  [string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}"), string(name: "NS", value: "${NS}"), string(name: "JENKINS_TEST_TAG", value: "${KINGKONG_IMG}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}")])                      
+                      }
+                  }
+                  stage("Warm Rebooting") {
+                      catchError {
+                          build(job: "Tests/reboot-idle", parameters:  [string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}"), string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "REBOOT_TYPE", value:"warm"), string(name: "CYCLES", value:"1"), string(name: "IDLE", value:"FALSE")])
+                      }
+                  }
+                  stage("Reading - post reboot") {
+                      catchError {
+                          build(job: "Tests/Development/kong-test-read-registers", parameters:  [string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}"), string(name: "NS", value: "${NS}"), string(name: "JENKINS_TEST_TAG", value: "${KINGKONG_IMG}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}")])                      
+                      }
+                  }
+                  stage("Changing Fan Speed - pre ptu") {
+                      catchError {
+                          build(job: "Tests/Development/ipmi-fan-speed", parameters:  [string(name: "SPEEDMODE", value: "set"), string(name: "SPEEDVALUE", value: "${SPEEDVALUE}"), string(name: "NODELABEL", value: "${JENKINS_NODE_LABEL}"), string(name: "NS", value:"${NS}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}")])
+                      }
+                  }
+                  stage("Reading - pre ptu") {
+                      catchError {
+                          build(job: "Tests/Development/kong-test-read-registers", parameters:  [string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}"), string(name: "NS", value: "${NS}"), string(name: "JENKINS_TEST_TAG", value: "${KINGKONG_IMG}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}")])                      
+                      }
+                  }
+                  stage("Running PTU") {
+                      catchError {
+                          build(job:"Tests/Development/kingkong-test", parameters:  [string(name: "TEST", value: "ptu"), string(name: "JENKINS_TEST_TAG", value: "${KINGKONG_IMG}"), string(name: "NS", value: "${NS}"), string(name: "JENKINS_NODE_LABEL", value:"${JENKINS_NODE_LABEL}"), string(name: "KUBECTL_ARGS", value:"${KUBECONFIG}")])
+                      }
+                  }
+                  stage("Reading - post ptu") {
+                      catchError {
+                          build(job: "Tests/Development/kong-test-read-registers", parameters:  [string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}"), string(name: "NS", value: "${NS}"), string(name: "JENKINS_TEST_TAG", value: "${KINGKONG_IMG}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}")])                      
+                      }
+                  }
+                  stage("Resetting Fan Speed - 2 - post ptu") {
+                      catchError {
+                          build(job: "Tests/Development/ipmi-fan-speed", parameters:[string(name: "NODELABEL", value: "${JENKINS_NODE_LABEL}"), string(name: "NS", value:"${NS}"), string(name: "SPEEDMODE", value: "reset"), string(name: "SPEEDVALUE", value: "${SPEEDVALUE}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}")])
+                      }
+                  }
+                  stage("Reading - pre ptu reboot") {
+                      catchError {
+                          build(job: "Tests/Development/kong-test-read-registers", parameters:  [string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}"), string(name: "NS", value: "${NS}"), string(name: "JENKINS_TEST_TAG", value: "${KINGKONG_IMG}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}")])                      
+                      }
+                  }
+                  stage("Warm Rebooting - ptu") {
+                      catchError {
+                          build(job: "Tests/reboot-idle", parameters:  [string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}"), string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "REBOOT_TYPE", value:"warm"), string(name: "CYCLES", value:"1"), string(name: "IDLE", value:"FALSE")])
+                      }
+                  }
+              }
+          }
+      }
+
+      stage("KK ROLLBACK KNOBS") {
+          steps {
+              script {
+                  stage("kk/knobs-end") {
+                      catchError {
+                          build (job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KNOBS", value: "DFXEnable=0x0,DfxDisableBiosDone=0x0"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+                      }
+                  }
+              }
+          }
+      }*/
+
+    /*stage ("SGX TEST") {
+      steps {
+        script {
+          stage("sgx/knobs-start") {
+            catchError {
+              build (job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KNOBS", value: "EnableTme=1,EnableMktme=1,EnableGlobalIntegrity=1,EnableSgx=1,SgxAutoRegistrationAgent=1,PrmSgxSize=0x1000000000"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+            }
+          }
+          stage("sgx/sgx-sdk") {
+            catchError {
+              run_job("${env.WORKSPACE}/sgx/sgx-sdk.${cluster}")
+            }
+          }
+          stage("sgx/knobs-end") {
+            catchError {
+              build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KNOBS", value: "EnableTme=1,EnableMktme=1,EnableGlobalIntegrity=1,EnableSgx=1,SgxAutoRegistrationAgent=0,PrmSgxSize=0x0000000000000000"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+            }
+          }
+        }
+      }
+    }*/
+
+    /*stage("DSA/KERNEL") {
+      steps {
+        script {
+          stage("dsa/knobs-start") {
+            catchError {
+              build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KNOBS", value: "VTdSupport=1,PcieEnqCmdSupport=1"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+            }
+          }
+          stage("dsa/kernel-start") {
+            catchError {
+              build(job: "Tests/kernelcli_run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KERNEL_PARAMETERS", value: "intel_iommu=on,intel_iommu=sm_on,iommu=pt,hugepages=512"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+            }
+          }
+          stage("dsa test") {
+            dsa_list.each { test ->
+            stage(test) {
+              catchError {
+                run_job("${env.WORKSPACE}/${test}.${cluster}")
+              }
+            }
+            }
+          }
+          stage("dsa/kernel-end") {
+            catchError {
+              build(job: "Tests/kernelcli_run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KERNEL_PARAMETERS", value: "intel_iommu=on,intel_iommu=sm_on,ats_with_iommu_swizzle"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+            }
+          }
+          stage("dsa/knobs-end") {
+            catchError {
+              build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KNOBS", value: "VTdSupport=1,PcieEnqCmdSupport=0"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+            }
+          }
+        }
+      }
+    }*/
+
+    /*stage("WORKLOADS2") {
+      steps {
+        script {
+          mixer_list.each { test ->
+          stage(test) {
+            catchError {
+              run_job("${env.WORKSPACE}/${test}.${cluster}")
+            }
+          }
+          }
+        }
+      }
+    }*/
+  
+  }
+}
+
+// Agnostic variables and functions
+def private iter
+def private base
+def run_job(job_file) {
+  base = load "${env.WORKSPACE}/base/base.groovy"
+  job = load(job_file)
+  base.init()
+  env.NS = "spr-sf-phase1"
+  env.JENKINS_NODE_LABEL = "spr-sf-phase1"
+  env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.opus"
+  if (job_file == "${env.WORKSPACE}/ras/ras-sf.spr") {
+    //echo "inside if"
+    env.JENKINS_TEST_BINARY = "${TEST_BINARY}"
+  }
+  iter = (env.ITERATIONS as int) ?: (1 as int)
+  for (int i = 0; i < iter; i++) {
+    base.run(env.JOB_RUNTIME)
+  }
+  base.reset()
+}

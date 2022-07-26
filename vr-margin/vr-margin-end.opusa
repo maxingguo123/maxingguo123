@@ -1,0 +1,3 @@
+load "${env.WORKSPACE}/vr-margin/vr-margin-end.base"
+env.JENKINS_TEST_TAG="vr-margin-icx-opus-v1.02"
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.opus"

@@ -1,0 +1,145 @@
+// Pipeline specific variables
+
+def cluster="spr"
+//def NS="spr-sf-main-qs"
+def NS="${params.NS}"
+def KUBECONFIG="--kubeconfig=/srv/kube/config.flex"
+//def JENKINS_NODE_LABEL="spr-sf-main-qs"
+def JENKINS_NODE_LABEL="${params.JENKINS_NODE_LABEL}"
+
+def freq_list = ["high-freq-sweep/high-freq-sweep"]
+//def mixer_list = ["mixer/paiv-mixer"]
+//def test_list1 = ["lemongrass/lemongrass","jasper/combo-01","jasper/combo-02","jasper/combo-03","jasper/combo-05"]
+//def test_list2 = ["sandstone/sandstone-release","sandstone/sandstone-v100","sandstone/sandstone-combo","shc/shc","ive-povray/ive-povray","mesh-stress/mesh-stress-qs","jasper/kvm-unit-tests","jasper/cloud-hypervisor","ive-vt/auto-reboot","ive-vt/create-teardown"]
+
+
+pipeline {
+    agent { label 'common' }
+    environment {
+    KUBECTL_ARGS = "${KUBECONFIG}"
+    JENKINS_NODE_LABEL = "${JENKINS_NODE_LABEL}"
+    NS = "${NS}"
+    }
+    stages {
+
+     /*stage("RAS") {
+      steps {
+        script {
+          stage("ras/knobs-start") {
+            catchError {
+                build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KNOBS", value: "WheaErrorInjSupportEn=1,WheaErrInjEn=1,RasLogLevel=0,serialDebugMsgLvl=0"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+            }
+          }
+          stage("ras/ras") {
+            catchError {
+                run_job("${env.WORKSPACE}/ras/ras-test.${cluster}")
+            }
+          }
+          stage("ras/knobs-end") {
+            catchError {
+                build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KNOBS", value: "WheaErrorInjSupportEn=0,WheaErrInjEn=1,RasLogLevel=1,serialDebugMsgLvl=4"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+            }
+          }
+        }
+      }
+    }*/
+
+        stage("FREQ SWEEP") {
+            steps {
+                script {
+                    freq_list.each { test ->
+                    stage(test) {
+                        catchError {
+                            run_job("${env.WORKSPACE}/${test}.${cluster}")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+       stage("WARM RESET") {
+            steps {
+                script {
+                  stage("RF-cycles-in-warm") {
+                      catchError {
+                         build(job: "Tests/cycle-in-reboot", parameters:  [string(name: "NS", value:"${NS}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}"), string(name: "JENKINS_NODE_LABEL", value:  "${JENKINS_NODE_LABEL}"), string(name: "REBOOT_TYPE", value: "rf_warm"), string(name: "CYCLES", value: "1")])
+                      }
+                  }
+                }
+            }
+        }
+
+        /*stage("MIXER") {
+            steps {
+                script {
+                    mixer_list.each { test ->
+                    stage(test) {
+                        catchError {
+                            run_job("${env.WORKSPACE}/${test}.${cluster}")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+       stage("WARM RESET") {
+            steps {
+                script {
+                  stage("RF-cycles-in-warm") {
+                      catchError {
+                         build(job: "Tests/cycle-in-reboot", parameters:  [string(name: "NS", value:"${NS}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}"), string(name: "JENKINS_NODE_LABEL", value:  "${JENKINS_NODE_LABEL}"), string(name: "REBOOT_TYPE", value: "rf_warm"), string(name: "CYCLES", value: "1")])
+                      }
+                  }
+                }
+            }
+        }
+
+        stage("WORKLOADS1") {
+            steps {
+                script {
+                    test_list1.each { test ->
+                    stage(test) {
+                        catchError {
+                            run_job("${env.WORKSPACE}/${test}.${cluster}")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        stage("WORKLOADS2") {
+            steps {
+                script {
+                    test_list2.each { test ->
+                    stage(test) {
+                        catchError {
+                            run_job("${env.WORKSPACE}/${test}.${cluster}")
+                            }
+                        }
+                    }
+                }
+            }
+        }*/
+
+    }
+}
+
+// Agnostic variables and functions
+def private iter
+def private base
+def run_job(job_file) {
+  base = load "${env.WORKSPACE}/base/base.groovy"
+  job = load(job_file)
+  base.init()
+  //env.NS = "spr-sf-main-qs"
+  //env.JENKINS_NODE_LABEL = "spr-sf-main-qs"
+  //env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.flex"
+  iter = (env.ITERATIONS as int) ?: (1 as int)
+  for (int i = 0; i < iter; i++) {
+      base.run(env.JOB_RUNTIME)
+  }
+  base.reset()
+}

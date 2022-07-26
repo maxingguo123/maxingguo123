@@ -1,0 +1,9 @@
+env.JENKINS_TEST_TAG="ive-genie-generic-v1p0-22ww19-4"
+env.JENKINS_TEST_LABEL="ive-genie-generic-ptustress-v1p0-22ww19-4"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/run_content.sh"
+env.JENKINS_TEST_ARGS="-t 18 -wl 'PTUStress'"
+env.JOB_RUNTIME=68400
+env.DEPLOYMENT_YAML_URL="https://gitlab-mirror-fm.devtools.intel.com/sandstone/prt-int-cluster/-/raw/master/ive/sandstone_run_specific.yaml"
+env.SANDSTONE_DEPLOYMENT="${env.WORKSPACE}/sandstone_run_specific.yaml"
+env.EMAIL="ive-genie@intel.com"

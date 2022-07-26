@@ -1,0 +1,4 @@
+load "${env.WORKSPACE}/shc/shc.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.opus"
+env.ITERATIONS=2

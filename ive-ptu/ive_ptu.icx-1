@@ -1,0 +1,6 @@
+load "${env.WORKSPACE}/ive-ptu/ive_ptu.base"
+
+env.JENKINS_TEST_LABEL="ive-ptu-icx-v1p0"
+env.JENKINS_NODE_LABEL="ive-ptu-icx-v1p0"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"

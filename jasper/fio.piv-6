@@ -1,0 +1,5 @@
+load "${env.WORKSPACE}/jasper/fio.base"
+
+env.JENKINS_NODE_LABEL="piv-6"
+env.NS="piv-6"
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"

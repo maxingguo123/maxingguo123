@@ -1,0 +1,52 @@
+// Pipeline specific variables
+
+def cluster="spr"
+def NS="${params.NS}"
+def KUBECONFIG="--kubeconfig=/srv/kube/config.flex"
+def JENKINS_NODE_LABEL="${params.JENKINS_NODE_LABEL}"
+
+def def_list = ["sandstone/sandstone-release","sandstone/sandstone","sandstone/sandstone-combo","ive-povray/ive-povray","memory-subsystem/mlc","TSL/TSL","shc/shc","google-stressapp/google-stressapp","imunch/imunch","imunch-replay/imunch-replay","vss/vss","helpers/idle"]
+//def jasper_list = ["jasper/cpu-check","jasper/kvm-unit-tests","jasper/cloud-hypervisor","jasper/povray","jasper/hackbench","jasper/specjbb","jasper/unixbench","jasper/stressapptest","jasper/mprime","jasper/lzbench","jasper/python-data-science","jasper/python-mega-pytest","jasper/nss","jasper/mkl-dnn","jasper/ffmpeg","jasper/fio","jasper/mlc","jasper/gmp","jasper/openblas","jasper/eigen"]
+def jasper_list = ["jasper/cpu-check","jasper/kvm-unit-tests","jasper/cloud-hypervisor","jasper/povray","jasper/specjbb","jasper/stressapptest","jasper/mprime","jasper/lzbench","jasper/python-data-science","jasper/python-mega-pytest","jasper/nss","jasper/mkl-dnn","jasper/ffmpeg","jasper/fio","jasper/mlc","jasper/gmp","jasper/openblas","jasper/eigen"]
+def ive_list = ["ive-vt/create-teardown","ive-vt/auto-reboot"]
+def test_list = def_list + jasper_list + ive_list
+
+pipeline {
+    agent { label 'common' }
+    environment {
+       KUBECTL_ARGS = "${KUBECONFIG}"
+       JENKINS_NODE_LABEL = "${JENKINS_NODE_LABEL}"
+       NS = "${NS}"
+   }
+    stages {
+
+        stage("MCC-WORKLOADS") {
+            steps {
+                script {
+                    test_list.each { test ->
+                    stage(test) {
+                        catchError {
+                            run_job("${env.WORKSPACE}/${test}.${cluster}")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+     }
+}
+
+// Agnostic variables and functions
+def private iter
+def private base
+def run_job(job_file) {
+  base = load "${env.WORKSPACE}/base/base.groovy"
+  job = load(job_file)
+  base.init()
+  iter = (env.ITERATIONS as int) ?: (1 as int)
+  for (int i = 0; i < iter; i++) {
+    base.run(env.JOB_RUNTIME)
+  }
+  base.reset()
+}

@@ -1,0 +1,12 @@
+env.JENKINS_TEST_TAG="tsl-3.4.0"
+env.JENKINS_TEST_LABEL="tsl"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/shc\\/shc"
+env.JENKINS_TEST_ARGS="\\/shc\\/tslengine"
+env.TEST_RUNTIME="10h"
+env.DRAGON_TYPE_ARG="depth"
+env.DRAGON_ARGS_ARG="-a 30 -O"
+env.RUN_DRAGON_ARG=true
+env.EXTRA_ARGS_ARG="-f FailMask"
+env.JOB_RUNTIME=36000
+env.EMAIL="dpg_fsce_cluster_dl@intel.com"

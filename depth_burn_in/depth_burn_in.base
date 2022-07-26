@@ -1,0 +1,6 @@
+env.JENKINS_TEST_TAG="spr_gdc_depth_burn_in"
+env.JENKINS_TEST_LABEL="depth-burn-test"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/tests\\/scripts\\/run-specific.sh"
+env.JENKINS_TEST_ARGS=""
+env.JOB_RUNTIME=60000

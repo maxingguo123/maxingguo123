@@ -1,0 +1,3 @@
+load "${env.WORKSPACE}/service-framework-workloads/perf_ip_cpu.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"

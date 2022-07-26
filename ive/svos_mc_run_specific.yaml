@@ -1,0 +1,137 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  namespace: NAMESPACE
+  name: SANDSTONE_NAME
+spec:
+  selector:
+    matchLabels:
+      name: SANDSTONE_NAME
+  template:
+    metadata:
+      labels:
+        name: SANDSTONE_NAME
+        runid: ATSCALE_RUNID
+        runtimeClassName: runc
+    spec:
+      nodeSelector:
+        SANDSTONE_NODE_LABEL: "true"
+      hostNetwork: true
+      volumes:
+        - name: dshm
+          emptyDir:
+            medium: Memory
+        - name: hostroot
+          hostPath:
+            path: /
+            type: Directory
+        - name: usrvol
+          hostPath:
+            path: /usr
+            type: Directory
+        - name: libvol
+          hostPath:
+            path: /lib
+            type: Directory
+        - name: svvol
+          hostPath:
+            path: /sv
+            type: Directory
+        - name: sbinvol
+          hostPath:
+            path: /sbin
+            type: Directory
+        - name: binvol
+          hostPath:
+            path: /bin
+            type: Directory
+        - name: etcvol
+          hostPath:
+            path: /etc
+            type: Directory
+        - name: logsfolder
+          hostPath:
+            path: /pub/logs
+            type: Directory
+      initContainers:
+        - name: init-container
+          image: REGISTRY/sandstone-init-container:9
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: INIT_MSR_SET
+              value: "INIT_MSR_SET_VAL"
+            - name: INIT_MSR_CPU
+              value: "INIT_MSR_CPU_VAL"
+          securityContext:
+            privileged: true
+      containers:
+      - name: SANDSTONE_NAME
+        image: REGISTRY/sandstone:DOCKER_TAG
+        imagePullPolicy: Always
+        volumeMounts:
+          - mountPath: /dev/shm
+            name: dshm
+          - mountPath: /usr
+            name: usrvol
+            readOnly: false
+          - mountPath: /sv
+            name: svvol
+            readOnly: false
+          - mountPath: /lib
+            name: libvol
+            readOnly: false
+          - mountPath: /sbin
+            name: sbinvol
+            readOnly: false
+          - mountPath: /bin
+            name: binvol
+            readOnly: false
+          - mountPath: /etc
+            name: etcvol
+            readOnly: false
+          - mountPath: /var/local/logs
+            name: logsfolder
+            readOnly: false
+        #run-specific uses env vars for params
+        command: ["/tests/scripts/run-specific.sh"]
+        env:
+          - name: PROJECT
+            value: "icelakex"
+          - name: PATH
+            value: "/usr/local/icelakex/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/python/bin/icelakex:/usr/local/python/bin/pysvtools:/usr/local/python/bin/misc:/usr/local/icelakex/bin/vtd/:/usr/local/python/bin/falconvalley:/usr/local/nvmem:/usr/local/nvmem/val_tools:/usr/local/python/bin/barlowvalley:/usr/local/uvat/bin"
+          - name: LD_LIBRARY_PATH
+            value: "/usr/local/lib"
+          - name: SANDSTONE_BIN
+            value: "SANDSTONE_BIN_PATH"
+          - name: SANDSTONE_ARGS
+            value: "SANDSTONE_TEST_ARGS"
+          # Dragon Environment Variables
+          - name: RUN_DRAGON
+            value: "RUN_DRAGON_ARG"
+          - name: DRAGON_ARGS
+            value: "DRAGON_ARGS_ARG"
+          - name: DRAGON_TYPE
+            value: "DRAGON_TYPE_ARG"
+          - name: EXTRA_ARGS
+            value: "EXTRA_ARGS_ARG"
+          # Multichase Environment Variables
+          - name: MC_SPECIFIC_TEST_TO_RUN
+            value: "MC_TEST_SPECIFIC"
+          # GeekBench Env Variables
+          - name: GB_USER
+            value: "GB_USER_ARG"
+          - name: GB_KEY
+            value: "GB_KEY_ARG"
+          - name: GB_ITERATIONS
+            value: "GB_ITERATIONS_ARG"
+        readinessProbe:
+          exec:
+            command:
+              - cat
+              - /tmp/testdone
+            # Wait for 30s before checking for the first time
+            # then probe for completion every 5 seconds
+          initialDelaySeconds: 30
+          periodSeconds: 5
+        securityContext:
+          privileged: true

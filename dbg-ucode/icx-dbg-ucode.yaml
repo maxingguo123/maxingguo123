@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ucode-mapping
+  namespace: mgmt
+data:
+  ucode_config.yaml: |-
+    cluster_endpoint: "http://ive-infra04.deacluster.intel.com:5000"
+    pools:
+      ICX_XCC-C0_IVE_DBG_IVE_DCU-NONAPIC_JAVILLA: "ive_debug_8c584110"
+      ICX_XCC-C0_PIV_DBG_IVE_DCU-NONAPIC_JAVILLA: "ive_debug_8c584110"
+      ICX_XCC-D0_IVE_EXC_DEFAULT_BURNIN-D0_DCASTR5: "SKIP"
+      ICX_XCC-C0_PIV_EXC_DEFAULT_BURNIN-D0_DCASTR5: "SKIP"
+      ICX_XCC-C0_BKC_EXC_DEFAULT_BURNIN-D0_DCASTR5: "SKIP"

@@ -1,0 +1,86 @@
+// Pipeline specific variables
+def cluster="spr"
+def NS="${params.NS}"
+def KUBECONFIG="--kubeconfig=/srv/kube/config.flex"
+def JENKINS_NODE_LABEL="${params.JENKINS_NODE_LABEL}"
+env.KUBECTL_ARGS = "${KUBECONFIG}"
+env.JENKINS_NODE_LABEL = "${JENKINS_NODE_LABEL}"
+env.NS = "${NS}"
+
+def test_list = ["TSL/TSL","shc/shc","jasper/mlc","imunch/imunch","imunch-replay/imunch-replay","vss/vss","helpers/idle"]
+def test_list2 = ["sandstone/sandstone","sandstone/sandstone-release","sandstone/sandstone-combo"]
+def MM_KNOBS_INIT="bdatEn=1,EnableEvLoader=1,EnableRMT=1,RMTPerBitMargining=1,RMTBacksideMargining=1,AttemptFastBoot=0,AttemptFastBootCold=0,EnableRMTonFCB=0,AllowedSocketsInParallel=1"
+def MM_KNOBS_ROLLBACK="bdatEn=1,EnableEvLoader=0,EnableRMT=0,RMTPerBitMargining=1,RMTBacksideMargining=0,AttemptFastBoot=1,AttemptFastBootCold=1,EnableRMTonFCB=0,AllowedSocketsInParallel=0"
+
+//***OS margin part***
+def mlc_margin_list = ["jasper/mlc-margin"]
+
+//RMT initial and rollback knobs
+//Knob TrainingResultOffsetFunctionEnable needs to be enabled before the offset training
+def RMT_KNOBS_INIT="bdatEn=1,EnableEvLoader=1,EnableRMT=1,RMTPerBitMargining=1,RMTBacksideMargining=1,AttemptFastBoot=0,AttemptFastBootCold=0,EnableRMTonFCB=0,AllowedSocketsInParallel=1,TrainingResultOffsetFunctionEnable=1"
+def RMT_KNOBS_ROLLBACK="bdatEn=1,EnableEvLoader=0,EnableRMT=0,RMTPerBitMargining=1,RMTBacksideMargining=0,AttemptFastBoot=1,AttemptFastBootCold=1,EnableRMTonFCB=0,AllowedSocketsInParallel=0,TrainingResultOffsetFunctionEnable=0,OffsetTxVref=0x64,TelemetryTxVrefLeftEdge=0x6"
+
+//Offset training + Telemetry value
+def offset_list = ["OffsetRxDq=0x7,OffsetRxVref=0x64,TelemetryRxDqsDelayRightEdge=0xE,TelemetryRxDqsDelayLeftEdge=0x7,TelemetryRxVrefRightEdge=0x6,TelemetryRxVrefLeftEdge=0x6","OffsetRxDq=0x6b,OffsetRxVref=0x64,TelemetryRxDqsDelayRightEdge=0x7,TelemetryRxDqsDelayLeftEdge=0xE,TelemetryRxVrefRightEdge=0x6,TelemetryRxVrefLeftEdge=0x6","OffsetRxVref=0x6,OffsetRxDq=0x64,TelemetryRxVrefRightEdge=0xC,TelemetryRxVrefLeftEdge=0x6,TelemetryRxDqsDelayRightEdge=0x7,TelemetryRxDqsDelayLeftEdge=0x7","OffsetRxVref=0x6a,OffsetRxDq=0x64,TelemetryRxVrefRightEdge=0x6,TelemetryRxVrefLeftEdge=0xC,TelemetryRxDqsDelayRightEdge=0x7,TelemetryRxDqsDelayLeftEdge=0x7","OffsetTxDq=0x6,OffsetTxVref=0x64,TelemetryTxDqDelayRightEdge=0xC,TelemetryTxDqDelayLeftEdge=0x6,TelemetryTxVrefRightEdge=0x6,TelemetryTxVrefLeftEdge=0x6,OffsetRxVref=0x64,TelemetryRxVrefLeftEdge=0x6","OffsetTxDq=0x6a,OffsetTxVref=0x64,TelemetryTxDqDelayRightEdge=0x6,TelemetryTxDqDelayLeftEdge=0xC,TelemetryTxVrefRightEdge=0x6,TelemetryTxVrefLeftEdge=0x6","OffsetTxVref=0x6,OffsetTxDq=0x64,TelemetryTxVrefRightEdge=0xC,TelemetryTxVrefLeftEdge=0x6,TelemetryTxDqDelayRightEdge=0x6,TelemetryTxDqDelayLeftEdge=0x6","OffsetTxVref=0x6a,OffsetTxDq=0x64,TelemetryTxVrefRightEdge=0x6,TelemetryTxVrefLeftEdge=0xC,TelemetryTxDqDelayRightEdge=0x6,TelemetryTxDqDelayLeftEdge=0x6"]
+
+pipeline {
+    agent { label 'common' }
+    
+    environment {
+        
+       KUBECTL_ARGS = "${KUBECONFIG}"
+       JENKINS_NODE_LABEL = "${JENKINS_NODE_LABEL}"
+       NS = "${NS}"
+   }
+    stages {
+    
+    stage("test-parametrized-string") {
+      steps {
+        script {
+          currentBuild.displayName ="MAxIo"
+          stage("test-parametrized-string") {
+              catchError(catchInterruptions: false)
+              {
+                   sleep 5
+                   echo "Nitesh-1"
+                   echo "${NS}"
+                   echo "${JENKINS_NODE_LABEL}"
+                   echo "${env.NS}"
+                   echo "${env.JENKINS_NODE_LABEL}"
+              }
+              
+          }
+        }
+      }
+    }
+        stage("Workloads") {
+            steps {
+                script {
+                    test_list.each { test ->
+                    stage(test) {
+                        catchError {
+                            run_job("${env.WORKSPACE}/${test}.${cluster}")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+
+    }
+}
+
+
+// Agnostic variables and functions
+def private iter
+def private base
+def run_job(job_file) {
+  base = load "${env.WORKSPACE}/base/base.groovy"
+  job = load(job_file)
+  base.init()
+  echo "Nitesh env still set-- ${env.NS}"
+  echo "Nitesh env still  set ${env.JENKINS_NODE_LABEL}"
+  echo "Nitesh env still  set ${env.KUBECTL_ARGS}"
+  base.reset()
+}

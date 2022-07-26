@@ -1,0 +1,57 @@
+// Pipeline specific variables
+
+def cluster="spr"
+
+def NS="spr-dbg-rmt-armandov"
+def KUBECONFIG="--kubeconfig=/srv/kube/config.opus"
+def JENKINS_NODE_LABEL="spr-dbg-rmt-armandov"
+
+def RMT_KNOBS_ROLLBACK="bdatEn=1,EnableEvLoader=0,EnableRMT=0,RMTPerBitMargining=1,RMTBacksideMargining=0,AttemptFastBoot=1,AttemptFastBootCold=1,EnableRMTonFCB=0,AllowedSocketsInParallel=0"
+def RMT_KNOBS_INIT="bdatEn=1,EnableEvLoader=1,EnableRMT=1,RMTPerBitMargining=1,RMTBacksideMargining=1,AttemptFastBoot=0,AttemptFastBootCold=0,EnableRMTonFCB=0,AllowedSocketsInParallel=1"
+
+pipeline {
+  agent { label 'piv' }
+  stages {
+
+        stage("BIOS KNOBS") {
+                steps {
+                    script {
+                        stage("rmt-knobs-start") {
+                            catchError {
+                            build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value:"${NS}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}"), string(name: "KNOBS", value: "${RMT_KNOBS_INIT}"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+                            }
+                        }
+                    }
+                }
+            }
+
+        stage("ROLLBACK") {
+            steps {
+                script {
+                    stage("rmt-knobs-rollback") {
+                       catchError {
+                            build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value:"${NS}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}"), string(name: "KNOBS", value: "${RMT_KNOBS_ROLLBACK}"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+                       }
+                    }
+                }
+            }
+        }
+  }
+}
+
+// Agnostic variables and functions
+def private iter
+def private base
+def run_job(job_file) {
+  base = load "${env.WORKSPACE}/base/base.groovy"
+  job = load(job_file)
+  base.init()
+  env.NS = "spr-dbg-rmt-armandov"
+  env.JENKINS_NODE_LABEL = "spr-dbg-rmt-armandov"
+  env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.opus"
+  iter = (env.ITERATIONS as int) ?: (1 as int)
+  for (int i = 0; i < iter; i++) {
+    base.run(env.JOB_RUNTIME)
+  }
+  base.reset()
+}

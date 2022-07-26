@@ -1,0 +1,6 @@
+env.JENKINS_TEST_TAG="passmark-burnin-vm-v1.0"
+env.JENKINS_TEST_LABEL="passmark-burnin-vm"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/start_qemu.sh"
+env.JENKINS_TEST_ARGS="2048 10 noload"
+env.JOB_RUNTIME=2400

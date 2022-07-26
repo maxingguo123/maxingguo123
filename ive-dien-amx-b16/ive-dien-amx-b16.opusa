@@ -1,0 +1,3 @@
+load "${env.WORKSPACE}/ive-dien-amx-b16/ive-dien-amx-b16.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.opus"

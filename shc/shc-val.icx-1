@@ -1,0 +1,5 @@
+load "${env.WORKSPACE}/shc/shc-val.base"
+
+env.JENKINS_TEST_TAG="icx_medium_hvm_icx_v4.8.1"
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+env.ITERATIONS=2

@@ -1,0 +1,106 @@
+def cluster="cr"
+def def_list = ["sandstone/sandstone-combo", "imunch-replay/imunch-replay", "imunch/imunch", "vss/vss", "cafe-dol/cafe-dol", "DOL/DOL"]
+def test_list = def_list
+def NS="burnin"
+def KUBECONFIG="--kubeconfig=/srv/kube/config.cr"
+def JENKINS_NODE_LABEL="burnin"
+def KNOBS_ROLLBACK="bdatEn=1,AttemptFastBootCold=1,AttemptFastBoot=1,EnableBiosSsaLoader=1,EnableBiosSsaRMT=0,LegacyRmt=0,BiosSsaPerBitMargining=1,EnableBiosSsaRMTonFCB=0,RmtOnColdFastBoot=0"
+def KNOBS_INIT="bdatEn=1,AttemptFastBootCold=0,AttemptFastBoot=0,EnableBiosSsaLoader=1,EnableBiosSsaRMT=1,LegacyRmt=0,BiosSsaPerBitMargining=1,EnableBiosSsaRMTonFCB=0,RmtOnColdFastBoot=0"
+
+
+pipeline {
+    agent { label 'common' }
+    stages {
+       //stage("INIT") {
+       //steps {
+       //  script {
+       //    stage("knobs-start") {
+       //      catchError {
+       //          build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value:"${NS}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}"), string(name: "KNOBS", value: "${KNOBS_INIT}"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+       //      }
+       //    }
+       //   }
+       //  }
+       // }
+       // stage("MM") {
+       //      steps {
+       //          script {
+       //              stage("Memory-margin") {
+       //                 catchError {
+       //                     build(job: "Tests/memory-margin", parameters:  [string(name: "NS", value:"${NS}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}"), string(name: "JENKINS_NODE_LABEL", value:  "${JENKINS_NODE_LABEL}"), string(name: "CYCLES", value: "5")])
+       //                 }
+       //             }
+       //         }
+       //     }
+       // }
+       // stage("ROLLBACK") {
+       // steps {
+       //  script {
+       //    stage("knobs-rollback") {
+       //      catchError {
+       //          build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value:"${NS}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}"), string(name: "KNOBS", value: "${KNOBS_ROLLBACK}"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+       //      }
+       //    }
+       //   }
+       //  }
+       // }
+          stage("CYCLING") {
+             steps {
+                 script {
+                     stage("RF-cycles-in-warm") {
+                        catchError {
+                             build(job: "Tests/cycle-in-reboot", parameters:  [string(name: "NS", value:"${NS}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}"), string(name: "JENKINS_NODE_LABEL", value:  "${JENKINS_NODE_LABEL}"), string(name: "REBOOT_TYPE", value: "rf_warm"), string(name: "CYCLES", value: "25")])
+                             }
+                         }
+                     stage("RF-cycles-in-cold") {
+                        catchError {
+                             build(job: "Tests/cycle-in-reboot", parameters:  [string(name: "NS", value:"${NS}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}"), string(name: "JENKINS_NODE_LABEL", value:  "${JENKINS_NODE_LABEL}"), string(name: "REBOOT_TYPE", value: "rf_cold"), string(name: "CYCLES", value: "25")])
+                            }
+                        }
+                    }
+                }
+            }
+        stage("Tests") {
+            steps {
+                script {
+                    test_list.each { test ->
+                    stage(test) {
+                        catchError {
+                            run_job("${env.WORKSPACE}/${test}.${cluster}")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        stage("IDLE") {
+            steps {
+                script {
+                    stage('IDLE') {
+                        catchError {
+                            run_job("${env.WORKSPACE}/helpers/idle.${cluster}")
+                            }
+                        }
+                }
+            }
+        }
+    }
+}
+
+
+
+// Agnostic variables and functions
+def private iter
+def private base
+def run_job(job_file) {
+  base = load "${env.WORKSPACE}/base/base.groovy"
+  job = load(job_file)
+  base.init()
+  env.NS = "burnin"
+  env.JENKINS_NODE_LABEL = "burnin"
+  iter = (env.ITERATIONS as int) ?: (1 as int)
+  for (int i = 0; i < iter; i++) {
+    base.run(env.JOB_RUNTIME)
+  }
+  base.reset()
+}

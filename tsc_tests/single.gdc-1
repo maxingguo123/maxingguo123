@@ -1,0 +1,3 @@
+load "${env.WORKSPACE}/tsc_tests/single.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config"

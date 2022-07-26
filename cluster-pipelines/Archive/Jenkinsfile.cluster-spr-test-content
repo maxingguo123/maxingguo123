@@ -1,0 +1,174 @@
+// Pipeline specific variables
+
+def cluster="spr"
+
+//def qat_hw = ["hero-OpenSSL-RSAMB/hero-openssl-rsamb-hw"]
+//def qat_sw = ["hero-OpenSSL-RSAMB/hero-openssl-rsamb-sw"]
+//def qat_list = qat_hw + qat_sw
+def test_list = ["mixer/mixer"]
+def dsa_list = ["dsa-spdk/dsa-spdk"]
+def KINGKONG_IMG="kingkong_sqrt-v0.94.4"
+def test_list2 = ["jasper/combo-03","jasper/combo-02","jasper/combo-01","sandstone/sandstone-release-dbg","ive-povray/ive-povray-new","ive-vt/auto-reboot","ive-vt/create-teardown","jasper/oasis-dbg","pnp-ai/pnp-ai"]
+
+def KUBECONFIG="--kubeconfig=/srv/kube/config.icx-1"
+def JENKINS_NODE_LABEL="spr-test-content"
+def NS="spr-test-content"
+
+pipeline {
+  agent { label "common" }
+  stages {
+
+      /*stage("QAT/KERNEL") {
+          steps {
+              script {
+                  stage("qat/knobs-start") {
+                      catchError {
+                          build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KNOBS", value: "VTdSupport=0"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+                      }
+                  }
+                  stage("qat/kernel-start") {
+                      catchError {
+                          build(job: "Tests/kernelcli_run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KERNEL_PARAMETERS", value: "intel_iommu=off,iommu=pt,iommu=on,hugepages=1024"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+                      }
+                  }
+                  stage("qat tests") {
+                      qat_list.each { test ->
+                      stage(test) {
+                          catchError {
+                              run_job("${env.WORKSPACE}/${test}.${cluster}")
+                          }
+                      }
+                      }
+                  }
+                  stage("qat/kernel-end") {
+                      catchError {
+                          build(job: "Tests/kernelcli_run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KERNEL_PARAMETERS", value: "intel_iommu=on,iommu=pt,iommu=on,hugepages=1024"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+                      }
+                  }
+                  stage("qat/knobs-end") {
+                      catchError {
+                          build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KNOBS", value: "VTdSupport=1"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+                      }
+                  }
+              }
+          }
+      }*/
+
+      stage("TEST/MIXER") {
+          steps {
+              script {
+                  test_list.each { test ->
+                  stage(test) {
+                      catchError {
+                          run_job("${env.WORKSPACE}/${test}.${cluster}")
+                      }
+                  }
+                  }
+              }
+          }
+      }
+
+      stage("DSA/KERNEL") {
+          steps {
+              script {
+                  stage("dsa/knobs-start") {
+                      catchError {
+                          build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KNOBS", value: "VTdSupport=1,PcieEnqCmdSupport=1"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+                      }
+                  }
+                  stage("dsa/kernel-start") {
+                      catchError {
+                          build(job: "Tests/kernelcli_run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KERNEL_PARAMETERS", value: "intel_iommu=on,intel_iommu=sm_on,iommu=pt,hugepages=512"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+                      }
+                  }
+                  stage("dsa test") {
+                      dsa_list.each { test ->
+                      stage(test) {
+                          catchError {
+                              run_job("${env.WORKSPACE}/${test}.${cluster}")
+                          }
+                      }
+                      }
+                  }
+                  stage("dsa/kernel-end") {
+                      catchError {
+                          build(job: "Tests/kernelcli_run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KERNEL_PARAMETERS", value: "intel_iommu=on,intel_iommu=sm_on,ats_with_iommu_swizzle"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+                      }
+                  }
+                  stage("dsa/knobs-end") {
+                      catchError {
+                          build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "KNOBS", value: "VTdSupport=1,PcieEnqCmdSupport=0"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+                      }
+                  }
+              }
+          }
+      }
+
+      stage("READ - pre kong") {
+          steps {
+              script {
+                  stage("Reading - pre kong") {
+                      catchError {
+                          build(job: "Tests/Development/kong-test-read-registers", parameters:  [string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}"), string(name: "NS", value: "${NS}"), string(name: "JENKINS_TEST_TAG", value: "${KINGKONG_IMG}")])                      
+                      }
+                  }
+              }
+          }
+      }
+      stage("KINGKONG") {
+          steps {
+              script {
+                  stage("Running KK") {
+                      catchError {
+                          build(job:"Tests/Development/kingkong-test", parameters:  [string(name: "TEST", value: "kong"), string(name: "JENKINS_TEST_TAG", value: "${KINGKONG_IMG}"), string(name: "NS", value: "${NS}"), string(name: "JENKINS_NODE_LABEL", value:"${JENKINS_NODE_LABEL}"), string(name: "KUBECTL_ARGS", value:"${KUBECONFIG}")])
+                      }
+                  }
+              }
+          }
+      }
+      stage("READ - post kong") {
+          steps {
+              script {
+                  stage("Reading - post kong") {
+                      catchError {
+                              build(job: "Tests/Development/kong-test-read-registers", parameters:  [string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}"), string(name: "NS", value: "${NS}"), string(name: "JENKINS_TEST_TAG", value: "${KINGKONG_IMG}")])                      
+                      }
+                  }
+              }
+          }
+      }
+
+      stage("WORKLOADS") {
+          steps {
+              script {
+                  test_list2.each { test ->
+                  stage(test) {
+                      catchError {
+                          run_job("${env.WORKSPACE}/${test}.${cluster}")
+                      }
+                  }
+                  }
+              }
+          }
+      }
+
+  }
+}
+
+
+// Agnostic variables and functions
+def private iter
+def private base
+def run_job(job_file) {
+  base = load "${env.WORKSPACE}/base/base.groovy"
+  job = load(job_file)
+  base.init()
+  env.NS = "spr-test-content"
+  env.JENKINS_NODE_LABEL = "spr-test-content"
+  env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+  iter = (env.ITERATIONS as int) ?: (1 as int)
+  for (int i = 0; i < iter; i++) {
+      base.run(env.JOB_RUNTIME)
+  }
+  base.reset()
+}

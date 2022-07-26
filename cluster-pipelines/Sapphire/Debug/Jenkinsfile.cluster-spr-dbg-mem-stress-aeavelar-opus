@@ -1,0 +1,100 @@
+// Pipeline specific variables
+
+def cluster="spr"
+def NS="spr-dbg-mem-stress-aeavelar"
+def KUBECONFIG="--kubeconfig=/srv/kube/config.opus"
+def JENKINS_NODE_LABEL="spr-dbg-mem-stress-aeavelar"
+
+def mlc_list = ["jasper/mlc"]
+def mixer_list = ["mixer/paiv-mixer"]
+def test_list = ["TSL/TSL","sgx/sgx-graphene-mlc","shc/shc","vss/vss","memory-subsystem/mlc","mesh-stress/mesh-stress","ive-povray/ive-povray","jasper/eigen","packer-qemu-mixed/packer-qemu-mixed","ive-stressng/ive-stressng","xprod-legacy/xprod-legacy","ive-stressapptest/ive-stressapptest"]
+
+pipeline {
+  agent { label 'piv' }
+  stages {
+
+    stage("MLC TEST") {
+      steps {
+        script {
+          mlc_list.each { test ->
+          stage(test) {
+            catchError {
+                run_job("${env.WORKSPACE}/${test}.${cluster}")
+            }
+          }
+          }
+        }
+      }
+    }
+
+    stage("MLC-MULTI") {
+      steps {
+        script {
+          stage("mlc-multi test") {
+            catchError {
+              build(job: "Tests/spr-mlc-multi", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+            }
+          }
+        }
+      }
+    }
+
+    stage("MIXER WORKLOAD") {
+      steps {
+        script {
+          mixer_list.each { test ->
+          stage(test) {
+            catchError {
+                run_job("${env.WORKSPACE}/${test}.${cluster}")
+            }
+          }
+          }
+        }
+      }
+    }
+
+       stage("WARM RESET MIXER") {
+            steps {
+                script {
+                  stage("RF-cycles-in-warm") {
+                      catchError {
+                         build(job: "Tests/cycle-in-reboot", parameters:  [string(name: "NS", value:"${NS}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}"), string(name: "JENKINS_NODE_LABEL", value:  "${JENKINS_NODE_LABEL}"), string(name: "REBOOT_TYPE", value: "rf_warm"), string(name: "CYCLES", value: "1"), string(name: "SS", value: "FALSE")])
+                      }
+                  }
+                }
+            }
+        }
+
+    stage("WORKLOADS") {
+      steps {
+        script {
+          test_list.each { test ->
+          stage(test) {
+            catchError {
+                run_job("${env.WORKSPACE}/${test}.${cluster}")
+            }
+          }
+          }
+        }
+      }
+    }
+
+  }
+}
+
+// Agnostic variables and functions
+def private iter
+def private base
+def run_job(job_file) {
+  base = load "${env.WORKSPACE}/base/base.groovy"
+  job = load(job_file)
+  base.init()
+  env.NS = "spr-dbg-mem-stress-aeavelar"
+  env.JENKINS_NODE_LABEL = "spr-dbg-mem-stress-aeavelar"
+  env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.opus"
+  iter = (env.ITERATIONS as int) ?: (1 as int)
+  for (int i = 0; i < iter; i++) {
+    base.run(env.JOB_RUNTIME)
+  }
+  base.reset()
+}

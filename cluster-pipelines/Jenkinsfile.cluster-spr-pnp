@@ -1,0 +1,49 @@
+// Pipeline specific variables
+def cluster="spr"
+
+//def def_list = ["pnp/hackbench-ptu-combo", "pnp/mkl-dnn-ptu-combo", "pnp/mlc-ptu-combo", "pnp/specjbb-ptu-combo", "pnp/unixbench-ptu-combo"]
+def def_list_0 = ["pnp/specjbb-ptu-combo", "pts/pts-cachebench-ptu-combo-v0.2", "pts/pts-coremark-ptu-combo-v0.2"]
+//def def_list_1 = ["pts/pts-cachebench-ptu-combo-v0.2", "pts/pts-coremark-ptu-combo-v0.2", "pts/pts-cryptography-ptu-combo-v0.2", "pts/pts-database-ptu-combo-v0.2", "pts/pts-machine-learning-ptu-combo-v0.2"]
+//def def_list_2 = ["pts/pts-memory-ptu-combo-v0.2", "pts/pts-mkl-dnn-ptu-combo-v0.2", "pts/pts-multicore-ptu-combo-v0.2", "pts/pts-oneapi-ptu-combo-v0.2", "pts/pts-video-encoding-ptu-combo-v0.2", "pts/pts-y-cruncher-ptu-combo-v0.2"]
+//def test_list = def_list_0 + def_list_1 + def_list_2
+def test_list = def_list_0
+
+def KUBECONFIG="--kubeconfig=/srv/kube/config.icx-1"
+def JENKINS_NODE_LABEL="unifiednode"
+def NS="default"
+
+pipeline {
+  agent { label "common" }
+  stages {
+     stage("Tests") {
+      steps {
+        script {
+          test_list.each { test ->
+          stage(test) {
+            catchError {
+                run_job("${env.WORKSPACE}/${test}.${cluster}")
+            }
+          }
+        }}
+      }
+    }
+  }
+}
+
+// Agnostic variables and functions
+def private iter
+def private base
+def run_job(job_file) {
+  base = load "${env.WORKSPACE}/base/base.groovy"
+  job = load(job_file)
+  env.SANDSTONE_DEPLOYMENT="${env.WORKSPACE}/pnp/bench-ptu-combo.yaml"
+  env.NS = "piv-7"
+  env.JENKINS_NODE_LABEL = "pnp"
+  base.init()
+  iter = (env.ITERATIONS as int) ?: (1 as int)
+  for (int i = 0; i < iter; i++) {
+    base.run(env.JOB_RUNTIME)
+  }
+  base.reset()
+}
+

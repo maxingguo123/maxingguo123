@@ -1,0 +1,3 @@
+load "${env.WORKSPACE}/ive-stressapptest/ive-stressapptest.base"
+env.JENKINS_TEST_BINARY="\\/run_content.sh -t 2"
+env.JOB_RUNTIME=7200

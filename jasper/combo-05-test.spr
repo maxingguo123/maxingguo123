@@ -1,0 +1,7 @@
+load "${env.WORKSPACE}/jasper/combo-05.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+env.JENKINS_TEST_TAG="95"
+env.JENKINS_TEST_ARGS=7200
+env.JOB_RUNTIME=7200
+env.DEPLOYMENT_YAML_URL="https://raw.githubusercontent.com/intel-innersource/applications.infrastructure.data-center.jenkins.prt-int-cluster/main/jasper/combo-05.yaml"

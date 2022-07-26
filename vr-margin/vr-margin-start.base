@@ -1,0 +1,9 @@
+env.JENKINS_TEST_TAG="vr-margin-icx-gdc"
+env.JENKINS_TEST_LABEL="vr-margin-start"
+env.JENKINS_NODE_LABEL="craig-test"
+env.JENKINS_TEST_BINARY="\\/tests\\/scripts\\/run_vr_margin.sh"
+env.JENKINS_TEST_ARGS="VR_MODE=start"
+env.JOB_RUNTIME=1200
+env.EMAIL="craig.sterrett@intel.com"
+env.SANDSTONE_DEPLOYMENT="${env.WORKSPACE}/vrmargin_run_specific.yaml"
+env.DEPLOYMENT_YAML_URL="https://gitlab.devtools.intel.com/sandstone/prt-int-cluster/-/raw/master/vr-margin/vrmargin_run_specific.yaml"

@@ -1,0 +1,9 @@
+env.JENKINS_TEST_TAG="jasper-iperf-v0.2"
+env.JENKINS_TEST_LABEL="sscombo-iperf-mesh"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/run.sh"
+env.JENKINS_TEST_ARGS=""
+env.JOB_RUNTIME=4200
+env.PRE_YAML="iperf/network-headless-svc.yaml"
+env.DEPLOYMENT_YAML_URL="https://gitlab.devtools.intel.com/deepakku/prt-int-cluster/-/raw/master/mesh-stress/sandstone_run_specific.yaml"
+env.SANDSTONE_DEPLOYMENT="${env.WORKSPACE}/sandstone_run_specific.yaml"

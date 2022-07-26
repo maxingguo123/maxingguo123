@@ -1,0 +1,11 @@
+load "${env.WORKSPACE}/TSL/TSL.base"
+
+env.DRAGON_TYPE_ARG="depth"
+env.TEST_RUNTIME="24h"
+env.JOB_RUNTIME=86400
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.gdc-1"
+env.JENKINS_TEST_TAG="tsl-3.9.1_v2"
+env.JENKINS_TEST_LABEL="tsl-val"
+env.NS="tsl-test"
+env.JENKINS_NODE_LABEL="tsl-test"
+env.EMAIL="ricardo.bonilla.cordero@intel.com"

@@ -1,0 +1,8 @@
+env.JENKINS_TEST_TAG="jasper-mlc-May_2022"
+env.JENKINS_TEST_LABEL="jasper-mlc"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/run.sh"
+env.JENKINS_TEST_ARGS=""
+env.JOB_RUNTIME=2700
+env.ITERATIONS=2
+env.EMAIL="craig.sterrett@intel.com"

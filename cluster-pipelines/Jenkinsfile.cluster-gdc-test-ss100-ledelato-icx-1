@@ -1,0 +1,45 @@
+// Pipeline specific variables
+
+def cluster="icx-1"
+def test_list = ["sandstone/sandstone-v100"]
+def NS="icx-test-ss100-ledelato"
+def KUBECONFIG="--kubeconfig=/srv/kube/config.icx-1"
+def JENKINS_NODE_LABEL="icx-test-ss100-ledelato"
+
+pipeline {
+  agent { label 'piv' }
+  stages {
+
+      stage("TESTS") {
+          steps {
+              script {
+                  test_list.each { test ->
+                  stage(test) {
+                      catchError {
+                          run_job("${env.WORKSPACE}/${test}.${cluster}")
+                      }
+                  }
+                  }
+              }
+          }
+      }
+    
+  }     
+}
+
+// Agnostic variables and functions
+def private iter
+def private base
+def run_job(job_file) {
+  base = load "${env.WORKSPACE}/base/base.groovy"
+  job = load(job_file)
+  base.init()
+  env.NS = "icx-test-ss100-ledelato"
+  env.JENKINS_NODE_LABEL = "icx-test-ss100-ledelato"
+  env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+  iter = (env.ITERATIONS as int) ?: (1 as int)
+  for (int i = 0; i < iter; i++) {
+    base.run(env.JOB_RUNTIME)
+  }
+  base.reset()
+}

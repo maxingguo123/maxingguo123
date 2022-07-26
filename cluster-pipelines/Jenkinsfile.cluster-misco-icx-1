@@ -1,0 +1,53 @@
+// Pipeline specific variables
+def cluster="icx-1"
+
+def test_list1 = ["mixer/mixer", "xhpl-linpack/hp-linpack", "sandstone/sandstone-release", "sandstone/sandstone-combo", "imunch/imunch", "imunch-replay/imunch-replay"]
+def test_list2 = ["shc/shc", "DOL/DOL", "DOL/dol-google-skx", "jasper/iperf", "jasper/mlc", "jasper/fio", "pts/pts-coremark-v0.1", "pintsx/geekbench", "pintsx/ycruncher", "posted-interrupts/posted-interrupts"]
+def test_list3 = ["ive-stressapptest/ive-stressapptest", "ive-mprime/ive-mprime", "resnet50/ive-resnet50", "spec2017/spec2017", "stress-ng/pagefaults", "stress-ng/memory", "stream/stream", "sysbench/sysbench"]
+def test_list4 = ["jasper/cloud-hypervisor", "jasper/kvm-unit-tests",  "jasper/oasis", "ive-fio/ive-fio", "jasper/specjbb", "cafe-dol/cafe-dol", "ive-povray/ive-povray"]
+def test_list =   test_list1 + test_list2 + test_list3 + test_list4
+
+
+//Pipeline failure on certs @aug 22 2021, adjusting list to start from last test run
+//def test_list5 = ["resnet50/ive-resnet50", "spec2017/spec2017", "stress-ng/pagefaults", "stress-ng/memory", "stream/stream", "sysbench/sysbench", "jasper/cloud-hypervisor", "jasper/kvm-unit-tests",  "ive-vt/benchmarks", "jasper/oasis", "ive-fio/ive-fio", "ive-vt/hpc", "jasper/specjbb", "cafe-dol/cafe-dol", "ive-povray/ive-povray"]
+
+def NS="misco-pool"
+def KUBECONFIG="--kubeconfig=/srv/kube/config.icx-1"
+def JENKINS_NODE_LABEL="misco-pool"
+
+
+pipeline {
+  agent { label "common" }
+  stages {
+     stage("Tests") {
+      steps {
+        script {
+          test_list.each { test ->
+          stage(test) {
+            catchError {
+                run_job("${env.WORKSPACE}/${test}.${cluster}")
+            }
+          }
+        }}
+      }
+    } 
+  }
+}
+
+// Agnostic variables and functions
+def private iter
+def private base
+def run_job(job_file) {
+  base = load "${env.WORKSPACE}/base/base.groovy"
+  job = load(job_file)
+  base.init()
+  env.NS = "misco-pool"
+  env.JENKINS_NODE_LABEL = "misco-pool"
+  env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+
+  iter = (env.ITERATIONS as int) ?: (1 as int)
+  for (int i = 0; i < iter; i++) {
+    base.run(env.JOB_RUNTIME)
+  }
+  base.reset()
+}

@@ -1,0 +1,3 @@
+load "${env.WORKSPACE}/xhpl-linpack/xhpl-linpack.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.gdc-1"

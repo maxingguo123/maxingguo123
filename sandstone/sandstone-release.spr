@@ -1,0 +1,4 @@
+load "${env.WORKSPACE}/sandstone/sandstone-release.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+env.JENKINS_TEST_ARGS="-vv -T 3600000 --disable=@locks_cross_cacheline"

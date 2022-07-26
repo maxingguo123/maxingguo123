@@ -1,0 +1,88 @@
+// Pipeline specific variables
+
+def cluster="spr"
+//def NS="spr-platform-content"
+def NS="${params.NS}"
+def KUBECONFIG="--kubeconfig=/srv/kube/config.opus"
+//def JENKINS_NODE_LABEL="spr-platform-content"
+def JENKINS_NODE_LABEL="${params.JENKINS_NODE_LABEL}"
+
+def def_list = ["dram-bank-stress/dram-bank-stress","memory-subsystem/mlc","google-stressapp/google-stressapp","helpers/idle","dpdk-vfio/dpdk-vfio"]
+def ive_list = ["ive-dien-amx-b16/ive-dien-amx-b16","ive-iperf/ive-iperf","ive-omnetpp/ive-omnetpp","ive-linpack/ive-linpack","ive-stream/ive-stream","ive-hpcg/ive-hpcg","ive-mlc/ive-mlc","ive-benchdnn-ptu/ive-benchdnn-ptu","ive-corefreq-prime95/ive-corefreq-prime95","ive-resnet50-legacy/ive-resnet50-legacy","ive-resnet50-amx/ive-resnet50-amx","ive-mobilenet-amx-b16/ive-mobilenet-amx-b16","ive-gromacs/ive-gromacs","ive-fio/ive-fio","ive-benchdnn/ive-benchdnn","ive-stressng/ive-stressng","ive-ycruncher/ive-ycruncher","ive-mprime/ive-mprime","ive-geekbench/ive-geekbench","ive-stressapptest/ive-stressapptest","ive-ptustress/ive-ptustress"]
+def pnp_list = ["paiv-pnp/linpack/linpack_avx2", "paiv-pnp/linpack/linpack_avx512", "paiv-pnp/ai/ai_resnet50_inference", "paiv-pnp/speccpu/specrate2017-int", "paiv-pnp/speccpu/specrate2017-fp", "paiv-pnp/stream/stream_sse", "paiv-pnp/stream/stream_avx2", "paiv-pnp/stream/stream_avx512", "paiv-pnp/mlc/mlc_bandwidth", "paiv-pnp/mlc/mlc_idle_latency"]
+def test_list = pnp_list + ive_list + def_list
+
+pipeline {
+    agent { label 'common' }
+    environment {
+    KUBECTL_ARGS = "${KUBECONFIG}"
+    JENKINS_NODE_LABEL = "${JENKINS_NODE_LABEL}"
+    NS = "${NS}"
+    }
+    stages {
+
+        stage("WORKLOADS") {
+            steps {
+                script {
+                    test_list.each { test ->
+                    stage(test) {
+                        catchError {
+                            run_job("${env.WORKSPACE}/${test}.${cluster}")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        /*stage("Combo") {
+          steps {
+            script {
+              stage("Combo/workloads") {
+                catchError {
+                  build(job: "Tests/Development/combo-workloads", parameters:  [string(name: "NS", value: "${NS}"), string(name: "KUBECONFIG", value: "${KUBECONFIG}"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+                }
+              }
+            }
+          }
+        }*/
+  
+  }
+
+post {
+       always {
+          script {
+                    def looprequired="${params.LOOP_REQUIRED}"
+                    if ("${looprequired}"=="true" && "${currentBuild.result}"!="ABORTED")
+                    {
+                    stage("Going to run pipeline in loop now...") {
+                   catchError {
+                     build(job: "/Sapphire/Main pipelines/SPR-SampleFactory-Platform-Pipeline-OPUS", parameters: [string(name: "NS", value:"${params.NS}"), string(name: "JENKINS_NODE_LABEL", value:  "${params.JENKINS_NODE_LABEL}"), string(name: "LOOP_REQUIRED", value: "${params.LOOP_REQUIRED}")],wait:false)
+                     currentBuild.result = 'SUCCESS'
+                     return
+                    }
+                  }
+                }
+             }
+           }
+      }
+
+}
+
+// Agnostic variables and functions
+
+def private iter
+def private base
+def run_job(job_file) {
+  base = load "${env.WORKSPACE}/base/base.groovy"
+  job = load(job_file)
+  base.init()
+  //env.NS = "spr-sf-platform-content"
+  //env.JENKINS_NODE_LABEL = "spr-sf-platform-content"
+  //env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.opus"
+  iter = (env.ITERATIONS as int) ?: (1 as int)
+  for (int i = 0; i < iter; i++) {
+    base.run(env.JOB_RUNTIME)
+  }
+  base.reset()
+}

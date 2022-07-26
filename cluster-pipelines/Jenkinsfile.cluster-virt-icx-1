@@ -1,0 +1,39 @@
+// Pipeline specific variables
+
+def cluster="icx-1"
+def def_list = ["google-stressapp/google-stressapp", "ive-prime95/ive-prime95", "sandstone/sandstone", "sandstone/sandstone-release", "sandstone/sandstone-combo", "shc/shc", "spec2017/spec2017", "stream/stream", "vt-combo/vt-combo", "xhpl-linkpack/xhpl-linpack", "DOL/DOL", "TSL/TSL"]
+def pts_list = ["pts/pts-coremark-v0.1", "pts/pts-cryptography-v0.1", "pts/pts-database-v0.1", "pts/pts-machine-learning-v0.1", "pts/pts-memory-v0.1", "pts/pts-mkl-dnn-v0.1", "pts/pts-multicore-v0.1", "pts/pts-oneapi-v0.1", "pts/pts-video-encoding-v0.1", "pts/pts-y-cruncher-v0.1"]
+def test_list = def_list + pts_list
+
+pipeline {
+  agent { label 'agent' }
+  stages {
+    stage("Tests") {
+      steps {
+        script {
+          test_list.each { test ->
+          stage(test) {
+            catchError {
+                run_job("${env.WORKSPACE}/${test}-virt.${cluster}")
+            }
+          }
+        }}
+      }
+    }
+  }
+}
+
+// Agnostic variables and functions
+def private iter
+def private base
+def run_job(job_file) {
+  base = load "${env.WORKSPACE}/base/base.groovy"
+  job = load(job_file)
+  base.init("virt")
+  iter = (env.ITERATIONS as int) ?: (1 as int)
+  for (int i = 0; i < iter; i++) {
+    base.run(env.JOB_RUNTIME)
+  }
+  base.reset()
+}
+

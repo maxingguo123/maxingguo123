@@ -1,0 +1,46 @@
+// Pipeline specific variables
+
+def cluster="spr"
+def sgx_list = ["sgx/sgx-sandstone-graphene","sgx/sgx-graphene-mlc","sgx/sgx-sdk"]
+//def def_list = ["sandstone/sandstone-combo","sandstone/sandstone-release","jasper/mlc","jasper/fio","posted-interrupts/posted-interrupts","google-stressapp/google-stressapp","imunch/imunch","imunch-replay/imunch-replay","vss/vss","helpers/idle"]
+def test_list = sgx_list
+
+def KUBECONFIG="--kubeconfig=/srv/kube/config.opus"
+def JENKINS_NODE_LABEL="spr-sgx"
+def NS="spr-sgx"
+
+pipeline {
+  agent { label "common" }
+  stages {
+    stage("Tests") {
+      steps {
+        script {
+          test_list.each { test ->
+          stage(test) {
+            catchError {
+                run_job("${env.WORKSPACE}/${test}.${cluster}")
+            }
+          }
+        }}
+      }
+    }
+  }
+}
+
+// Agnostic variables and functions
+def private iter
+def private base
+def run_job(job_file) {
+  base = load "${env.WORKSPACE}/base/base.groovy"
+  job = load(job_file)
+  base.init()
+  env.NS = "spr-sgx"
+  env.JENKINS_NODE_LABEL = "spr-sgx"
+  env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.opus"
+  iter = (env.ITERATIONS as int) ?: (1 as int)
+  for (int i = 0; i < iter; i++) {
+    base.run(env.JOB_RUNTIME)
+  }
+  base.reset()
+}
+

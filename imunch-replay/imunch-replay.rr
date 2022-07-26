@@ -1,0 +1,2 @@
+load "${env.WORKSPACE}/imunch-replay/imunch-replay.base"
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.rr"

@@ -1,0 +1,3 @@
+load "${env.WORKSPACE}/google-stressapp/google-stressapp.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config"

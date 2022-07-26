@@ -1,0 +1,5 @@
+load "${env.WORKSPACE}/sandstone/sandstone.base"
+env.JENKINS_NODE_LABEL="ltr-pipeline"
+env.NS="ltr"
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"
+env.JENKINS_TEST_BINARY="\\/tests\\/sandstone-sse"

@@ -1,0 +1,8 @@
+//test_benchdnn_perf_ip_cpu.env:
+
+env.JENKINS_TEST_TAG="benchdnn-atscale-0.4"
+env.JENKINS_TEST_LABEL="test-benchdnn-perf-ip-cpu"
+env.JENKINS_NODE_LABEL="sfval"
+env.JENKINS_TEST_BINARY="\\/tests\\/scripts\\/run-specific.sh"
+env.JENKINS_TEST_ARGS="--privileged -e DRIVER=ip -e BATCH=ip\\/perf_ip_cpu"
+env.JOB_RUNTIME=3500

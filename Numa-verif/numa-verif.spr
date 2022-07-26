@@ -1,0 +1,3 @@
+load "${env.WORKSPACE}/numa-verif/numa-verif.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"

@@ -1,0 +1,3 @@
+load "${env.WORKSPACE}/DOL/dol-google-skx.base"
+
+env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.icx-1"

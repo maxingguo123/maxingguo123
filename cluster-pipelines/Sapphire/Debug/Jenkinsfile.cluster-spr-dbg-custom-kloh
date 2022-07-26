@@ -1,0 +1,69 @@
+// Pipeline specific variables
+
+def cluster="spr"
+//def NS="spr-burnin"
+def NS="spr-dbg-custom-kloh"
+def KUBECONFIG="--kubeconfig=/srv/kube/config.${params.cluster}"
+def JENKINS_NODE_LABEL="spr-dbg-custom-kloh"
+def cycle = "${params.cycle}"
+pipeline {
+    agent { label 'common' }
+    environment {
+        KUBECTL_ARGS = "${KUBECONFIG}"
+        JENKINS_NODE_LABEL = "${JENKINS_NODE_LABEL}"
+        NS = "${NS}"
+    }
+    stages {
+        stage("Start") {
+            steps {
+                script {
+                    for(int i=0; i < "${cycle}".toInteger(); i++) {
+                       
+                        stage("MLC TEST ${i}") {
+                           catchError {
+                                run_job("${env.WORKSPACE}/jasper/mlc.${cluster}")
+                                        
+                            }
+                        }
+                        stage("Mesh Stress ${i}") {
+                            catchError {
+                                run_job("${env.WORKSPACE}/mesh-stress/mesh-stress.${cluster}")
+                                        
+                            }
+                        }
+                        stage("vss-unified ${i}") {
+                            catchError {
+                                run_job("${env.WORKSPACE}/vss/vss.${cluster}")
+                            }
+                        }
+                        stage("RF-cycles-in-warm ${i}") {
+                            catchError {
+                                build(job: "Tests/cycle-in-reboot", parameters:[string(name: "NS", value:"${NS}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}"),string(name: "JENKINS_NODE_LABEL", value:  "${JENKINS_NODE_LABEL}"), string(name: "REBOOT_TYPE", value: "rf_warm"), string(name: "CYCLES", value: "1")])
+                            }
+                        }
+                            
+                    }
+                }   
+            }
+        }
+        
+    }
+}
+
+def private iter
+def private base
+def run_job(job_file) {
+    base = load "${env.WORKSPACE}/base/base.groovy"
+    job = load(job_file)
+    base.init()
+    env.NS = "spr-dbg-custom-kloh"
+    env.JENKINS_NODE_LABEL = "spr-dbg-custom-kloh"
+    env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.${params.cluster}"
+    env.JOB_RUNTIME = 3600
+    env.ITERATIONS = 1
+    iter = (env.ITERATIONS as int) ?: (1 as int)
+    for (int i = 0; i < iter; i++) {
+        base.run(env.JOB_RUNTIME)
+    }
+    base.reset()
+}

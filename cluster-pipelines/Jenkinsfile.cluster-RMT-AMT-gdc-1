@@ -1,0 +1,60 @@
+def cluster="gdc-1"
+
+//def def_list = []
+//def test_list = def_list
+
+def NS="rmt-amt"
+def KUBECONFIG="--kubeconfig=/srv/kube/config.gdc-1"
+def JENKINS_NODE_LABEL="rmt-amt" 
+
+
+def KNOBS_INIT="serialDebugMsgLvl=2,bdatEn=1,AdvMemTestOptions=0x3FFFF,AttemptFastBootCold=0,AttemptFastBoot=0,EnableBiosSsaLoader=1,EnableBiosSsaRMT=1,LegacyRmt=0,BiosSsaPerBitMargining=1,EnableBiosSsaRMTonFCB=0,RmtOnColdFastBoot=0,MultiThreaded=0,promoteMrcWarnings=0,promoteWarnings=0"
+
+def KNOBS_ROLLBACK="serialDebugMsgLvl=4,bdatEn=1,AdvMemTestOptions=0x00000000,AttemptFastBootCold=1,AttemptFastBoot=1,EnableBiosSsaLoader=1,EnableBiosSsaRMT=0,LegacyRmt=0,BiosSsaPerBitMargining=1,EnableBiosSsaRMTonFCB=0,RmtOnColdFastBoot=0,MultiThreaded=1,promoteMrcWarnings=1,promoteWarnings=1"
+
+
+pipeline {
+    agent { label 'common' }
+    stages {
+        stage("INIT") {
+            steps {
+                script {
+                    stage("knobs-start") {
+                        catchError {
+                            build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value:"${NS}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}"), string(name: "KNOBS", value: "${KNOBS_INIT}"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+             }
+           }
+          }
+         }
+        }
+        stage("ROLLBACK") {
+        steps {
+         script {
+           stage("knobs-rollback") {
+             catchError {
+                 build(job: "Tests/xmlcli-run", parameters:  [string(name: "NS", value:"${NS}"), string(name: "KUBECONFIG", value:"${KUBECONFIG}"), string(name: "KNOBS", value: "${KNOBS_ROLLBACK}"), string(name: "JENKINS_NODE_LABEL", value: "${JENKINS_NODE_LABEL}")])
+             }
+           }
+          }
+         }
+        }
+
+    }
+}
+
+// Agnostic variables and functions
+def private iter
+def private base
+def run_job(job_file) {
+  base = load "${env.WORKSPACE}/base/base.groovy"
+  job = load(job_file)
+  base.init()
+  env.KUBECTL_ARGS="--kubeconfig=/srv/kube/config.gdc-1"
+  env.NS = "rmt-amt"
+  env.JENKINS_NODE_LABEL = "rmt-amt"
+  iter = (env.ITERATIONS as int) ?: (1 as int)
+  for (int i = 0; i < iter; i++) {
+    base.run(env.JOB_RUNTIME)
+  }
+  base.reset()
+}

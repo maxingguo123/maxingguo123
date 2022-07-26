@@ -1,0 +1,7 @@
+env.JENKINS_TEST_TAG=""
+env.JENKINS_TEST_LABEL="paiv-mixer-ras-combo"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JOB_RUNTIME=255000
+env.DEPLOYMENT_YAML_URL="https://raw.githubusercontent.com/intel-innersource/applications.infrastructure.data-center.jenkins.prt-int-cluster/main/paiv-mixer-ras-combo/sandstone_run_specific.yaml"
+env.SANDSTONE_DEPLOYMENT="${env.WORKSPACE}/sandstone_run_specific.yaml"
+env.EMAIL="deepak1.kumar@intel.com"
