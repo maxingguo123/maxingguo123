@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: ipmi-collector
+  namespace: monitoring
+  labels:
+    name: ipmi-collector
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9290"
+spec:
+  selector:
+    matchLabels:
+      name: ipmi-collector
+  template:
+    metadata:
+      labels:
+        name: ipmi-collector
+    spec:
+      hostNetwork: true
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: nodeowner
+                operator: NotIn
+                values: [admin]
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+      containers:
+      - name: ipmi-collector
+        image: prt-registry.sova.intel.com/telemetry/ib_ipmi_exporter:0.1
+        securityContext:
+          privileged: true
+        ports:
+          - name: metrics
+            containerPort: 9290
+            protocol: TCP

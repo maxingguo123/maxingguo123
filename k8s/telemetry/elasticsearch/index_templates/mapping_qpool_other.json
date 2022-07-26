@@ -1,0 +1,18 @@
+{
+  "order": 0,
+  "version": 1,
+  "index_patterns": [
+    "other-qpool-*"
+  ],
+  "mappings": {
+    "properties": {
+      "@timestamp": {
+        "type": "date_nanos"
+      },
+      "logtime": {
+        "type": "date_nanos"
+      }
+    }
+  },
+  "aliases": {}
+}

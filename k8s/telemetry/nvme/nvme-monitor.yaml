@@ -1,0 +1,23 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: nvme-monitor
+  labels:
+    name: nvme-monitor
+    type: node
+spec:
+  selector:
+    matchLabels:
+      name: nvme-collector
+  namespaceSelector:
+    matchNames:
+    - monitoring
+  podMetricsEndpoints:
+  - port: metrics
+    interval: 2m
+    relabelings:
+    - action: replace
+      sourceLabels:
+      - __meta_kubernetes_pod_node_name
+      targetLabel: instance

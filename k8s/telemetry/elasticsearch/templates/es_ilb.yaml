@@ -1,0 +1,25 @@
+{{if .Values.ilb}}
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+  {{if eq .Values.csp "gcp"}}
+    cloud.google.com/load-balancer-type: "Internal"
+  {{else if eq .Values.csp "azure"}}
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+  {{end}}
+  labels:
+    common.k8s.elastic.co/type: elasticsearch
+    elasticsearch.k8s.elastic.co/cluster-name: elasticsearch-{{.Release.Name}}
+  name: elasticsearch-{{.Release.Name}}-es-http-ilb
+spec:
+  ports:
+  - name: https
+    port: 9200
+    protocol: TCP
+    targetPort: 9200
+  selector:
+    common.k8s.elastic.co/type: elasticsearch
+    elasticsearch.k8s.elastic.co/cluster-name: elasticsearch-{{.Release.Name}}
+  type: LoadBalancer
+{{end}}

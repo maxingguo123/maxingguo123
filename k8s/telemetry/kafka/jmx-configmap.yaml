@@ -1,0 +1,91 @@
+---
+# Source: cp-helm-charts/charts/cp-kafka/templates/jmx-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: atscale-cp-kafka-jmx-configmap
+  labels:
+    app: cp-kafka
+    chart: cp-kafka-0.1.0
+    release: atscale
+    heritage: Helm
+data:
+  jmx-kafka-prometheus.yml: |+
+    jmxUrl: service:jmx:rmi:///jndi/rmi://localhost:5555/jmxrmi
+    lowercaseOutputName: true
+    lowercaseOutputLabelNames: true
+    ssl: false
+    rules:
+    - pattern : kafka.server<type=ReplicaManager, name=(.+)><>(Value|OneMinuteRate)
+      name: "cp_kafka_server_replicamanager_$1"
+    - pattern : kafka.controller<type=KafkaController, name=(.+)><>Value
+      name: "cp_kafka_controller_kafkacontroller_$1"
+    - pattern : kafka.server<type=BrokerTopicMetrics, name=(.+)><>OneMinuteRate
+      name: "cp_kafka_server_brokertopicmetrics_$1"
+    - pattern : kafka.network<type=RequestMetrics, name=RequestsPerSec, request=(.+)><>OneMinuteRate
+      name: "cp_kafka_network_requestmetrics_requestspersec_$1"
+    - pattern : kafka.network<type=SocketServer, name=NetworkProcessorAvgIdlePercent><>Value
+      name: "cp_kafka_network_socketserver_networkprocessoravgidlepercent"
+    - pattern : kafka.server<type=ReplicaFetcherManager, name=MaxLag, clientId=(.+)><>Value
+      name: "cp_kafka_server_replicafetchermanager_maxlag_$1"
+    - pattern : kafka.server<type=KafkaRequestHandlerPool, name=RequestHandlerAvgIdlePercent><>OneMinuteRate
+      name: "cp_kafka_kafkarequesthandlerpool_requesthandleravgidlepercent"
+    - pattern : kafka.controller<type=ControllerStats, name=(.+)><>OneMinuteRate
+      name: "cp_kafka_controller_controllerstats_$1"
+    - pattern : kafka.server<type=SessionExpireListener, name=(.+)><>OneMinuteRate
+      name: "cp_kafka_server_sessionexpirelistener_$1"
+    # - pattern: 'java.lang<type=GarbageCollector, name=(.+)><Collection>(\w+):'
+    #   name: java_gc_$2
+    #   label:
+    #     name: $1
+    - pattern: 'java.lang<type=Memory><(\w+)MemoryUsage>(\w+): (\d+)'
+      name: jvm_memory_usage_$2_bytes
+      labels:
+        area: "$1"  # Heap/NonHeap
+      value: $3
+      type: GAUGE
+    # name is always the same, the name of the GC
+    # - pattern: 'java.lang<type=GarbageCollector, name=[^,]+, key=([^>]+)><LastGcInfo, memoryUsageAfterGc>(used|commited): (\d+)'
+    #   name: jvm_memory_after_gc_$2_bytes
+    #   value: $3
+    #   labels:
+    #     space: $1
+    #   type: GAUGE
+    #   valueFactor: 0.000001
+    # - pattern: 'java.lang<type=GarbageCollector, name=[^>]+><LastGcInfo>duration: (\d+)'
+    #   name: jvm_gc_duration_seconds
+    #   value: $1
+    #   type: GAUGE
+    #   # Convert microseconds to seconds
+    #   valueFactor: 0.000001
+    # java.lang<type=GarbageCollector, name=G1 Young Generation><>CollectionCount
+    - pattern: 'java.lang<name=([\s\w]+), type=GarbageCollector, key=(\w+)>(.*): (\d+)'
+    # - pattern: 'java.lang(.*): (\d+)'
+      name: jvm_gc_$3
+      labels:
+        name: $1
+        key: $2
+      value: $4
+      type: GAUGE
+    - pattern: 'java.lang<name=([\s\w]+), type=MemoryPool, key=(\w+)>(.*): (\d+)'
+    # - pattern: 'java.lang(.*): (\d+)'
+      name: jvm_mempool_$3
+      labels:
+        name: $1
+        key: $2
+      value: $4
+      type: GAUGE
+    - pattern: 'java.lang<name=([\s\w]+), type=GarbageCollector>(.*): (\d+)'
+    # - pattern: 'java.lang(.*): (\d+)'
+      name: jvm_gc_$2
+      labels:
+        name: $1
+      value: $3
+      type: GAUGE
+    - pattern: 'java.lang<name=([\s\w]+), type=MemoryPool>(.*): (\d+)'
+    # - pattern: 'java.lang(.*): (\d+)'
+      name: jvm_mempool_$2
+      labels:
+        name: $1
+      value: $3
+      type: GAUGE

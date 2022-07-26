@@ -1,0 +1,5 @@
+cluster: whitley
+topic: atscale
+# Optionally add node selector to control where the daemonset lands
+# nodeSelector:
+#  nodeowner: test

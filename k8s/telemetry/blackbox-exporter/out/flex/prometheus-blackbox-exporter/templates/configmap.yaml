@@ -1,0 +1,30 @@
+---
+# Source: prometheus-blackbox-exporter/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: atscale-prometheus-blackbox-exporter
+  labels:
+    helm.sh/chart: prometheus-blackbox-exporter-5.3.1
+    app.kubernetes.io/name: prometheus-blackbox-exporter
+    app.kubernetes.io/instance: atscale
+    app.kubernetes.io/version: "0.19.0"
+    app.kubernetes.io/managed-by: Helm
+data:
+  blackbox.yaml: |
+    modules:
+      http_2xx:
+        http:
+          follow_redirects: true
+          no_follow_redirects: false
+          preferred_ip_protocol: ip4
+          valid_http_versions:
+          - HTTP/1.1
+          - HTTP/2.0
+        prober: http
+        timeout: 10s
+      icmp:
+        icmp:
+          preferred_ip_protocol: ip4
+        prober: icmp
+        timeout: 10s

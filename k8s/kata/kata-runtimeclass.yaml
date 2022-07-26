@@ -1,0 +1,36 @@
+---
+kind: RuntimeClass
+apiVersion: node.k8s.io/v1beta1
+metadata:
+    name: kata-qemu
+handler: kata-qemu
+scheduling:
+  nodeSelector:
+    katacontainers.io/kata-runtime: "true"
+---
+kind: RuntimeClass
+apiVersion: node.k8s.io/v1beta1
+metadata:
+    name: kata-qemu-tdx
+handler: kata-qemu-tdx
+scheduling:
+  nodeSelector:
+    katacontainers.io/kata-runtime: "true"
+---
+kind: RuntimeClass
+apiVersion: node.k8s.io/v1beta1
+metadata:
+    name: kata-clh
+handler: kata-clh
+scheduling:
+  nodeSelector:
+    katacontainers.io/kata-runtime: "true"
+---
+kind: RuntimeClass
+apiVersion: node.k8s.io/v1beta1
+metadata:
+    name: kata-fc
+handler: kata-fc
+scheduling:
+  nodeSelector:
+    katacontainers.io/kata-runtime: "true"

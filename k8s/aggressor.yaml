@@ -1,0 +1,116 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: NAMESPACE
+  name: SANDSTONE_NAME
+spec:
+  replicas: REPLICA_COUNT
+  selector:
+    matchLabels:
+      name: SANDSTONE_NAME
+  template:
+    metadata:
+      labels:
+        name: SANDSTONE_NAME
+        runtimeClassName: runc
+    spec:
+      nodeSelector:
+        SANDSTONE_NODE_LABEL: "true"
+      affinity:
+      # This code exists for future use when we will need to run multiple
+      # aggressors next to each other
+      #  podAffinity:
+      #    requiredDuringSchedulingIgnoredDuringExecution:
+      #      - labelSelector:
+      #          matchExpressions:
+      #            - key: name
+      #              operator: In
+      #              values:
+      #                - WITH-YOU
+      #                - AND-YOU-TOO
+      #        topologyKey: "kubernetes.io/hostname"
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: name
+                    operator: In
+                    values:
+                      - SANDSTONE_NAME
+              topologyKey: "kubernetes.io/hostname"
+      volumes:
+        - name: dshm
+          emptyDir:
+            medium: Memory
+        - name: hostroot
+          hostPath:
+            path: /
+            type: Directory
+        - name: modules
+          hostPath:
+            path: /lib/modules
+        - name: journal
+          hostPath:
+            path: /var/log/journal
+        - name: machineid
+          hostPath:
+            path: /etc/machine-id
+        - name: sys
+          hostPath:
+            path: /sys
+      containers:
+      - name: SANDSTONE_NAME
+        image: REGISTRY/sandstone:DOCKER_TAG
+        imagePullPolicy: Always
+        volumeMounts:
+          - mountPath: /dev/shm
+            name: dshm
+          - mountPath: /hostroot
+            name: hostroot
+            readOnly: false
+          - mountPath: /lib/modules
+            name: modules
+            readOnly: true
+          - mountPath: /var/log/journal
+            name: journal
+            readOnly: true
+          - mountPath: /etc/machine-id
+            name: machineid
+            readOnly: true
+          - mountPath: /sys
+            name: sys
+            readOnly: false
+        #run-specific uses env vars for params
+        command: ["/tests/scripts/run-specific.sh"]
+        env:
+          - name: SANDSTONE_BIN
+            value: "SANDSTONE_BIN_PATH"
+          - name: SANDSTONE_ARGS
+            value: "SANDSTONE_TEST_ARGS"
+          # Dragon Environment Variables
+          - name: RUN_DRAGON
+            value: "RUN_DRAGON_ARG"
+          - name: DRAGON_ARGS
+            value: "DRAGON_ARGS_ARG"
+          - name: DRAGON_TYPE
+            value: "DRAGON_TYPE_ARG"
+          - name: EXTRA_ARGS
+            value: "EXTRA_ARGS_ARG"
+          # GeekBench Env Variables
+          - name: GB_USER
+            value: "GB_USER_ARG"
+          - name: GB_KEY
+            value: "GB_KEY_ARG"
+          - name: GB_ITERATIONS
+            value: "GB_ITERATIONS_ARG"
+        readinessProbe:
+          exec:
+            command:
+              - cat
+              - /tmp/testdone
+            # Wait for 30s before checking for the first time
+            # then probe for completion every 5 seconds
+          initialDelaySeconds: 30
+          periodSeconds: 5
+        securityContext:
+          privileged: true

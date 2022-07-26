@@ -1,0 +1,25 @@
+prometheus:
+  replicas: 1
+  retention: '30d'
+  storage:
+    node:
+      class: faster
+      size: 500
+    k8s:
+      class: faster
+      size: 500
+    telemetry:
+      class: faster
+      size: 500
+
+grafana:
+  replicas: 1
+  storage:
+    class: faster
+    size: 100Mi
+monitored_namespaces:
+  - default
+  - kube-system
+  - monitoring
+  - mgmt
+teams_hook: "https://outlook.office.com/webhook/ef0e6efe-ca94-4ac5-aad7-a8130b0ca519@46c98d88-e344-4ed4-8496-4ed7712e255d/IncomingWebhook/739e6f2db99b442ebc16056491468f6e/815743d2-88eb-4b74-98ec-621f00e5b8ae"

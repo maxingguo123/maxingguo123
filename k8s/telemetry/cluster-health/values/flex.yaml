@@ -1,0 +1,23 @@
+replicas: 1
+labels:
+- app: clusterhealth
+nodeSelector:
+  nodetype: telemetry
+locations:
+- "fl30lne001"
+- "fl30lnw003"
+elasticsearch:
+  host: https://10.45.242.4:9200
+  user: "elastic"
+  pass: "8t02M5PGB2bT8h51yJ4yOt9S"
+  use_ssl: true
+  cacert: /elastic-cert/ca.crt
+api_url: "http://api.clusterscope.ingress.fl30lcent1.deacluster.intel.com"
+image: prt-registry.sova.intel.com/cluster-health:v0.99
+extraVolumeMounts:
+- name: elastic-cert
+  mountPath: /elastic-cert
+extraVolumes:
+- name: elastic-cert
+  secret:
+    secretName: atscale-es-cert

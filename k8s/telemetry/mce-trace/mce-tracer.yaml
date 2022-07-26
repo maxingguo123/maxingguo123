@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: mce-tracer
+  namespace: mgmt
+  labels:
+    k8s-app: mce-tracer
+spec:
+  selector:
+    matchLabels:
+      name: mce-tracer
+  template:
+    metadata:
+      labels:
+        name: mce-tracer
+    spec:
+      hostNetwork: true
+      containers:
+      - name: mce-trace
+        image: prt-registry.sova.intel.com/sandstone:jasper-vtd-detector-v0.1
+        command: ["/usr/bin/bash"]
+        args: ["-c", "echo enabling mce tracing; cd /sys/kernel/debug/tracing; echo 1 > events/mce/mce_record/enable; cat trace_pipe"]
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: dbus
+          mountPath: /var/run/dbus
+          readOnly: true
+        - name: systemd
+          mountPath: /run/systemd
+          readOnly: true
+        - name: journal
+          mountPath: /journal
+          readOnly: true
+        - mountPath: /sys
+          name: hostrootsys
+      volumes:
+        - name: hostroot
+          hostPath:
+            path: /tmp
+            type: Directory
+        - name: hostrootsys
+          hostPath:
+            path: /sys
+        - name: hostrootucode
+          hostPath:
+            path: /lib/firmware/intel-ucode
+        - name: dbus
+          hostPath:
+            path: /var/run/dbus
+        - name: systemd
+          hostPath:
+            path: /run/systemd
+        - name: journal
+          hostPath:
+            path: /var/log/journal

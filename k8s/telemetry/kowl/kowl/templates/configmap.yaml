@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "kowl.fullname" . }}
+  labels:
+    {{- include "kowl.labels" . | nindent 4 }}
+  namespace: {{ .Release.Namespace }}
+data:
+  config.yaml: |
+    {{- tpl (toYaml .Values.kowl.config) $ | nindent 4 }}
+
+  {{- if .Values.kowl.roles }}
+  roles.yaml: |
+    roles:
+      {{- tpl (toYaml .Values.kowl.roles) $ | nindent 6 }}
+  {{- end }}
+
+  {{- if .Values.kowl.roleBindings }}
+  role-bindings.yaml: |
+    roleBindings:
+      {{- tpl (toYaml .Values.kowl.roleBindings) $ | nindent 6 }}
+  {{- end }}

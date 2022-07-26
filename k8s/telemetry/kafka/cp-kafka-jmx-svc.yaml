@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cp-kafka-jmx-headless
+  labels:
+    app: cp-kafka
+spec:
+  ports:
+    - port: 5556
+      name: metrics
+  clusterIP: None
+  selector:
+    app: cp-kafka

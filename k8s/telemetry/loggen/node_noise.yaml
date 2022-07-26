@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: node-noise
+  namespace: default
+  labels:
+    k8s-app: node-noise
+spec:
+  # replicas: 3
+  selector:
+    matchLabels:
+      name: node-noise
+  template:
+    metadata:
+      labels:
+        name: node-noise
+    spec:
+      nodeSelector:
+        noise: "true"
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+      containers:
+      - name: node-noise-steady
+        image: centos/systemd
+        imagePullPolicy: IfNotPresent
+        command: ["/usr/bin/bash"]
+        args: ["-c", "lines=1335;for ((i=0; i<=$(($lines / `dmesg | wc -l`)); i++)); do dmesg >> /tmp/outfile; done; \
+                      sleep 60; while true; do cat /tmp/outfile | tail -n $lines; sleep 1; done"]
+      - name: node-noise-burst-periodic
+        image: centos/systemd
+        imagePullPolicy: IfNotPresent
+        command: ["/usr/bin/bash"]
+        args: ["-c", "lines=40000;for ((i=0; i<=$(($lines / `dmesg | wc -l`)); i++)); do dmesg >> /tmp/outfile2; done; \
+                       sleep 300; while true; do cat /tmp/outfile2 | tail -n $lines; sleep 900; done"]
+      # - name: node-noise-burst-once
+      #   image: centos/systemd
+      #   imagePullPolicy: IfNotPresent
+      #   command: ["/usr/bin/bash"]
+      #   args: ["-c", "lines=100000;for ((i=0; i<=$(($lines / `dmesg | wc -l`)); i++)); do dmesg >> /tmp/outfile; done; \
+      #                 sleep 60; cat /tmp/outfile; sleep infinity;"]
+ 
+        securityContext:
+          privileged: true
+#  updateStrategy:
+#    rollingUpdate:
+#      maxUnavailable: 20%
+#      type: RollingUpdate

@@ -1,0 +1,18 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: clusterhealth-cm
+  namespace: kube-system
+data:
+  config.json: |
+    {
+      "locations": ["{{- join "\",\"" .Values.locations }}"],
+      "es_index": "health",
+      "es_host": "{{- .Values.elasticsearch.host -}}",
+      "es_user": "{{- .Values.elasticsearch.user -}}",
+      "es_pass": "{{- .Values.elasticsearch.pass -}}",
+      "es_use_ssl": {{ .Values.elasticsearch.use_ssl -}},
+      "es_cacert": "{{- .Values.elasticsearch.cacert -}}",
+      "api_url":"{{- .Values.api_url -}}",
+      "interval": 10
+    }

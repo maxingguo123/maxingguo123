@@ -1,0 +1,5 @@
+cluster: azure
+esindex: atscale
+tenants:
+- username: default
+  mgmt_ns: mgmt

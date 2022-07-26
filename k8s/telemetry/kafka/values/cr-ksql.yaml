@@ -1,0 +1,19 @@
+## ------------------------------------------------------
+## KSQL Server
+## ------------------------------------------------------
+enabled: true
+image: confluentinc/cp-ksqldb-server
+imageTag: 6.0.1
+replicaCount: 1
+nodeSelector:
+  ksql: "true"
+configurationOverrides:
+  "confluent.support.metrics.enable": "false"
+  ksql.streams.replication.factor: 2
+  ksql.internal.topic.replicas: 2
+  ksql.streams.num.standby.replicas: 2
+  max.request.size: "12160530"
+  compression.type: "snappy"
+
+ksql:
+ headless: true

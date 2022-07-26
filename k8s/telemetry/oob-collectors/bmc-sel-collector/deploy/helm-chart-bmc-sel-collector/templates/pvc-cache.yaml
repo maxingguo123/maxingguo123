@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "bmc-sel-collector.fullname" . }}-cache
+  labels:
+{{ include "bmc-sel-collector.labels" . | indent 4 }}
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.storage.cache.size }}
+  storageClassName: {{ .Values.storage.cache.class }}

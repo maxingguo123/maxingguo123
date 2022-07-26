@@ -1,0 +1,18 @@
+apiVersion: kibana.k8s.elastic.co/v1beta1
+kind: Kibana
+metadata:
+  name: kibana-{{.Release.Name}}
+spec:
+  version: 7.8.0
+  {{if .Values.imageRepo}}
+  image: {{.Values.imageRepo}}/docker.elastic.co/kibana/kibana:7.8.0
+  {{end}}
+  count: {{.Values.kibana.count}}
+  elasticsearchRef:
+    name: elasticsearch-{{.Release.Name}}
+  podTemplate:
+    spec:
+      nodeSelector:
+        kibana: "true"
+      containers:
+      - name: kibana

@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: labeling-validator-webhook
+  namespace: mgmt
+  labels:
+    app: labeling-validator-webhook
+spec:
+  selector:
+    matchLabels:
+      app: labeling-validator-webhook
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: labeling-validator-webhook
+    spec:
+      containers:
+        - name: labeling-validator-webhook
+          image: gmmaha/labeling-validator:v0.3
+          imagePullPolicy: Always
+          args:
+            - -tls-cert-file=/etc/webhook/certs/tls.crt
+            - -tls-key-file=/etc/webhook/certs/tls.key
+          volumeMounts:
+            - name: webhook-certs
+              mountPath: /etc/webhook/certs
+              readOnly: true
+            - name: machine-owners-list
+              mountPath: /etc/node_owners
+      volumes:
+        - name: webhook-certs
+          secret:
+            secretName: labeling-validator-webhook-certs
+        - name: machine-owners-list
+          configMap:
+            name: machine-owners-list
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: labeling-validator-webhook
+  namespace: mgmt
+  labels:
+    app: labeling-validator-webhook
+spec:
+  ports:
+  - port: 443
+    targetPort: 8080
+  selector:
+    app: labeling-validator-webhook

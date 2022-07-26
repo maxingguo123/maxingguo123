@@ -1,0 +1,296 @@
+---
+# Source: prometheus-blackbox-exporter/templates/servicemonitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: atscale-prometheus-blackbox-exporter-kafka0
+  labels:
+    app.kubernetes.io/name: prometheus-blackbox-exporter
+    app.kubernetes.io/instance: atscale
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: prometheus-blackbox-exporter-4.10.1
+    type: telemetry
+spec:
+  endpoints:
+  - port: http
+    scheme: http
+    path: "/probe"
+    interval: 30s
+    scrapeTimeout: 30s
+    params:
+      module:
+      - icmp
+      target:
+      - atscale-cp-kafka-0.atscale-cp-kafka-headless.monitoring.svc.cluster.local
+    metricRelabelings:
+      - targetLabel: instance
+        replacement: atscale-cp-kafka-0.atscale-cp-kafka-headless.monitoring.svc.cluster.local
+      - targetLabel: target
+        replacement: kafka0
+  jobLabel: "atscale"
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: prometheus-blackbox-exporter
+      app.kubernetes.io/instance: atscale
+  namespaceSelector:
+    matchNames:
+      - monitoring
+---
+# Source: prometheus-blackbox-exporter/templates/servicemonitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: atscale-prometheus-blackbox-exporter-kafka1
+  labels:
+    app.kubernetes.io/name: prometheus-blackbox-exporter
+    app.kubernetes.io/instance: atscale
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: prometheus-blackbox-exporter-4.10.1
+    type: telemetry
+spec:
+  endpoints:
+  - port: http
+    scheme: http
+    path: "/probe"
+    interval: 30s
+    scrapeTimeout: 30s
+    params:
+      module:
+      - icmp
+      target:
+      - atscale-cp-kafka-1.atscale-cp-kafka-headless.monitoring.svc.cluster.local
+    metricRelabelings:
+      - targetLabel: instance
+        replacement: atscale-cp-kafka-1.atscale-cp-kafka-headless.monitoring.svc.cluster.local
+      - targetLabel: target
+        replacement: kafka1
+  jobLabel: "atscale"
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: prometheus-blackbox-exporter
+      app.kubernetes.io/instance: atscale
+  namespaceSelector:
+    matchNames:
+      - monitoring
+---
+# Source: prometheus-blackbox-exporter/templates/servicemonitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: atscale-prometheus-blackbox-exporter-kafka2
+  labels:
+    app.kubernetes.io/name: prometheus-blackbox-exporter
+    app.kubernetes.io/instance: atscale
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: prometheus-blackbox-exporter-4.10.1
+    type: telemetry
+spec:
+  endpoints:
+  - port: http
+    scheme: http
+    path: "/probe"
+    interval: 30s
+    scrapeTimeout: 30s
+    params:
+      module:
+      - icmp
+      target:
+      - atscale-cp-kafka-2.atscale-cp-kafka-headless.monitoring.svc.cluster.local
+    metricRelabelings:
+      - targetLabel: instance
+        replacement: atscale-cp-kafka-2.atscale-cp-kafka-headless.monitoring.svc.cluster.local
+      - targetLabel: target
+        replacement: kafka2
+  jobLabel: "atscale"
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: prometheus-blackbox-exporter
+      app.kubernetes.io/instance: atscale
+  namespaceSelector:
+    matchNames:
+      - monitoring
+---
+# Source: prometheus-blackbox-exporter/templates/servicemonitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: atscale-prometheus-blackbox-exporter-zookeeper0
+  labels:
+    app.kubernetes.io/name: prometheus-blackbox-exporter
+    app.kubernetes.io/instance: atscale
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: prometheus-blackbox-exporter-4.10.1
+    type: telemetry
+spec:
+  endpoints:
+  - port: http
+    scheme: http
+    path: "/probe"
+    interval: 30s
+    scrapeTimeout: 30s
+    params:
+      module:
+      - icmp
+      target:
+      - atscale-cp-zookeeper-0.atscale-cp-zookeeper-headless.monitoring.svc.cluster.local
+    metricRelabelings:
+      - targetLabel: instance
+        replacement: atscale-cp-zookeeper-0.atscale-cp-zookeeper-headless.monitoring.svc.cluster.local
+      - targetLabel: target
+        replacement: zookeeper0
+  jobLabel: "atscale"
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: prometheus-blackbox-exporter
+      app.kubernetes.io/instance: atscale
+  namespaceSelector:
+    matchNames:
+      - monitoring
+---
+# Source: prometheus-blackbox-exporter/templates/servicemonitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: atscale-prometheus-blackbox-exporter-zookeeper1
+  labels:
+    app.kubernetes.io/name: prometheus-blackbox-exporter
+    app.kubernetes.io/instance: atscale
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: prometheus-blackbox-exporter-4.10.1
+    type: telemetry
+spec:
+  endpoints:
+  - port: http
+    scheme: http
+    path: "/probe"
+    interval: 30s
+    scrapeTimeout: 30s
+    params:
+      module:
+      - icmp
+      target:
+      - atscale-cp-zookeeper-1.atscale-cp-zookeeper-headless.monitoring.svc.cluster.local
+    metricRelabelings:
+      - targetLabel: instance
+        replacement: atscale-cp-zookeeper-1.atscale-cp-zookeeper-headless.monitoring.svc.cluster.local
+      - targetLabel: target
+        replacement: zookeeper1
+  jobLabel: "atscale"
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: prometheus-blackbox-exporter
+      app.kubernetes.io/instance: atscale
+  namespaceSelector:
+    matchNames:
+      - monitoring
+---
+# Source: prometheus-blackbox-exporter/templates/servicemonitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: atscale-prometheus-blackbox-exporter-zookeeper2
+  labels:
+    app.kubernetes.io/name: prometheus-blackbox-exporter
+    app.kubernetes.io/instance: atscale
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: prometheus-blackbox-exporter-4.10.1
+    type: telemetry
+spec:
+  endpoints:
+  - port: http
+    scheme: http
+    path: "/probe"
+    interval: 30s
+    scrapeTimeout: 30s
+    params:
+      module:
+      - icmp
+      target:
+      - atscale-cp-zookeeper-2.atscale-cp-zookeeper-headless.monitoring.svc.cluster.local
+    metricRelabelings:
+      - targetLabel: instance
+        replacement: atscale-cp-zookeeper-2.atscale-cp-zookeeper-headless.monitoring.svc.cluster.local
+      - targetLabel: target
+        replacement: zookeeper2
+  jobLabel: "atscale"
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: prometheus-blackbox-exporter
+      app.kubernetes.io/instance: atscale
+  namespaceSelector:
+    matchNames:
+      - monitoring
+---
+# Source: prometheus-blackbox-exporter/templates/servicemonitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: atscale-prometheus-blackbox-exporter-fluentd-systemd-reset
+  labels:
+    app.kubernetes.io/name: prometheus-blackbox-exporter
+    app.kubernetes.io/instance: atscale
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: prometheus-blackbox-exporter-4.10.1
+    type: telemetry
+spec:
+  endpoints:
+  - port: http
+    scheme: http
+    path: "/probe"
+    interval: 30s
+    scrapeTimeout: 30s
+    params:
+      module:
+      - http_2xx
+      target:
+      - ive-infra01.l10b2.deacluster.intel.com:24210/api/config.json
+    metricRelabelings:
+      - targetLabel: instance
+        replacement: ive-infra01.l10b2.deacluster.intel.com:24210/api/config.json
+      - targetLabel: target
+        replacement: fluentd-systemd-reset
+  jobLabel: "atscale"
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: prometheus-blackbox-exporter
+      app.kubernetes.io/instance: atscale
+  namespaceSelector:
+    matchNames:
+      - monitoring
+---
+# Source: prometheus-blackbox-exporter/templates/servicemonitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: atscale-prometheus-blackbox-exporter-fluentd-systemd-vmware
+  labels:
+    app.kubernetes.io/name: prometheus-blackbox-exporter
+    app.kubernetes.io/instance: atscale
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: prometheus-blackbox-exporter-4.10.1
+    type: telemetry
+spec:
+  endpoints:
+  - port: http
+    scheme: http
+    path: "/probe"
+    interval: 30s
+    scrapeTimeout: 30s
+    params:
+      module:
+      - http_2xx
+      target:
+      - ive-infra01.l10b2.deacluster.intel.com:24211/api/config.json
+    metricRelabelings:
+      - targetLabel: instance
+        replacement: ive-infra01.l10b2.deacluster.intel.com:24211/api/config.json
+      - targetLabel: target
+        replacement: fluentd-systemd-vmware
+  jobLabel: "atscale"
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: prometheus-blackbox-exporter
+      app.kubernetes.io/instance: atscale
+  namespaceSelector:
+    matchNames:
+      - monitoring

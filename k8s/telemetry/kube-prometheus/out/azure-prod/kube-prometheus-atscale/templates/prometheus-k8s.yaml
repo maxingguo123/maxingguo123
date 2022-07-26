@@ -1,0 +1,53 @@
+---
+# Source: kube-prometheus-atscale/templates/prometheus-k8s.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  labels:
+    prometheus: k8s
+  name: k8s
+  namespace: monitoring
+spec:
+  alerting:
+    alertmanagers:
+    - name: alertmanager-main
+      namespace: monitoring
+      port: web
+  image: quay.io/prometheus/prometheus:v2.20.0
+  nodeSelector:
+    prometheus-k8s: "true"
+  podMonitorNamespaceSelector: {}
+  podMonitorSelector: 
+    matchLabels:
+      type: k8s
+  replicas: 1
+  resources:
+    requests:
+      memory: 400Mi
+  retention: 30d
+  retentionSize: 0GB
+  ruleSelector:
+    matchLabels:
+      prometheus: k8s
+      role: alert-rules
+  securityContext:
+    fsGroup: 2000
+    runAsNonRoot: true
+    runAsUser: 1000
+  storage:
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 500Gi
+        storageClassName: faster
+
+  serviceAccountName: prometheus-k8s
+  serviceMonitorNamespaceSelector: {}
+  serviceMonitorSelector:
+    matchLabels:
+      type: k8s
+  version: v2.20.0
+  walCompression: true

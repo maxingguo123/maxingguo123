@@ -1,0 +1,249 @@
+apiVersion: elasticsearch.k8s.elastic.co/v1beta1
+kind: Elasticsearch
+metadata:
+  name: elasticsearch-{{.Release.Name}}
+spec:
+  version: 7.8.0
+  {{if .Values.imageRepo}}
+  image: {{.Values.imageRepo}}/docker.elastic.co/elasticsearch/elasticsearch:7.8.0
+  {{end}}
+  podDisruptionBudget:
+    spec:
+      maxUnavailable: 5
+      selector:
+        matchLabels:
+          elasticsearch.k8s.elastic.co/cluster-name: elasticsearch-{{.Release.Name}}
+  http:
+    tls:
+      certificate:
+        secretName: {{.Release.Name}}-es-cert
+  nodeSets:
+{{if .Values.master}}
+  - name: master
+    config:
+      node.master: true
+      node.data: {{if .Values.data}}false{{else}}true{{end}}
+      node.ingest: true
+      node.ml: false
+      xpack.monitoring.collection.enabled: true
+    podTemplate:
+      spec:
+       {{if eq .Values.csp "gcp"}}
+        initContainers:
+        - name: install-plugins
+          command: ["sh"]
+          args: ["-c", "export ES_JAVA_OPTS=;\
+                        bin/elasticsearch-keystore add-file -f gcs.client.default.credentials_file /etc/gcs/esbackup-service-account.json;\
+                        bin/elasticsearch-plugin install --batch repository-gcs"]
+      {{end}}
+      {{if eq .Values.csp "azure"}}
+        initContainers:
+        - name: install-plugins
+          command: ["sh"]
+          args: ["-c", "export ES_JAVA_OPTS=;\
+                        cat /etc/azure/default.account | bin/elasticsearch-keystore add -fx azure.client.default.account;\
+                        cat /etc/azure/default.key | bin/elasticsearch-keystore add -fx azure.client.default.key;\
+                        bin/elasticsearch-plugin install --batch repository-azure"]
+      {{end}}
+        nodeSelector:
+          esmaster: "true"
+        containers:
+        - name: elasticsearch
+          resources:
+            requests:
+              memory: {{.Values.master.max_memory_gb}}Gi
+          env:
+          - name: ES_JAVA_OPTS
+            # https://medium.com/naukri-engineering/garbage-collection-in-elasticsearch-and-the-g1gc-16b79a447181
+            value: "-Xms{{.Values.master.heap_gb}}g -Xmx{{.Values.master.heap_gb}}g -XX:-UseConcMarkSweepGC -XX:+UseG1GC -XX:MaxGCPauseMillis=300 -Dlog4j2.formatMsgNoLookups=true"
+        {{if eq .Values.csp "gcp"}}
+          volumeMounts:
+          - name: gcs-svc-acct
+            mountPath: "/etc/gcs"
+            readOnly: true
+        {{end}}
+        {{if eq .Values.csp "azure"}}
+          volumeMounts:
+          - name: azure-acct
+            mountPath: "/etc/azure/"
+            readOnly: true
+        {{end}}
+
+
+      {{if eq .Values.csp "gcp"}}
+        volumes:
+        - name: gcs-svc-acct
+          secret:
+            secretName: esbackup-svc-acct
+      {{end}}
+      {{if eq .Values.csp "azure"}}
+        volumes:
+        - name: azure-acct
+          secret:
+            secretName: azure-acct
+      {{end}}
+
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{.Values.master.storage.size}}
+        storageClassName: {{.Values.master.storage.class}}
+    count: {{.Values.master.count}}
+{{end}}
+{{if .Values.data}}
+  - name: data
+    config:
+      node.master: {{if .Values.master}}false{{else}}true{{end}}
+      node.data: true
+      node.ingest: true
+      node.ml: false
+      {{if .Values.criticaldata}}node.attr.index_type: non-critical{{end}}
+      xpack.monitoring.collection.enabled: true
+    podTemplate:
+      spec:
+      {{if eq .Values.csp "gcp"}}
+        initContainers:
+        - name: install-plugins
+          command: ["sh"]
+          args: ["-c", "export ES_JAVA_OPTS=;\
+                        bin/elasticsearch-keystore add-file -f gcs.client.default.credentials_file /etc/gcs/esbackup-service-account.json;\
+                        bin/elasticsearch-plugin install --batch repository-gcs"]
+      {{end}}
+      {{if eq .Values.csp "azure"}}
+        initContainers:
+        - name: install-plugins
+          command: ["sh"]
+          args: ["-c", "export ES_JAVA_OPTS=;\
+                        cat /etc/azure/default.account | bin/elasticsearch-keystore add -fx azure.client.default.account;\
+                        cat /etc/azure/default.key | bin/elasticsearch-keystore add -fx azure.client.default.key;\
+                        bin/elasticsearch-plugin install --batch repository-azure"]
+      {{end}}
+        nodeSelector:
+          esdata: "true"
+        containers:
+        - name: elasticsearch
+          resources:
+            requests:
+              memory: {{.Values.data.max_memory_gb}}Gi
+          env:
+          - name: ES_JAVA_OPTS
+            value: "-Xms{{.Values.data.heap_gb}}g -Xmx{{.Values.data.heap_gb}}g -XX:-UseConcMarkSweepGC -XX:+UseG1GC -XX:MaxGCPauseMillis=300 -Dlog4j2.formatMsgNoLookups=true"
+
+       {{if eq .Values.csp "gcp"}}
+          volumeMounts:
+          - name: gcs-svc-acct
+            mountPath: "/etc/gcs"
+            readOnly: true
+        {{end}}
+        {{if eq .Values.csp "azure"}}
+          volumeMounts:
+          - name: azure-acct
+            mountPath: "/etc/azure/"
+            readOnly: true
+        {{end}}
+
+      {{if eq .Values.csp "gcp"}}
+        volumes:
+        - name: gcs-svc-acct
+          secret:
+            secretName: esbackup-svc-acct
+      {{end}}
+        {{if eq .Values.csp "azure"}}
+        volumes:
+        - name: azure-acct
+          secret:
+            secretName: azure-acct
+        {{end}}
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{.Values.data.storage.size}}
+        storageClassName: {{.Values.data.storage.class}}
+    count: {{.Values.data.count}}
+{{end}}
+{{if .Values.criticaldata}}
+  - name: criticaldata
+    config:
+      node.master: {{if .Values.master}}false{{else}}true{{end}}
+      node.data: true
+      node.ingest: true
+      node.ml: false
+      node.attr.index_type: critical
+      xpack.monitoring.collection.enabled: true
+    podTemplate:
+      spec:
+      {{if eq .Values.csp "gcp"}}
+        initContainers:
+        - name: install-plugins
+          command: ["sh"]
+          args: ["-c", "export ES_JAVA_OPTS=;\
+                        bin/elasticsearch-keystore add-file -f gcs.client.default.credentials_file /etc/gcs/esbackup-service-account.json;\
+                        bin/elasticsearch-plugin install --batch repository-gcs"]
+      {{end}}
+      {{if eq .Values.csp "azure"}}
+        initContainers:
+        - name: install-plugins
+          command: ["sh"]
+          args: ["-c", "export ES_JAVA_OPTS=;\
+                        cat /etc/azure/default.account | bin/elasticsearch-keystore add -fx azure.client.default.account;\
+                        cat /etc/azure/default.key | bin/elasticsearch-keystore add -fx azure.client.default.key;\
+                        bin/elasticsearch-plugin install --batch repository-azure"]
+      {{end}}
+        nodeSelector:
+          esdata: "true"
+        containers:
+        - name: elasticsearch
+          resources:
+            requests:
+              memory: {{.Values.data.max_memory_gb}}Gi
+          env:
+          - name: ES_JAVA_OPTS
+            value: "-Xms{{.Values.data.heap_gb}}g -Xmx{{.Values.data.heap_gb}}g -XX:-UseConcMarkSweepGC -XX:+UseG1GC -XX:MaxGCPauseMillis=300 -Dlog4j2.formatMsgNoLookups=true"
+
+       {{if eq .Values.csp "gcp"}}
+          volumeMounts:
+          - name: gcs-svc-acct
+            mountPath: "/etc/gcs"
+            readOnly: true
+        {{end}}
+        {{if eq .Values.csp "azure"}}
+          volumeMounts:
+          - name: azure-acct
+            mountPath: "/etc/azure/"
+            readOnly: true
+        {{end}}
+
+      {{if eq .Values.csp "gcp"}}
+        volumes:
+        - name: gcs-svc-acct
+          secret:
+            secretName: esbackup-svc-acct
+      {{end}}
+        {{if eq .Values.csp "azure"}}
+        volumes:
+        - name: azure-acct
+          secret:
+            secretName: azure-acct
+        {{end}}
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{.Values.data.storage.size}}
+        storageClassName: {{.Values.data.storage.class}}
+    count: {{.Values.criticaldata.count}}
+{{end}}

@@ -1,0 +1,51 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  labels:
+    prometheus: telemetry
+  name: telemetry
+  namespace: monitoring
+spec:
+  alerting:
+    alertmanagers:
+    - name: alertmanager-main
+      namespace: monitoring
+      port: web
+  image: quay.io/prometheus/prometheus:v2.20.0
+  nodeSelector:
+    prometheus-telemetry: "true"
+  podMonitorNamespaceSelector: {}
+  podMonitorSelector: 
+    matchLabels:
+      type: telemetry
+  replicas: {{.Values.prometheus.replicas}}
+  resources:
+    requests:
+      memory: 400Mi
+  retention: {{.Values.prometheus.retention}}
+  retentionSize: {{div (mul .Values.prometheus.retentionSizePerc .Values.prometheus.storage.telemetry.size) 100}}GB
+  ruleSelector:
+    matchLabels:
+      prometheus: telemetry
+      role: alert-rules
+  securityContext:
+    fsGroup: 2000
+    runAsNonRoot: true
+    runAsUser: 1000
+  storage:
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{.Values.prometheus.storage.telemetry.size}}Gi
+        storageClassName: {{.Values.prometheus.storage.telemetry.class}}
+
+  serviceAccountName: prometheus-k8s
+  serviceMonitorNamespaceSelector: {}
+  serviceMonitorSelector:
+    matchLabels:
+      type: telemetry
+  version: v2.20.0
+  walCompression: true

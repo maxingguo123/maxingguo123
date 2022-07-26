@@ -1,0 +1,53 @@
+---
+# Source: kube-prometheus-atscale/templates/prometheus-telemetry.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  labels:
+    prometheus: telemetry
+  name: telemetry
+  namespace: monitoring
+spec:
+  alerting:
+    alertmanagers:
+    - name: alertmanager-main
+      namespace: monitoring
+      port: web
+  image: quay.io/prometheus/prometheus:v2.20.0
+  nodeSelector:
+    prometheus-telemetry: "true"
+  podMonitorNamespaceSelector: {}
+  podMonitorSelector: 
+    matchLabels:
+      type: telemetry
+  replicas: 1
+  resources:
+    requests:
+      memory: 400Mi
+  retention: 12d
+  retentionSize: 89GB
+  ruleSelector:
+    matchLabels:
+      prometheus: telemetry
+      role: alert-rules
+  securityContext:
+    fsGroup: 2000
+    runAsNonRoot: true
+    runAsUser: 1000
+  storage:
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 99Gi
+        storageClassName: local-storage
+
+  serviceAccountName: prometheus-k8s
+  serviceMonitorNamespaceSelector: {}
+  serviceMonitorSelector:
+    matchLabels:
+      type: telemetry
+  version: v2.20.0
+  walCompression: true

@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "bmc-sel-collector.fullname" . }}
+  labels:
+{{ include "bmc-sel-collector.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "bmc-sel-collector.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        build_id: {{ default "disabled" .Values.build_id | quote }}
+      labels:
+        app.kubernetes.io/name: {{ include "bmc-sel-collector.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      serviceAccountName: {{ template "bmc-sel-collector.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: service
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          lifecycle:
+            preStop:
+              exec:
+                command: [ "/bin/touch", "/tmp/stop-collector" ]
+          env:
+{{- if .Values.debug }}
+            - name: DEBUG
+              value: "true"
+{{- end }}
+            - name: LOG_PATH
+              value: "/logs"
+            - name: CACHE_PATH
+              value: "/cache"
+            - name: INVENTORY_FILE
+              value: "/inventory/redfish-prometheus.json"
+            - name: COLLECTION_INTERVAL
+              value: "{{ .Values.collection_interval }}"
+            - name: KAFKA_BROKERS
+              value: "{{ join "," .Values.kafka.brokers }}"
+            - name: KAFKA_TOPIC
+              value: "{{ .Values.kafka.topic }}"
+          ports:
+            - name: http
+              containerPort: 9666
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /inventory
+              name: inventory
+              readOnly: true
+            - mountPath: /logs
+              name: logs
+              readOnly: false
+            - mountPath: /cache
+              name: cache
+              readOnly: false
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: inventory
+          nfs:
+            path: {{ .Values.inventory.nfs_share }}
+            server: {{ .Values.inventory.nfs_server }}
+        - name: cache
+          persistentVolumeClaim:
+            claimName:  {{ include "bmc-sel-collector.fullname" . }}-cache
+        - name: logs
+          emptyDir: {}

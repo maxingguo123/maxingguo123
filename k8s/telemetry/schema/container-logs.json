@@ -1,0 +1,243 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://gitlab.devtools.intel.com/sandstone/cluster-infra/blob/master/k8s/telemetry/schema/k8s.json",
+    "type": "object",
+    "title": "The Root Schema",
+    "description": "The root schema comprises the entire JSON document.",
+    "required": [
+        "stream",
+        "log",
+        "docker",
+        "kubernetes",
+        "test",
+        "runid",
+        "@timestamp",
+        "tag"
+    ],
+    "properties": {
+        "stream": {
+            "$id": "#/properties/stream",
+            "type": "string",
+            "title": "Log stream",
+            "description": "Indicates if log was collected over stdout or stderr",
+            "default": "",
+            "examples": [
+                "stderr"
+            ]
+        },
+        "log": {
+            "$id": "#/properties/log",
+            "type": "string",
+            "title": "Log message",
+            "description": "Log message",
+            "default": "",
+            "examples": [
+                "Failed to list *v1.Service: Get https://10.219.23.17:6443/api/v1/services?labelSelector=%21service.kubernetes.io%2Fheadless%2C%21service.kubernetes.io%2Fservice-proxy-name&limit=500&resourceVersion=0: x509: certificate signed by unknown authority (possibly because of \"crypto/rsa: verification error\" while trying to verify candidate authority certificate \"kubernetes\")"
+            ]
+        },
+        "docker": {
+            "$id": "#/properties/docker",
+            "type": "object",
+            "title": "Container metadata",
+            "description": "Provides metadata on container gathered from docker",
+            "default": {},
+            "required": [
+                "container_id"
+            ],
+            "properties": {
+                "container_id": {
+                    "$id": "#/properties/docker/properties/container_id",
+                    "type": "string",
+                    "title": "Container ID",
+                    "description": "UUID of the container",
+                    "default": "",
+                    "examples": [
+                        "5093923d0ed6ca03662c19ae9f73c0e2556f7f28588cd94b61ed536a10290c1b"
+                    ]
+                }
+            }
+        },
+        "kubernetes": {
+            "$id": "#/properties/kubernetes",
+            "type": "object",
+            "title": "Kubernetes metadata",
+            "description": "Metadata gathered from Kubernetes pods and cluster",
+            "default": {},
+           "required": [
+                "container_name",
+                "namespace_name",
+                "pod_name",
+                "host",
+                "container_image",
+                "container_image_id",
+                "labels"
+            ],
+            "properties": {
+                "container_name": {
+                    "$id": "#/properties/kubernetes/properties/container_name",
+                    "type": "string",
+                    "title": "Container name",
+                    "description": "Container name as defined in podspec",
+                    "default": "",
+                    "examples": [
+                        "kube-proxy"
+                    ]
+                },
+
+                "container_image": {
+                    "$id": "#/properties/kubernetes/properties/container_image",
+                    "type": "string",
+                    "title": "Container Image",
+                    "description": "Reference to container image URI",
+                    "default": "",
+                    "examples": [
+                        "docker.io/gmmaha/networkstuff:latest"
+                    ]
+                },
+                "container_image_id": {
+                    "$id": "#/properties/kubernetes/properties/container_image_id",
+                    "type": "string",
+                    "title": "Container image ID",
+                    "description": "Container image ID",
+                    "default": "",
+                    "examples": [
+                        "docker.io/gmmaha/networkstuff@sha256:b8fdf862cba28c813a4be6d3e5b781808facbf5a94e4fd9144ae07a4cc1576a5"
+                    ]
+                },
+
+                "host": {
+                    "$id": "#/properties/kubernetes/properties/host",
+                    "type": "string",
+                    "title": "Host name",
+                    "description": "Host name where the container was running",
+                    "default": "",
+                    "examples": [
+                        "r09s03"
+                    ]
+                },
+
+                "labels": {
+                    "$id": "#/properties/kubernetes/properties/labels",
+                    "type": "object",
+                    "title": "Kubernetes pod labels",
+                    "description": "List of key value pairs",
+                    "default": {},
+                   "required": ["name"],
+                    "properties": {
+                        "name": {
+                            "$id": "#/properties/kubernetes/properties/labels/properties/name",
+                            "type": "string",
+                            "title": "App 'name' label",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": "",
+                            "examples": [
+                                "network-capture"
+                            ]
+                        }
+                    }
+                },
+                "master_url": {
+                    "$id": "#/properties/kubernetes/properties/master_url",
+                    "type": "string",
+                    "title": "The Master_url Schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "https://10.96.0.1:443/api"
+                    ]
+                },
+
+                "namespace_name": {
+                    "$id": "#/properties/kubernetes/properties/namespace_name",
+                    "type": "string",
+                    "title": "Namespace name",
+                    "description": "Namespace where the pod is run",
+                    "default": "",
+                    "examples": [
+                        "mgmt"
+                    ]
+                },
+                "pod_name": {
+                    "$id": "#/properties/kubernetes/properties/pod_name",
+                    "type": "string",
+                    "title": "Pod name",
+                    "description": "K8s pod name",
+                    "default": "",
+                    "examples": [
+                        "kube-proxy-gm62s"
+                    ]
+                },
+               "namespace_id": {
+                    "$id": "#/properties/kubernetes/properties/namespace_id",
+                    "type": "string",
+                    "title": "Namespace ID",
+                    "description": "UUID of namespace",
+                    "default": ""
+                }
+            }
+        },
+
+        "cluster-name": {
+            "$id": "#/properties/cluster-name",
+            "type": "string",
+            "title": "Cluster name",
+            "description": "Cluster name",
+            "default": "",
+            "examples": [
+                "gdc-qpool-1"
+            ]
+        },
+
+        "subcluster-name": {
+            "$id": "#/properties/subcluster-name",
+            "type": "string",
+            "title": "Sub cluster name",
+            "description": "Sub cluster name",
+            "default": "",
+            "examples": [
+                "ive"
+            ]
+        },
+ 
+        "test": {
+            "$id": "#/properties/test",
+            "type": "string",
+            "title": "Test name",
+            "description": "Name of the test running when this schema was generated",
+            "default": "",
+            "examples": [
+                "resnet50-unified"
+            ]
+        },
+        "runid": {
+            "$id": "#/properties/runid",
+            "type": "string",
+            "title": "Run ID",
+            "description": "Unique identifying the specific invocation of the test",
+            "default": "",
+            "examples": [
+                "run-vgpvm3"
+            ]
+        },
+        "@timestamp": {
+            "$id": "#/properties/@timestamp",
+            "type": "string",
+            "title": "Timestamp",
+            "description": "Time formatted as elasticsearch strict_date_optional_time",
+            "default": "",
+            "examples": [
+                "2020-03-27T14:55:01.538000366+00:00"
+            ]
+        },
+        "tag": {
+            "$id": "#/properties/tag",
+            "type": "string",
+            "title": "Tag",
+            "description": "Tag added by log collector",
+            "default": "",
+            "examples": [
+                "kubernetes.var.log.containers.kube-proxy-gm62s_kube-system_kube-proxy-5093923d0ed6ca03662c19ae9f73c0e2556f7f28588cd94b61ed536a10290c1b.log"
+            ]
+        }
+    }
+}

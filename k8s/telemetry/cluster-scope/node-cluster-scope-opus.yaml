@@ -1,0 +1,77 @@
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: cluster-config-meta
+  namespace: mgmt
+data:
+  LOCATION: "opusa"
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: node-cluster-scope-ds
+  namespace: mgmt
+  labels:
+    app: node-cluster-scope
+spec:
+  selector:
+    matchLabels:
+      app: node-cluster-scope
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 10
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: node-cluster-scope
+    spec:
+      hostNetwork: true
+      containers:
+      - name: node-cluster-scope
+        image: prt-registry.sova.intel.com/cluster-scope:v0.69
+        imagePullPolicy: Always
+        envFrom:
+        - configMapRef:
+            name: cluster-config-meta
+        env:
+          - name: HOST_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.hostIP
+          - name: POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: NODENAME
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
+          - name: CLUSTER_METADATA
+            value: /var/log/atscale/cscope-metadata.ndjson
+          - name: ROOT_URL
+            value: ive-infra04.deacluster.intel.com:5000/api/node/metadata?name=
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: hostroot
+          mountPath: /hostroot
+        - name: varlog
+          mountPath: /var/log
+      volumes:
+        - name: hostroot
+          hostPath:
+            path: /
+        - name: varlog
+          hostPath:
+            path: /var/log
+

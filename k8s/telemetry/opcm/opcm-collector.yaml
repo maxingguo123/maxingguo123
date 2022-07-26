@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: opcm-collector
+  namespace: monitoring
+  labels:
+    name: opcm-collector
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9738"
+spec:
+  selector:
+    matchLabels:
+      name: opcm-collector
+  template:
+    metadata:
+      labels:
+        name: opcm-collector
+    spec:
+      hostNetwork: true
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: nodeowner
+                operator: NotIn
+                values: [admin]
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+      containers:
+      - name: opcm-collector
+        image: prt-registry.sova.intel.com/pcm:bc0be8fd
+        securityContext:
+          privileged: true
+        ports:
+          - name: metrics
+            containerPort: 9738
+            protocol: TCP

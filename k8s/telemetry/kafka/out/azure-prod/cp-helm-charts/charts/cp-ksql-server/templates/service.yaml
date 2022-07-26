@@ -1,0 +1,18 @@
+---
+# Source: cp-helm-charts/charts/cp-ksql-server/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: atscale-cp-ksql-server
+  labels:
+    app: cp-ksql-server
+    chart: cp-ksql-server-0.1.0
+    release: atscale
+    heritage: Helm
+spec:
+  ports:
+      - name: ksql-server
+        port: 8088
+  selector:
+    app: cp-ksql-server
+    release: atscale

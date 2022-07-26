@@ -1,0 +1,69 @@
+replicaCount: 1
+
+image:
+  registry: quay.io
+  # Use "cloudhut/kowl-business" for the business version
+  repository: cloudhut/kowl
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+securityContext:
+  runAsNonRoot: true
+
+service:
+  type: ClusterIP
+  port: 80
+  annotations: {}
+
+nodeSelector: {}
+
+kowl:
+  # Config.yaml is required for Kowl and Kowl Business.
+  # See reference config: https://github.com/cloudhut/kowl/blob/master/docs/config/kowl.yaml)
+  config: 
+  # roles:
+  # roleBindings:
+    kafka:
+      brokers:
+      - kafka-cp-kafka-0.kafka-cp-kafka-headless.dc-kafka:9092
+      - kafka-cp-kafka-1.kafka-cp-kafka-headless.dc-kafka:9092
+      - kafka-cp-kafka-2.kafka-cp-kafka-headless.dc-kafka:9092
+# Additional environment variables for kowl
+extraEnv: ""
+  # - name: KAFKA_RACKID
+  #   value: "1"
+
+# Additional environment variables for kowl mapped from Secret or ConfigMap
+extraEnvFrom: ""
+
+# Add additional volumes, e. g. for tls keys
+extraVolumes: ""
+# Add additional volumes mounts, e. g. for tls keys
+extraVolumeMounts: ""
+
+# Add additional containers, e. g. for oauth2-proxy
+extraContainers: {}
+
+secret:
+  keyName:
+    cloudhut-license-token: "cloudhut-license-token"
+    kafka-tls-passphrase: "kafka-tls-passphrase"
+    kafka-sasl-password: "kafka-sasl-password"
+
+## Configure extra options for liveness and readiness probes
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes)
+livenessProbe:
+  initialDelaySeconds: 0
+  periodSeconds: 10
+  timeoutSeconds: 1
+  successThreshold: 1
+  failureThreshold: 3
+
+readinessProbe:
+  # Give Kowl initially some time to connect to all Kafka Brokers
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 1
+  successThreshold: 1
+  failureThreshold: 3

@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: fwupdate
+spec:
+  selector:
+      matchLabels:
+        name: fwupdate
+  template:
+    metadata:
+        labels:
+          name: fwupdate
+    spec:
+      hostNetwork: true
+      nodeSelector:
+        peci_debug_2: "true"
+      containers:
+      - name: fwupdate
+        image: prt-registry.sova.intel.com/fwupdate:SED_VER
+        imagePullPolicy: Always
+        # imagePullPolicy: IfNotPresent
+	env:
+	- name: USER
+	  value: SED_USER
+	- name: PASSWORD
+	  value: SED_PASSWORD
+        securityContext:
+          privileged: true

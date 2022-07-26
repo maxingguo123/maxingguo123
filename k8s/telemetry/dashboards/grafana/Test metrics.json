@@ -1,0 +1,1904 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "https://gitlab.devtools.intel.com/sandstone/cluster-infra/tree/master/k8s/telemetry/dashboards/grafana/target-fluentd-prom",
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": 26,
+  "iteration": 1600457050718,
+  "links": [],
+  "panels": [
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "prometheus-telemetry",
+      "description": "Based on test_start events",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 3,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 14,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "hiddenSeries": false,
+      "id": 2,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": true,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": true,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 0,
+      "nullPointMode": "null as zero",
+      "percentage": false,
+      "pluginVersion": "7.1.0",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {}
+      ],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "sum by (test, host) (fluentd_prom_node_status{event=\"test_start\", runid =~ \"$runid\", host =~ \"$Node\"})",
+          "legendFormat": "{{test}}, {{host}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Test progress",
+      "tooltip": {
+        "shared": false,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "prometheus-telemetry",
+      "description": "Count of not ok",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 3,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 14,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "hiddenSeries": false,
+      "id": 4,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": false,
+        "hideEmpty": true,
+        "hideZero": true,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": true,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null as zero",
+      "percentage": false,
+      "pluginVersion": "7.1.0",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "sum by (host, test) (fluentd_prom_node_status{event=\"notok\", runid=~\"$runid\", host=~\"$Node\"})",
+          "legendFormat": "{{host}}, {{test}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Test reported failure",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "prometheus-telemetry",
+      "description": "Based on Heartbeat: 0",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 3,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 14
+      },
+      "hiddenSeries": false,
+      "id": 13,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": false,
+        "hideEmpty": true,
+        "hideZero": true,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": true,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null as zero",
+      "percentage": false,
+      "pluginVersion": "7.1.0",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "sum by (host, test) (fluentd_prom_node_status{event=\"heartbeat_0\", host =~ \"$Node\"})",
+          "legendFormat": "{{host}}, {{test}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Reboots",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "prometheus-telemetry",
+      "description": "Based on (NodeNotReady k8s event)",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 3,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 14
+      },
+      "hiddenSeries": false,
+      "id": 14,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": false,
+        "hideEmpty": true,
+        "hideZero": true,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": true,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "percentage": false,
+      "pluginVersion": "7.1.0",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "sum by (host) (fluentd_prom_node_status{event=\"nodenotready\", host =~ \"$Node\"})",
+          "legendFormat": "{{host}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Node unreachable ",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "prometheus-telemetry",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 3,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 22
+      },
+      "hiddenSeries": false,
+      "id": 6,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": false,
+        "hideEmpty": true,
+        "hideZero": true,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": true,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null as zero",
+      "percentage": false,
+      "pluginVersion": "7.1.0",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "sum by (host, test) (fluentd_prom_node_status{event=\"mce\", runid=~\"$runid\", host =~ \"$Node\"})",
+          "legendFormat": "{{host}}, {{test}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "MCE errors found",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "prometheus-telemetry",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 3,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 22
+      },
+      "hiddenSeries": false,
+      "id": 15,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": false,
+        "hideEmpty": true,
+        "hideZero": true,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": true,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null as zero",
+      "percentage": false,
+      "pluginVersion": "7.1.0",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "sum by (host, test) (fluentd_prom_node_status{event=\"corrected_mce\", runid=~\"$runid\", host =~ \"$Node\"})",
+          "legendFormat": "{{host}}, {{test}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Corrected MCE errors found",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "prometheus-telemetry",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 3,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 30
+      },
+      "id": 8,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": false,
+        "hideEmpty": true,
+        "hideZero": true,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": true,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null as zero",
+      "percentage": false,
+      "pluginVersion": "7.1.0",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "sum by(host, test) (fluentd_prom_node_status{event=\"test_fail\", runid=~\"$runid\", host =~ \"$Node\"})",
+          "legendFormat": "{{host}}, {{test}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Tests exited with failure ",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "prometheus-telemetry",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 3,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 30
+      },
+      "id": 9,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": false,
+        "hideEmpty": true,
+        "hideZero": true,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": true,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null as zero",
+      "percentage": false,
+      "pluginVersion": "7.1.0",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "sum by (host, test) (fluentd_prom_node_status{event=\"thermal_mce\", runid=~\"$runid\", host =~ \"$Node\"})",
+          "legendFormat": "{{host}} {{test}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Thermal MCE reported",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "prometheus-telemetry",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 3,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 38
+      },
+      "id": 10,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": false,
+        "hideEmpty": true,
+        "hideZero": true,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": true,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null as zero",
+      "percentage": false,
+      "pluginVersion": "7.1.0",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "sum by (host, test) (fluentd_prom_node_status{event=\"oom_kill\", runid=~\"$runid\", host =~ \"$Node\"})",
+          "legendFormat": "{{host}} {{test}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "OOM kill reported",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "prometheus-telemetry",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 3,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 38
+      },
+      "id": 12,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": false,
+        "hideEmpty": true,
+        "hideZero": true,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": true,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null as zero",
+      "percentage": false,
+      "pluginVersion": "7.1.0",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "sum by (host, test) (fluentd_prom_node_status{event=\"took_more_time\", runid=~\"$runid\", host =~ \"$Node\"})",
+          "legendFormat": "{{host}}, {{test}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Tests reported  more time than expected",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "prometheus-telemetry",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 3,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 46
+      },
+      "id": 11,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": false,
+        "hideEmpty": true,
+        "hideZero": true,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": true,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null as zero",
+      "percentage": false,
+      "pluginVersion": "7.1.0",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "sum by (host, test) (fluentd_prom_node_status{event=\"took_less_time\", runid=~\"$runid\", host =~ \"$Node\"})",
+          "legendFormat": "{{host}}, {{test}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Tests reported less time than expected",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "prometheus-telemetry",
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 3,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 46
+      },
+      "id": 16,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": false,
+        "hideEmpty": true,
+        "hideZero": true,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": true,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null as zero",
+      "percentage": false,
+      "pluginVersion": "7.1.0",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "count (count by (host) (fluentd_prom_node_status{event=\"heartbeat\", host=~\"$Node\", subcluster=\"default\"}))",
+          "hide": false,
+          "interval": "20m",
+          "legendFormat": "All Default",
+          "refId": "A"
+        },
+        {
+          "expr": "count by (host) (fluentd_prom_node_status{event=\"heartbeat\", host=~\"$JasperNodes\"})",
+          "hide": true,
+          "interval": "20m",
+          "legendFormat": "{{host}} ",
+          "refId": "B"
+        },
+        {
+          "expr": "count (count by (host) (fluentd_prom_node_status{event=\"heartbeat\", host=~\"$JasperNodes\"}))",
+          "hide": false,
+          "interval": "20m",
+          "legendFormat": "Jasper",
+          "refId": "C"
+        },
+        {
+          "expr": "count (count by (host) (fluentd_prom_node_status{event=\"heartbeat\", host=~\"$Node\"}))",
+          "hide": false,
+          "interval": "20m",
+          "legendFormat": "All",
+          "refId": "D"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Heartbeats",
+      "tooltip": {
+        "shared": true,
+        "sort": 1,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 26,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "allValue": null,
+        "current": {
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": "prometheus-telemetry",
+        "definition": "label_values(fluentd_prom_node_status, runid)",
+        "hide": 0,
+        "includeAll": true,
+        "label": null,
+        "multi": true,
+        "name": "runid",
+        "options": [],
+        "query": "label_values(fluentd_prom_node_status, runid)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": "prometheus-telemetry",
+        "definition": "label_values(fluentd_prom_node_status, host)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Node",
+        "multi": true,
+        "name": "Node",
+        "options": [],
+        "query": "label_values(fluentd_prom_node_status, host)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {
+          "text": [
+            "r01s01"
+          ],
+          "value": [
+            "r01s01"
+          ]
+        },
+        "hide": 0,
+        "includeAll": true,
+        "label": "JasperNodes",
+        "multi": true,
+        "name": "JasperNodes",
+        "options": [
+          {
+            "selected": true,
+            "text": "All",
+            "value": "$__all"
+          },
+          {
+            "selected": false,
+            "text": "r01s01",
+            "value": "r01s01"
+          },
+          {
+            "selected": false,
+            "text": "r01s02",
+            "value": "r01s02"
+          },
+          {
+            "selected": false,
+            "text": "r01s03",
+            "value": "r01s03"
+          },
+          {
+            "selected": false,
+            "text": "r01s05",
+            "value": "r01s05"
+          },
+          {
+            "selected": false,
+            "text": "r01s06",
+            "value": "r01s06"
+          },
+          {
+            "selected": false,
+            "text": "r01s08",
+            "value": "r01s08"
+          },
+          {
+            "selected": false,
+            "text": "r01s10",
+            "value": "r01s10"
+          },
+          {
+            "selected": false,
+            "text": "r01s13",
+            "value": "r01s13"
+          },
+          {
+            "selected": false,
+            "text": "r01s16",
+            "value": "r01s16"
+          },
+          {
+            "selected": false,
+            "text": "r01s19",
+            "value": "r01s19"
+          },
+          {
+            "selected": false,
+            "text": "r01s20",
+            "value": "r01s20"
+          },
+          {
+            "selected": false,
+            "text": "r02s04",
+            "value": "r02s04"
+          },
+          {
+            "selected": false,
+            "text": "r02s06",
+            "value": "r02s06"
+          },
+          {
+            "selected": false,
+            "text": "r02s08",
+            "value": "r02s08"
+          },
+          {
+            "selected": false,
+            "text": "r02s12",
+            "value": "r02s12"
+          },
+          {
+            "selected": false,
+            "text": "r02s14",
+            "value": "r02s14"
+          },
+          {
+            "selected": false,
+            "text": "r03s12",
+            "value": "r03s12"
+          },
+          {
+            "selected": false,
+            "text": "r03s14",
+            "value": "r03s14"
+          },
+          {
+            "selected": false,
+            "text": "r03s17",
+            "value": "r03s17"
+          },
+          {
+            "selected": false,
+            "text": "r05s01",
+            "value": "r05s01"
+          },
+          {
+            "selected": false,
+            "text": "r05s02",
+            "value": "r05s02"
+          },
+          {
+            "selected": false,
+            "text": "r05s06",
+            "value": "r05s06"
+          },
+          {
+            "selected": false,
+            "text": "r05s07",
+            "value": "r05s07"
+          },
+          {
+            "selected": false,
+            "text": "r05s08",
+            "value": "r05s08"
+          },
+          {
+            "selected": false,
+            "text": "r05s09",
+            "value": "r05s09"
+          },
+          {
+            "selected": false,
+            "text": "r05s14",
+            "value": "r05s14"
+          },
+          {
+            "selected": false,
+            "text": "r05s16",
+            "value": "r05s16"
+          },
+          {
+            "selected": false,
+            "text": "r05s17",
+            "value": "r05s17"
+          },
+          {
+            "selected": false,
+            "text": "r05s18",
+            "value": "r05s18"
+          },
+          {
+            "selected": false,
+            "text": "r05s19",
+            "value": "r05s19"
+          },
+          {
+            "selected": false,
+            "text": "r05s20",
+            "value": "r05s20"
+          },
+          {
+            "selected": false,
+            "text": "r06s02",
+            "value": "r06s02"
+          },
+          {
+            "selected": false,
+            "text": "r06s06",
+            "value": "r06s06"
+          },
+          {
+            "selected": false,
+            "text": "r06s07",
+            "value": "r06s07"
+          },
+          {
+            "selected": false,
+            "text": "r06s08",
+            "value": "r06s08"
+          },
+          {
+            "selected": false,
+            "text": "r06s09",
+            "value": "r06s09"
+          },
+          {
+            "selected": false,
+            "text": "r06s14",
+            "value": "r06s14"
+          },
+          {
+            "selected": false,
+            "text": "r10s01",
+            "value": "r10s01"
+          },
+          {
+            "selected": false,
+            "text": "r10s02",
+            "value": "r10s02"
+          },
+          {
+            "selected": false,
+            "text": "r10s04",
+            "value": "r10s04"
+          },
+          {
+            "selected": false,
+            "text": "r10s05",
+            "value": "r10s05"
+          },
+          {
+            "selected": false,
+            "text": "r10s06",
+            "value": "r10s06"
+          },
+          {
+            "selected": false,
+            "text": "r10s07",
+            "value": "r10s07"
+          },
+          {
+            "selected": false,
+            "text": "r10s09",
+            "value": "r10s09"
+          },
+          {
+            "selected": false,
+            "text": "r10s10",
+            "value": "r10s10"
+          },
+          {
+            "selected": false,
+            "text": "r10s13",
+            "value": "r10s13"
+          },
+          {
+            "selected": false,
+            "text": "r10s14",
+            "value": "r10s14"
+          },
+          {
+            "selected": false,
+            "text": "r10s15",
+            "value": "r10s15"
+          },
+          {
+            "selected": false,
+            "text": "r10s16",
+            "value": "r10s16"
+          },
+          {
+            "selected": false,
+            "text": "r10s17",
+            "value": "r10s17"
+          },
+          {
+            "selected": false,
+            "text": "r10s19",
+            "value": "r10s19"
+          },
+          {
+            "selected": false,
+            "text": "r10s20",
+            "value": "r10s20"
+          },
+          {
+            "selected": false,
+            "text": "r11s04",
+            "value": "r11s04"
+          },
+          {
+            "selected": false,
+            "text": "r11s06",
+            "value": "r11s06"
+          },
+          {
+            "selected": false,
+            "text": "r11s08",
+            "value": "r11s08"
+          },
+          {
+            "selected": false,
+            "text": "r11s09",
+            "value": "r11s09"
+          },
+          {
+            "selected": false,
+            "text": "r11s11",
+            "value": "r11s11"
+          },
+          {
+            "selected": false,
+            "text": "r11s13",
+            "value": "r11s13"
+          },
+          {
+            "selected": false,
+            "text": "r11s15",
+            "value": "r11s15"
+          },
+          {
+            "selected": false,
+            "text": "r11s19",
+            "value": "r11s19"
+          },
+          {
+            "selected": false,
+            "text": "r15s06",
+            "value": "r15s06"
+          },
+          {
+            "selected": false,
+            "text": "r15s10",
+            "value": "r15s10"
+          },
+          {
+            "selected": false,
+            "text": "r15s14",
+            "value": "r15s14"
+          },
+          {
+            "selected": false,
+            "text": "r15s15",
+            "value": "r15s15"
+          },
+          {
+            "selected": false,
+            "text": "r15s16",
+            "value": "r15s16"
+          },
+          {
+            "selected": false,
+            "text": "r15s19",
+            "value": "r15s19"
+          },
+          {
+            "selected": false,
+            "text": "r15s20",
+            "value": "r15s20"
+          },
+          {
+            "selected": false,
+            "text": "r16s04",
+            "value": "r16s04"
+          },
+          {
+            "selected": false,
+            "text": "r16s05",
+            "value": "r16s05"
+          },
+          {
+            "selected": false,
+            "text": "r16s07",
+            "value": "r16s07"
+          },
+          {
+            "selected": false,
+            "text": "r16s09",
+            "value": "r16s09"
+          },
+          {
+            "selected": false,
+            "text": "r16s10",
+            "value": "r16s10"
+          },
+          {
+            "selected": false,
+            "text": "r16s12",
+            "value": "r16s12"
+          },
+          {
+            "selected": false,
+            "text": "r16s13",
+            "value": "r16s13"
+          },
+          {
+            "selected": false,
+            "text": "r16s14",
+            "value": "r16s14"
+          },
+          {
+            "selected": false,
+            "text": "r16s15",
+            "value": "r16s15"
+          },
+          {
+            "selected": false,
+            "text": "r16s16",
+            "value": "r16s16"
+          },
+          {
+            "selected": false,
+            "text": "r16s17",
+            "value": "r16s17"
+          },
+          {
+            "selected": false,
+            "text": "r16s19",
+            "value": "r16s19"
+          },
+          {
+            "selected": false,
+            "text": "r16s20",
+            "value": "r16s20"
+          },
+          {
+            "selected": false,
+            "text": "r17s01",
+            "value": "r17s01"
+          },
+          {
+            "selected": false,
+            "text": "r17s09",
+            "value": "r17s09"
+          },
+          {
+            "selected": false,
+            "text": "r17s10",
+            "value": "r17s10"
+          },
+          {
+            "selected": false,
+            "text": "r17s11",
+            "value": "r17s11"
+          },
+          {
+            "selected": false,
+            "text": "r17s12",
+            "value": "r17s12"
+          },
+          {
+            "selected": false,
+            "text": "r17s15",
+            "value": "r17s15"
+          },
+          {
+            "selected": false,
+            "text": "r17s16",
+            "value": "r17s16"
+          },
+          {
+            "selected": false,
+            "text": "r17s17",
+            "value": "r17s17"
+          },
+          {
+            "selected": false,
+            "text": "r17s18",
+            "value": "r17s18"
+          },
+          {
+            "selected": false,
+            "text": "r17s19",
+            "value": "r17s19"
+          },
+          {
+            "selected": false,
+            "text": "r18s03",
+            "value": "r18s03"
+          },
+          {
+            "selected": false,
+            "text": "r18s06",
+            "value": "r18s06"
+          },
+          {
+            "selected": false,
+            "text": "r18s09",
+            "value": "r18s09"
+          },
+          {
+            "selected": false,
+            "text": "r18s10",
+            "value": "r18s10"
+          },
+          {
+            "selected": false,
+            "text": "r18s12",
+            "value": "r18s12"
+          },
+          {
+            "selected": false,
+            "text": "r18s13",
+            "value": "r18s13"
+          },
+          {
+            "selected": false,
+            "text": "r18s14",
+            "value": "r18s14"
+          },
+          {
+            "selected": false,
+            "text": "r18s15",
+            "value": "r18s15"
+          },
+          {
+            "selected": false,
+            "text": "r18s16",
+            "value": "r18s16"
+          },
+          {
+            "selected": false,
+            "text": "r18s17",
+            "value": "r18s17"
+          },
+          {
+            "selected": false,
+            "text": "r18s18",
+            "value": "r18s18"
+          },
+          {
+            "selected": false,
+            "text": "r18s19",
+            "value": "r18s19"
+          },
+          {
+            "selected": false,
+            "text": "r18s20",
+            "value": "r18s20"
+          },
+          {
+            "selected": false,
+            "text": "r19s03",
+            "value": "r19s03"
+          },
+          {
+            "selected": false,
+            "text": "r19s05",
+            "value": "r19s05"
+          },
+          {
+            "selected": false,
+            "text": "r19s07",
+            "value": "r19s07"
+          },
+          {
+            "selected": false,
+            "text": "r19s09",
+            "value": "r19s09"
+          },
+          {
+            "selected": false,
+            "text": "r19s12",
+            "value": "r19s12"
+          },
+          {
+            "selected": false,
+            "text": "r19s19",
+            "value": "r19s19"
+          },
+          {
+            "selected": false,
+            "text": "r19s20",
+            "value": "r19s20"
+          },
+          {
+            "selected": false,
+            "text": "r20s04",
+            "value": "r20s04"
+          },
+          {
+            "selected": false,
+            "text": "r20s05",
+            "value": "r20s05"
+          },
+          {
+            "selected": false,
+            "text": "r20s06",
+            "value": "r20s06"
+          },
+          {
+            "selected": false,
+            "text": "r20s08",
+            "value": "r20s08"
+          },
+          {
+            "selected": false,
+            "text": "r20s09",
+            "value": "r20s09"
+          },
+          {
+            "selected": false,
+            "text": "r20s10",
+            "value": "r20s10"
+          },
+          {
+            "selected": false,
+            "text": "r20s11",
+            "value": "r20s11"
+          },
+          {
+            "selected": false,
+            "text": "r20s13",
+            "value": "r20s13"
+          },
+          {
+            "selected": false,
+            "text": "r20s14",
+            "value": "r20s14"
+          },
+          {
+            "selected": false,
+            "text": "r20s18",
+            "value": "r20s18"
+          },
+          {
+            "selected": false,
+            "text": "r20s19",
+            "value": "r20s19"
+          }
+        ],
+        "query": "r01s01,r01s02,r01s03,r01s05,r01s06,r01s08,r01s10,r01s13,r01s16,r01s19,r01s20,r02s04,r02s06,r02s08,r02s12,r02s14,r03s12,r03s14,r03s17,r05s01,r05s02,r05s06,r05s07,r05s08,r05s09,r05s14,r05s16,r05s17,r05s18,r05s19,r05s20,r06s02,r06s06,r06s07,r06s08,r06s09,r06s14,r10s01,r10s02,r10s04,r10s05,r10s06,r10s07,r10s09,r10s10,r10s13,r10s14,r10s15,r10s16,r10s17,r10s19,r10s20,r11s04,r11s06,r11s08,r11s09,r11s11,r11s13,r11s15,r11s19,r15s06,r15s10,r15s14,r15s15,r15s16,r15s19,r15s20,r16s04,r16s05,r16s07,r16s09,r16s10,r16s12,r16s13,r16s14,r16s15,r16s16,r16s17,r16s19,r16s20,r17s01,r17s09,r17s10,r17s11,r17s12,r17s15,r17s16,r17s17,r17s18,r17s19,r18s03,r18s06,r18s09,r18s10,r18s12,r18s13,r18s14,r18s15,r18s16,r18s17,r18s18,r18s19,r18s20,r19s03,r19s05,r19s07,r19s09,r19s12,r19s19,r19s20,r20s04,r20s05,r20s06,r20s08,r20s09,r20s10,r20s11,r20s13,r20s14,r20s18,r20s19",
+        "skipUrlSync": false,
+        "type": "custom"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ]
+  },
+  "timezone": "",
+  "title": "Test metrics",
+  "uid": "9ek1KPlWk",
+  "version": 13
+}

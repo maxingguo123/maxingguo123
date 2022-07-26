@@ -1,0 +1,23 @@
+prometheus:
+  replicas: 1
+  retention: '30d'
+  storage:
+    node:
+      class: faster
+      size: 500
+    k8s:
+      class: faster
+      size: 500
+    telemetry:
+      class: faster
+      size: 500
+
+grafana:
+  replicas: 1
+  storage:
+    class: faster
+    size: 100Mi
+monitored_namespaces:
+  - default
+  - kube-system
+  - monitoring

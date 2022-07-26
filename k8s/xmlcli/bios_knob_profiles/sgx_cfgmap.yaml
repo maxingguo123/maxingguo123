@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: knob-monitor-config-map
+  namespace: NAMESPACE
+data:
+  BiosKnobs.ini: "[BiosKnobs]\nEnableSgx=1\nEnableTme=1\nPatrolScrub=0\nUmaBasedClustering=0\n"

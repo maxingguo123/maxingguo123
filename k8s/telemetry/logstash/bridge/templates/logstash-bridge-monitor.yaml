@@ -1,0 +1,23 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: logstash-bridge-{{.Values.name}}
+  labels:
+    k8s-app: logstash-bridge-{{.Values.name}}
+    type: telemetry
+spec:
+  selector:
+    matchLabels:
+      k8s-app: logstash-bridge-{{.Values.name}}
+  namespaceSelector:
+    matchNames:
+    - monitoring
+  podMetricsEndpoints:
+  - port: exporter
+    interval: 10s
+    relabelings:
+    - action: replace
+      sourceLabels:
+      - __meta_kubernetes_pod_node_name
+      targetLabel: instance

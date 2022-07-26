@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind:   StatefulSet
+metadata:
+  name: fluentd-bridge-{{.Values.name}}
+  labels:
+    k8s-app: fluentd-bridge-{{.Values.name}}
+    version: v2.2.1
+    addonmanager.kubernetes.io/mode: Reconcile
+spec:
+  replicas: {{.Values.replicas}}
+  podManagementPolicy: Parallel
+  selector:
+    matchLabels:
+      k8s-app: fluentd-bridge-{{.Values.name}}
+      version: v2.2.1
+  serviceName: fluentd-bridge
+  template:
+    metadata:
+      labels:
+        k8s-app: fluentd-bridge-{{.Values.name}}
+        version: v2.2.1
+      # This annotation ensures that fluentd does not get evicted if the node
+      # supports critical pod annotation based priority scheme.
+      # Note that this does not guarantee admission on the nodes (#40573).
+      annotations:
+        scheduler.alpha.kubernetes.io/critical-pod: ''
+        seccomp.security.alpha.kubernetes.io/pod: 'docker/default'
+    spec:
+      nodeSelector:
+        fluentd-bridge: "true"
+      containers:
+      - name: fluentd-bridge
+        ports:
+        - name: metrics
+          containerPort: 24231
+          protocol: TCP
+        image: sraghav1/fluentd-plugins:v3.0.1
+        command: ["bash"]
+        args: ["-c", "echo 0 >/tmp/counter;/entrypoint.sh"]
+        # livenessProbe:
+        #   exec:
+        #     command:
+        #     - bash
+        #     - /liveness/check_health.sh
+        #   initialDelaySeconds: 600
+        #   periodSeconds: 600
+        #   failureThreshold: 1
+        env:
+        - name: FLUENTD_ARGS
+          value: --no-supervisor -vvvv
+        volumeMounts:
+        - name: liveness
+          mountPath: /liveness
+        - name: config-volume
+          mountPath: /etc/fluent/config.d
+        - name: fluentd-buffers
+          mountPath: /var/log
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: liveness
+        configMap:
+          name: fluentd-bridge-liveness-v0.1.6
+      - name: config-volume
+        configMap:
+          name: fluentd-bridge-config-v0.1.6-{{.Values.name}}
+  volumeClaimTemplates:
+  - metadata:
+      name: fluentd-buffers
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: {{.Values.storage.size}}
+      storageClassName: {{.Values.storage.class}} 

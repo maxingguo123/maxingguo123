@@ -1,0 +1,10 @@
+{{if .Values.criticaldata}}
+{
+  "order": 1,
+  "index_patterns": ["critical-qpool-*"],
+  "settings": {
+	  "number_of_shards": {{.Values.criticaldata.count}},
+    "index.routing.allocation.include.index_type": "critical"
+  }
+}
+{{end}}

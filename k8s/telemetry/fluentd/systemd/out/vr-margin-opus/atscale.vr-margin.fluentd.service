@@ -1,0 +1,23 @@
+[Unit]
+Description=Atscale Fluentd Service: vr-margin
+After=docker.service
+Requires=docker.service
+
+[Service]
+TimeoutStartSec=0
+Restart=always
+ExecStartPre=-/usr/bin/docker exec %n stop
+ExecStartPre=-/usr/bin/docker rm %n
+ExecStartPre=/usr/bin/docker pull prt-registry.sova.intel.com/sraghav1/fluentd-plugins:v3.0.2 
+ExecStart=/usr/bin/docker run --name %n \
+    --entrypoint=/run.sh \
+    -p 0.0.0.0:24213:24213/tcp \
+    -v /var/local/logs/pmb_margining_logs:/var/local/logs/pmb_margining_logs:rw \
+    -v /etc/atscale/fluentd/vr-margin:/etc/fluent/config.d:ro \
+    --env "FLUENTD_ARGS=-q --no-supervisor" \
+    prt-registry.sova.intel.com/sraghav1/fluentd-plugins:v3.0.2 
+ExecStop=/usr/bin/docker stop -t 2 %n
+
+
+[Install]
+WantedBy=default.target

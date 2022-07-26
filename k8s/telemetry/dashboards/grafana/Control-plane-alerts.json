@@ -1,0 +1,1847 @@
+{
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": "-- Grafana --",
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "gnetId": null,
+    "graphTooltip": 0,
+    "id": 30,
+    "links": [],
+    "panels": [
+      {
+        "alert": {
+          "alertRuleTags": {},
+          "conditions": [
+            {
+              "evaluator": {
+                "params": [
+                  95
+                ],
+                "type": "gt"
+              },
+              "operator": {
+                "type": "and"
+              },
+              "query": {
+                "params": [
+                  "A",
+                  "5m",
+                  "now"
+                ]
+              },
+              "reducer": {
+                "params": [],
+                "type": "avg"
+              },
+              "type": "query"
+            },
+            {
+              "evaluator": {
+                "params": [
+                  95
+                ],
+                "type": "gt"
+              },
+              "operator": {
+                "type": "or"
+              },
+              "query": {
+                "params": [
+                  "B",
+                  "5m",
+                  "now"
+                ]
+              },
+              "reducer": {
+                "params": [],
+                "type": "avg"
+              },
+              "type": "query"
+            },
+            {
+              "evaluator": {
+                "params": [
+                  95
+                ],
+                "type": "gt"
+              },
+              "operator": {
+                "type": "or"
+              },
+              "query": {
+                "params": [
+                  "C",
+                  "5m",
+                  "now"
+                ]
+              },
+              "reducer": {
+                "params": [],
+                "type": "avg"
+              },
+              "type": "query"
+            }
+          ],
+          "executionErrorState": "alerting",
+          "for": "5m",
+          "frequency": "15m",
+          "handler": 1,
+          "message": "",
+          "name": "a001telekafka001 alert",
+          "noDataState": "no_data",
+          "notifications": [
+            {
+              "uid": "IQUN56J7z"
+            },
+            {
+              "uid": "F_Oyhea7k"
+            }
+          ]
+        },
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "datasource": "prometheus-node",
+        "fieldConfig": {
+          "defaults": {
+            "custom": {},
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "fill": 1,
+        "fillGradient": 0,
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 0,
+          "y": 0
+        },
+        "hiddenSeries": false,
+        "id": 9,
+        "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+        },
+        "lines": true,
+        "linewidth": 1,
+        "nullPointMode": "null",
+        "percentage": false,
+        "pluginVersion": "7.1.0",
+        "pointradius": 2,
+        "points": false,
+        "renderer": "flot",
+        "seriesOverrides": [],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+          {
+            "expr": "avg(100-100*rate(node_cpu_seconds_total{mode=\"idle\",instance=\"a001telekafka001\"}[10m]))",
+            "interval": "",
+            "legendFormat": "CPU",
+            "refId": "A"
+          },
+          {
+            "expr": "({__name__=~\"node_memory_MemTotal.*\",instance=\"a001telekafka001\"} - {__name__=~\"node_memory_MemAvailable.*\",instance=\"a001telekafka001\"})* 100 / {__name__=~\"node_memory_MemTotal.*\",instance=\"a001telekafka001\"} ",
+            "interval": "",
+            "legendFormat": "Memory",
+            "refId": "B"
+          },
+          {
+            "expr": "min((node_filesystem_size_bytes{instance=\"a001telekafka001\"} - node_filesystem_avail_bytes{instance=\"a001telekafka001\"})*100/node_filesystem_size_bytes{instance=\"a001telekafka001\", mountpoint!~\".*(/var/local/ucode|/var/local/common|/dev/fd|/boot|/run).*\"}) by (mountpoint)",
+            "interval": "",
+            "legendFormat": "{{mountpoint}}",
+            "refId": "C"
+          }
+        ],
+        "thresholds": [
+          {
+            "colorMode": "critical",
+            "fill": true,
+            "line": true,
+            "op": "gt",
+            "value": 95
+          }
+        ],
+        "timeFrom": null,
+        "timeRegions": [],
+        "timeShift": null,
+        "title": "a001telekafka001",
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "type": "graph",
+        "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": []
+        },
+        "yaxes": [
+          {
+            "format": "short",
+            "label": null,
+            "logBase": 1,
+            "max": "100",
+            "min": null,
+            "show": true
+          },
+          {
+            "format": "short",
+            "label": null,
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          }
+        ],
+        "yaxis": {
+          "align": false,
+          "alignLevel": null
+        }
+      },
+      {
+        "alert": {
+          "alertRuleTags": {},
+          "conditions": [
+            {
+              "evaluator": {
+                "params": [
+                  95
+                ],
+                "type": "gt"
+              },
+              "operator": {
+                "type": "and"
+              },
+              "query": {
+                "params": [
+                  "A",
+                  "5m",
+                  "now"
+                ]
+              },
+              "reducer": {
+                "params": [],
+                "type": "avg"
+              },
+              "type": "query"
+            },
+            {
+              "evaluator": {
+                "params": [
+                  95
+                ],
+                "type": "gt"
+              },
+              "operator": {
+                "type": "or"
+              },
+              "query": {
+                "params": [
+                  "B",
+                  "5m",
+                  "now"
+                ]
+              },
+              "reducer": {
+                "params": [],
+                "type": "avg"
+              },
+              "type": "query"
+            },
+            {
+              "evaluator": {
+                "params": [
+                  95
+                ],
+                "type": "gt"
+              },
+              "operator": {
+                "type": "or"
+              },
+              "query": {
+                "params": [
+                  "C",
+                  "5m",
+                  "now"
+                ]
+              },
+              "reducer": {
+                "params": [],
+                "type": "avg"
+              },
+              "type": "query"
+            }
+          ],
+          "executionErrorState": "alerting",
+          "for": "5m",
+          "frequency": "15m",
+          "handler": 1,
+          "name": "a001telekafka003 alert",
+          "noDataState": "no_data",
+          "notifications": [
+            {
+              "uid": "IQUN56J7z"
+            }
+          ]
+        },
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "datasource": "prometheus-node",
+        "fieldConfig": {
+          "defaults": {
+            "custom": {}
+          },
+          "overrides": []
+        },
+        "fill": 1,
+        "fillGradient": 0,
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 12,
+          "y": 0
+        },
+        "hiddenSeries": false,
+        "id": 13,
+        "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+        },
+        "lines": true,
+        "linewidth": 1,
+        "nullPointMode": "null",
+        "percentage": false,
+        "pluginVersion": "7.1.0",
+        "pointradius": 2,
+        "points": false,
+        "renderer": "flot",
+        "seriesOverrides": [],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+          {
+            "expr": "avg(100-100*rate(node_cpu_seconds_total{mode=\"idle\",instance=\"a001telemaster001\"}[10m]))",
+            "interval": "",
+            "legendFormat": "CPU",
+            "refId": "A"
+          },
+          {
+            "expr": "({__name__=~\"node_memory_MemTotal.*\",instance=\"a001telemaster001\"} - {__name__=~\"node_memory_MemAvailable.*\",instance=\"a001telemaster001\"})* 100 / {__name__=~\"node_memory_MemTotal.*\",instance=\"a001telemaster001\"} ",
+            "interval": "",
+            "legendFormat": "Memory",
+            "refId": "B"
+          },
+          {
+            "expr": "min((node_filesystem_size_bytes{instance=\"a001telemaster001\"} - node_filesystem_avail_bytes{instance=\"a001telemaster001\"})*100/node_filesystem_size_bytes{instance=\"a001telemaster001\", mountpoint!~\".*(/var/local/ucode|/var/local/common|/dev/fd|/boot|/run).*\"}) by (mountpoint)",
+            "interval": "",
+            "legendFormat": "{{mountpoint}}",
+            "refId": "C"
+          }
+        ],
+        "thresholds": [
+          {
+            "colorMode": "critical",
+            "fill": true,
+            "line": true,
+            "op": "gt",
+            "value": 95
+          }
+        ],
+        "timeFrom": null,
+        "timeRegions": [],
+        "timeShift": null,
+        "title": "a001telemaster001",
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "type": "graph",
+        "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": []
+        },
+        "yaxes": [
+          {
+            "format": "short",
+            "label": null,
+            "logBase": 1,
+            "max": "100",
+            "min": null,
+            "show": true
+          },
+          {
+            "format": "short",
+            "label": null,
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          }
+        ],
+        "yaxis": {
+          "align": false,
+          "alignLevel": null
+        }
+      },
+      {
+        "alert": {
+          "alertRuleTags": {},
+          "conditions": [
+            {
+              "evaluator": {
+                "params": [
+                  95
+                ],
+                "type": "gt"
+              },
+              "operator": {
+                "type": "and"
+              },
+              "query": {
+                "params": [
+                  "A",
+                  "5m",
+                  "now"
+                ]
+              },
+              "reducer": {
+                "params": [],
+                "type": "avg"
+              },
+              "type": "query"
+            },
+            {
+              "evaluator": {
+                "params": [
+                  95
+                ],
+                "type": "gt"
+              },
+              "operator": {
+                "type": "or"
+              },
+              "query": {
+                "params": [
+                  "B",
+                  "5m",
+                  "now"
+                ]
+              },
+              "reducer": {
+                "params": [],
+                "type": "avg"
+              },
+              "type": "query"
+            },
+            {
+              "evaluator": {
+                "params": [
+                  95
+                ],
+                "type": "gt"
+              },
+              "operator": {
+                "type": "or"
+              },
+              "query": {
+                "params": [
+                  "C",
+                  "5m",
+                  "now"
+                ]
+              },
+              "reducer": {
+                "params": [],
+                "type": "avg"
+              },
+              "type": "query"
+            }
+          ],
+          "executionErrorState": "alerting",
+          "for": "5m",
+          "frequency": "15m",
+          "handler": 1,
+          "name": "a001telekafka002 alert",
+          "noDataState": "no_data",
+          "notifications": [
+            {
+              "uid": "IQUN56J7z"
+            }
+          ]
+        },
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "datasource": "prometheus-node",
+        "fieldConfig": {
+          "defaults": {
+            "custom": {},
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "fill": 1,
+        "fillGradient": 0,
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 0,
+          "y": 9
+        },
+        "hiddenSeries": false,
+        "id": 7,
+        "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+        },
+        "lines": true,
+        "linewidth": 1,
+        "nullPointMode": "null",
+        "percentage": false,
+        "pluginVersion": "7.1.0",
+        "pointradius": 2,
+        "points": false,
+        "renderer": "flot",
+        "seriesOverrides": [],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+          {
+            "expr": "avg(100-100*rate(node_cpu_seconds_total{mode=\"idle\",instance=\"a001telekafka002\"}[10m]))",
+            "interval": "",
+            "legendFormat": "CPU",
+            "refId": "A"
+          },
+          {
+            "expr": "({__name__=~\"node_memory_MemTotal.*\",instance=\"a001telekafka002\"} - {__name__=~\"node_memory_MemAvailable.*\",instance=\"a001telekafka002\"})* 100 / {__name__=~\"node_memory_MemTotal.*\",instance=\"a001telekafka002\"} ",
+            "interval": "",
+            "legendFormat": "Memory",
+            "refId": "B"
+          },
+          {
+            "expr": "min((node_filesystem_size_bytes{instance=\"a001telekafka002\"} - node_filesystem_avail_bytes{instance=\"a001telekafka002\"})*100/node_filesystem_size_bytes{instance=\"a001telekafka002\", mountpoint!~\".*(/var/local/ucode|/var/local/common|/dev/fd|/boot|/run).*\"}) by (mountpoint)",
+            "interval": "",
+            "legendFormat": "{{mountpoint}}",
+            "refId": "C"
+          }
+        ],
+        "thresholds": [
+          {
+            "colorMode": "critical",
+            "fill": true,
+            "line": true,
+            "op": "gt",
+            "value": 95
+          }
+        ],
+        "timeFrom": null,
+        "timeRegions": [],
+        "timeShift": null,
+        "title": "a001telekafka002",
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "type": "graph",
+        "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": []
+        },
+        "yaxes": [
+          {
+            "format": "short",
+            "label": null,
+            "logBase": 1,
+            "max": "100",
+            "min": null,
+            "show": true
+          },
+          {
+            "format": "short",
+            "label": null,
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          }
+        ],
+        "yaxis": {
+          "align": false,
+          "alignLevel": null
+        }
+      },
+      {
+        "alert": {
+          "alertRuleTags": {},
+          "conditions": [
+            {
+              "evaluator": {
+                "params": [
+                  95
+                ],
+                "type": "gt"
+              },
+              "operator": {
+                "type": "and"
+              },
+              "query": {
+                "params": [
+                  "A",
+                  "5m",
+                  "now"
+                ]
+              },
+              "reducer": {
+                "params": [],
+                "type": "avg"
+              },
+              "type": "query"
+            },
+            {
+              "evaluator": {
+                "params": [
+                  95
+                ],
+                "type": "gt"
+              },
+              "operator": {
+                "type": "or"
+              },
+              "query": {
+                "params": [
+                  "B",
+                  "5m",
+                  "now"
+                ]
+              },
+              "reducer": {
+                "params": [],
+                "type": "avg"
+              },
+              "type": "query"
+            },
+            {
+              "evaluator": {
+                "params": [
+                  95
+                ],
+                "type": "gt"
+              },
+              "operator": {
+                "type": "or"
+              },
+              "query": {
+                "params": [
+                  "C",
+                  "5m",
+                  "now"
+                ]
+              },
+              "reducer": {
+                "params": [],
+                "type": "avg"
+              },
+              "type": "query"
+            }
+          ],
+          "executionErrorState": "alerting",
+          "for": "5m",
+          "frequency": "15m",
+          "handler": 1,
+          "name": "a001telemaster002 alert",
+          "noDataState": "no_data",
+          "notifications": []
+        },
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "datasource": "prometheus-node",
+        "fieldConfig": {
+          "defaults": {
+            "custom": {}
+          },
+          "overrides": []
+        },
+        "fill": 1,
+        "fillGradient": 0,
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 12,
+          "y": 9
+        },
+        "hiddenSeries": false,
+        "id": 18,
+        "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+        },
+        "lines": true,
+        "linewidth": 1,
+        "nullPointMode": "null",
+        "percentage": false,
+        "pluginVersion": "7.1.0",
+        "pointradius": 2,
+        "points": false,
+        "renderer": "flot",
+        "seriesOverrides": [],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+          {
+            "expr": "avg(100-100*rate(node_cpu_seconds_total{mode=\"idle\",instance=\"a001telemaster002\"}[10m]))",
+            "interval": "",
+            "legendFormat": "CPU",
+            "refId": "A"
+          },
+          {
+            "expr": "({__name__=~\"node_memory_MemTotal.*\",instance=\"a001telemaster002\"} - {__name__=~\"node_memory_MemAvailable.*\",instance=\"a001telemaster002\"})* 100 / {__name__=~\"node_memory_MemTotal.*\",instance=\"a001telemaster002\"} ",
+            "interval": "",
+            "legendFormat": "Memory",
+            "refId": "B"
+          },
+          {
+            "expr": "min((node_filesystem_size_bytes{instance=\"a001telemaster002\"} - node_filesystem_avail_bytes{instance=\"a001telemaster002\"})*100/node_filesystem_size_bytes{instance=\"a001telemaster002\", mountpoint!~\".*(/var/local/ucode|/var/local/common|/dev/fd|/boot|/run).*\"}) by (mountpoint)",
+            "interval": "",
+            "legendFormat": "{{mountpoint}}",
+            "refId": "C"
+          }
+        ],
+        "thresholds": [
+          {
+            "colorMode": "critical",
+            "fill": true,
+            "line": true,
+            "op": "gt",
+            "value": 95
+          }
+        ],
+        "timeFrom": null,
+        "timeRegions": [],
+        "timeShift": null,
+        "title": "a001telemaster002",
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "type": "graph",
+        "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": []
+        },
+        "yaxes": [
+          {
+            "format": "short",
+            "label": null,
+            "logBase": 1,
+            "max": "100",
+            "min": null,
+            "show": true
+          },
+          {
+            "format": "short",
+            "label": null,
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          }
+        ],
+        "yaxis": {
+          "align": false,
+          "alignLevel": null
+        }
+      },
+      {
+        "alert": {
+          "alertRuleTags": {},
+          "conditions": [
+            {
+              "evaluator": {
+                "params": [
+                  95
+                ],
+                "type": "gt"
+              },
+              "operator": {
+                "type": "and"
+              },
+              "query": {
+                "params": [
+                  "A",
+                  "5m",
+                  "now"
+                ]
+              },
+              "reducer": {
+                "params": [],
+                "type": "avg"
+              },
+              "type": "query"
+            },
+            {
+              "evaluator": {
+                "params": [
+                  5
+                ],
+                "type": "lt"
+              },
+              "operator": {
+                "type": "or"
+              },
+              "query": {
+                "params": [
+                  "B",
+                  "5m",
+                  "now"
+                ]
+              },
+              "reducer": {
+                "params": [],
+                "type": "avg"
+              },
+              "type": "query"
+            },
+            {
+              "evaluator": {
+                "params": [
+                  95
+                ],
+                "type": "gt"
+              },
+              "operator": {
+                "type": "or"
+              },
+              "query": {
+                "params": [
+                  "C",
+                  "5m",
+                  "now"
+                ]
+              },
+              "reducer": {
+                "params": [],
+                "type": "avg"
+              },
+              "type": "query"
+            }
+          ],
+          "executionErrorState": "alerting",
+          "for": "5m",
+          "frequency": "15m",
+          "handler": 1,
+          "name": "a001telekafka003 alert",
+          "noDataState": "no_data",
+          "notifications": [
+            {
+              "uid": "IQUN56J7z"
+            }
+          ]
+        },
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "datasource": "prometheus-node",
+        "fieldConfig": {
+          "defaults": {
+            "custom": {}
+          },
+          "overrides": []
+        },
+        "fill": 1,
+        "fillGradient": 0,
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 18
+        },
+        "hiddenSeries": false,
+        "id": 11,
+        "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+        },
+        "lines": true,
+        "linewidth": 1,
+        "nullPointMode": "null",
+        "percentage": false,
+        "pluginVersion": "7.1.0",
+        "pointradius": 2,
+        "points": false,
+        "renderer": "flot",
+        "seriesOverrides": [],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+          {
+            "expr": "avg(100-100*rate(node_cpu_seconds_total{mode=\"idle\",instance=\"a001telekafka003\"}[10m]))",
+            "interval": "",
+            "legendFormat": "CPU",
+            "refId": "A"
+          },
+          {
+            "expr": "({__name__=~\"node_memory_MemTotal.*\",instance=\"a001telekafka003\"} - {__name__=~\"node_memory_MemAvailable.*\",instance=\"a001telekafka003\"})* 100 / {__name__=~\"node_memory_MemTotal.*\",instance=\"a001telekafka003\"} ",
+            "interval": "",
+            "legendFormat": "Memory",
+            "refId": "B"
+          },
+          {
+            "expr": "min((node_filesystem_size_bytes{instance=\"a001telekafka003\"} - node_filesystem_avail_bytes{instance=\"a001telekafka003\"})*100/node_filesystem_size_bytes{instance=\"a001telekafka003\", mountpoint!~\".*(/var/local/ucode|/var/local/common|/dev/fd|/boot|/run).*\"}) by (mountpoint)",
+            "interval": "",
+            "legendFormat": "{{mountpoint}}",
+            "refId": "C"
+          }
+        ],
+        "thresholds": [
+          {
+            "colorMode": "critical",
+            "fill": true,
+            "line": true,
+            "op": "gt",
+            "value": 95
+          }
+        ],
+        "timeFrom": null,
+        "timeRegions": [],
+        "timeShift": null,
+        "title": "a001telekafka003",
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "type": "graph",
+        "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": []
+        },
+        "yaxes": [
+          {
+            "format": "short",
+            "label": null,
+            "logBase": 1,
+            "max": "100",
+            "min": null,
+            "show": true
+          },
+          {
+            "format": "short",
+            "label": null,
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          }
+        ],
+        "yaxis": {
+          "align": false,
+          "alignLevel": null
+        }
+      },
+      {
+        "alert": {
+          "alertRuleTags": {},
+          "conditions": [
+            {
+              "evaluator": {
+                "params": [
+                  95
+                ],
+                "type": "gt"
+              },
+              "operator": {
+                "type": "and"
+              },
+              "query": {
+                "params": [
+                  "A",
+                  "5m",
+                  "now"
+                ]
+              },
+              "reducer": {
+                "params": [],
+                "type": "avg"
+              },
+              "type": "query"
+            },
+            {
+              "evaluator": {
+                "params": [
+                  95
+                ],
+                "type": "gt"
+              },
+              "operator": {
+                "type": "or"
+              },
+              "query": {
+                "params": [
+                  "B",
+                  "5m",
+                  "now"
+                ]
+              },
+              "reducer": {
+                "params": [],
+                "type": "avg"
+              },
+              "type": "query"
+            },
+            {
+              "evaluator": {
+                "params": [
+                  95
+                ],
+                "type": "gt"
+              },
+              "operator": {
+                "type": "or"
+              },
+              "query": {
+                "params": [
+                  "C",
+                  "5m",
+                  "now"
+                ]
+              },
+              "reducer": {
+                "params": [],
+                "type": "avg"
+              },
+              "type": "query"
+            }
+          ],
+          "executionErrorState": "alerting",
+          "for": "5m",
+          "frequency": "15m",
+          "handler": 1,
+          "name": "a001telemaster002 alert",
+          "noDataState": "no_data",
+          "notifications": []
+        },
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "datasource": "prometheus-node",
+        "fieldConfig": {
+          "defaults": {
+            "custom": {}
+          },
+          "overrides": []
+        },
+        "fill": 1,
+        "fillGradient": 0,
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 18
+        },
+        "hiddenSeries": false,
+        "id": 21,
+        "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+        },
+        "lines": true,
+        "linewidth": 1,
+        "nullPointMode": "null",
+        "percentage": false,
+        "pluginVersion": "7.1.0",
+        "pointradius": 2,
+        "points": false,
+        "renderer": "flot",
+        "seriesOverrides": [],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+          {
+            "expr": "avg(100-100*rate(node_cpu_seconds_total{mode=\"idle\",instance=\"a001telemaster003\"}[10m]))",
+            "interval": "",
+            "legendFormat": "CPU",
+            "refId": "A"
+          },
+          {
+            "expr": "({__name__=~\"node_memory_MemTotal.*\",instance=\"a001telemaster003\"} - {__name__=~\"node_memory_MemAvailable.*\",instance=\"a001telemaster003\"})* 100 / {__name__=~\"node_memory_MemTotal.*\",instance=\"a001telemaster003\"} ",
+            "interval": "",
+            "legendFormat": "Memory",
+            "refId": "B"
+          },
+          {
+            "expr": "min((node_filesystem_size_bytes{instance=\"a001telemaster003\"} - node_filesystem_avail_bytes{instance=\"a001telemaster003\"})*100/node_filesystem_size_bytes{instance=\"a001telemaster003\", mountpoint!~\".*(/var/local/ucode|/var/local/common|/dev/fd|/boot|/run).*\"}) by (mountpoint)",
+            "interval": "",
+            "legendFormat": "{{mountpoint}}",
+            "refId": "C"
+          }
+        ],
+        "thresholds": [
+          {
+            "colorMode": "critical",
+            "fill": true,
+            "line": true,
+            "op": "gt",
+            "value": 95
+          }
+        ],
+        "timeFrom": null,
+        "timeRegions": [],
+        "timeShift": null,
+        "title": "a001telemaster003",
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "type": "graph",
+        "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": []
+        },
+        "yaxes": [
+          {
+            "format": "short",
+            "label": null,
+            "logBase": 1,
+            "max": "100",
+            "min": null,
+            "show": true
+          },
+          {
+            "format": "short",
+            "label": null,
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          }
+        ],
+        "yaxis": {
+          "align": false,
+          "alignLevel": null
+        }
+      },
+      {
+        "alert": {
+          "alertRuleTags": {},
+          "conditions": [
+            {
+              "evaluator": {
+                "params": [
+                  95
+                ],
+                "type": "gt"
+              },
+              "operator": {
+                "type": "and"
+              },
+              "query": {
+                "params": [
+                  "A",
+                  "5m",
+                  "now"
+                ]
+              },
+              "reducer": {
+                "params": [],
+                "type": "avg"
+              },
+              "type": "query"
+            },
+            {
+              "evaluator": {
+                "params": [
+                  95
+                ],
+                "type": "gt"
+              },
+              "operator": {
+                "type": "or"
+              },
+              "query": {
+                "params": [
+                  "B",
+                  "5m",
+                  "now"
+                ]
+              },
+              "reducer": {
+                "params": [],
+                "type": "avg"
+              },
+              "type": "query"
+            },
+            {
+              "evaluator": {
+                "params": [
+                  95
+                ],
+                "type": "gt"
+              },
+              "operator": {
+                "type": "or"
+              },
+              "query": {
+                "params": [
+                  "C",
+                  "5m",
+                  "now"
+                ]
+              },
+              "reducer": {
+                "params": [],
+                "type": "avg"
+              },
+              "type": "query"
+            }
+          ],
+          "executionErrorState": "alerting",
+          "for": "5m",
+          "frequency": "15m",
+          "handler": 1,
+          "name": "a001telemaster002 alert",
+          "noDataState": "no_data",
+          "notifications": [
+            {
+              "uid": "IQUN56J7z"
+            }
+          ]
+        },
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "datasource": "prometheus-node",
+        "fieldConfig": {
+          "defaults": {
+            "custom": {}
+          },
+          "overrides": []
+        },
+        "fill": 1,
+        "fillGradient": 0,
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 26
+        },
+        "hiddenSeries": false,
+        "id": 23,
+        "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+        },
+        "lines": true,
+        "linewidth": 1,
+        "nullPointMode": "null",
+        "percentage": false,
+        "pluginVersion": "7.1.0",
+        "pointradius": 2,
+        "points": false,
+        "renderer": "flot",
+        "seriesOverrides": [],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+          {
+            "expr": "avg(100-100*rate(node_cpu_seconds_total{mode=\"idle\",instance=\"a001teleprom001\"}[10m]))",
+            "interval": "",
+            "legendFormat": "CPU",
+            "refId": "A"
+          },
+          {
+            "expr": "({__name__=~\"node_memory_MemTotal.*\",instance=\"a001teleprom001\"} - {__name__=~\"node_memory_MemAvailable.*\",instance=\"a001teleprom001\"})* 100 / {__name__=~\"node_memory_MemTotal.*\",instance=\"a001teleprom001\"} ",
+            "interval": "",
+            "legendFormat": "Memory",
+            "refId": "B"
+          },
+          {
+            "expr": "min((node_filesystem_size_bytes{instance=\"a001teleprom001\"} - node_filesystem_avail_bytes{instance=\"a001teleprom001\"})*100/node_filesystem_size_bytes{instance=\"a001teleprom001\", mountpoint!~\".*(/var/local/ucode|/var/local/common|/dev/fd|/boot|/run).*\"}) by (mountpoint)",
+            "interval": "",
+            "legendFormat": "{{mountpoint}}",
+            "refId": "C"
+          }
+        ],
+        "thresholds": [
+          {
+            "colorMode": "critical",
+            "fill": true,
+            "line": true,
+            "op": "gt",
+            "value": 95
+          }
+        ],
+        "timeFrom": null,
+        "timeRegions": [],
+        "timeShift": null,
+        "title": "a001teleprom001",
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "type": "graph",
+        "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": []
+        },
+        "yaxes": [
+          {
+            "format": "short",
+            "label": null,
+            "logBase": 1,
+            "max": "100",
+            "min": null,
+            "show": true
+          },
+          {
+            "format": "short",
+            "label": null,
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          }
+        ],
+        "yaxis": {
+          "align": false,
+          "alignLevel": null
+        }
+      },
+      {
+        "alert": {
+          "alertRuleTags": {},
+          "conditions": [
+            {
+              "evaluator": {
+                "params": [
+                  95
+                ],
+                "type": "gt"
+              },
+              "operator": {
+                "type": "and"
+              },
+              "query": {
+                "params": [
+                  "A",
+                  "5m",
+                  "now"
+                ]
+              },
+              "reducer": {
+                "params": [],
+                "type": "avg"
+              },
+              "type": "query"
+            },
+            {
+              "evaluator": {
+                "params": [
+                  95
+                ],
+                "type": "gt"
+              },
+              "operator": {
+                "type": "or"
+              },
+              "query": {
+                "params": [
+                  "B",
+                  "5m",
+                  "now"
+                ]
+              },
+              "reducer": {
+                "params": [],
+                "type": "avg"
+              },
+              "type": "query"
+            },
+            {
+              "evaluator": {
+                "params": [
+                  95
+                ],
+                "type": "gt"
+              },
+              "operator": {
+                "type": "or"
+              },
+              "query": {
+                "params": [
+                  "C",
+                  "5m",
+                  "now"
+                ]
+              },
+              "reducer": {
+                "params": [],
+                "type": "avg"
+              },
+              "type": "query"
+            }
+          ],
+          "executionErrorState": "alerting",
+          "for": "5m",
+          "frequency": "15m",
+          "handler": 1,
+          "name": "a001telemaster002 alert",
+          "noDataState": "no_data",
+          "notifications": [
+            {
+              "uid": "IQUN56J7z"
+            }
+          ]
+        },
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "datasource": "prometheus-node",
+        "fieldConfig": {
+          "defaults": {
+            "custom": {}
+          },
+          "overrides": []
+        },
+        "fill": 1,
+        "fillGradient": 0,
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 26
+        },
+        "hiddenSeries": false,
+        "id": 25,
+        "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+        },
+        "lines": true,
+        "linewidth": 1,
+        "nullPointMode": "null",
+        "percentage": false,
+        "pluginVersion": "7.1.0",
+        "pointradius": 2,
+        "points": false,
+        "renderer": "flot",
+        "seriesOverrides": [],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+          {
+            "expr": "avg(100-100*rate(node_cpu_seconds_total{mode=\"idle\",instance=\"a001teleprom002\"}[10m]))",
+            "interval": "",
+            "legendFormat": "CPU",
+            "refId": "A"
+          },
+          {
+            "expr": "({__name__=~\"node_memory_MemTotal.*\",instance=\"a001teleprom002\"} - {__name__=~\"node_memory_MemAvailable.*\",instance=\"a001teleprom002\"})* 100 / {__name__=~\"node_memory_MemTotal.*\",instance=\"a001teleprom002\"} ",
+            "interval": "",
+            "legendFormat": "Memory",
+            "refId": "B"
+          },
+          {
+            "expr": "min((node_filesystem_size_bytes{instance=\"a001teleprom002\"} - node_filesystem_avail_bytes{instance=\"a001teleprom002\"})*100/node_filesystem_size_bytes{instance=\"a001teleprom002\", mountpoint!~\".*(/var/local/ucode|/var/local/common|/dev/fd|/boot|/run).*\"}) by (mountpoint)",
+            "interval": "",
+            "legendFormat": "{{mountpoint}}",
+            "refId": "C"
+          }
+        ],
+        "thresholds": [
+          {
+            "colorMode": "critical",
+            "fill": true,
+            "line": true,
+            "op": "gt",
+            "value": 95
+          }
+        ],
+        "timeFrom": null,
+        "timeRegions": [],
+        "timeShift": null,
+        "title": "a001teleprom002",
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "type": "graph",
+        "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": []
+        },
+        "yaxes": [
+          {
+            "format": "short",
+            "label": null,
+            "logBase": 1,
+            "max": "100",
+            "min": null,
+            "show": true
+          },
+          {
+            "format": "short",
+            "label": null,
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          }
+        ],
+        "yaxis": {
+          "align": false,
+          "alignLevel": null
+        }
+      },
+      {
+        "alert": {
+          "alertRuleTags": {},
+          "conditions": [
+            {
+              "evaluator": {
+                "params": [
+                  95
+                ],
+                "type": "gt"
+              },
+              "operator": {
+                "type": "and"
+              },
+              "query": {
+                "params": [
+                  "A",
+                  "5m",
+                  "now"
+                ]
+              },
+              "reducer": {
+                "params": [],
+                "type": "avg"
+              },
+              "type": "query"
+            },
+            {
+              "evaluator": {
+                "params": [
+                  95
+                ],
+                "type": "gt"
+              },
+              "operator": {
+                "type": "or"
+              },
+              "query": {
+                "params": [
+                  "B",
+                  "5m",
+                  "now"
+                ]
+              },
+              "reducer": {
+                "params": [],
+                "type": "avg"
+              },
+              "type": "query"
+            },
+            {
+              "evaluator": {
+                "params": [
+                  95
+                ],
+                "type": "gt"
+              },
+              "operator": {
+                "type": "or"
+              },
+              "query": {
+                "params": [
+                  "C",
+                  "5m",
+                  "now"
+                ]
+              },
+              "reducer": {
+                "params": [],
+                "type": "avg"
+              },
+              "type": "query"
+            }
+          ],
+          "executionErrorState": "alerting",
+          "for": "5m",
+          "frequency": "15m",
+          "handler": 1,
+          "name": "a001telemaster002 alert",
+          "noDataState": "no_data",
+          "notifications": [
+            {
+              "uid": "IQUN56J7z"
+            }
+          ]
+        },
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "datasource": "prometheus-node",
+        "fieldConfig": {
+          "defaults": {
+            "custom": {}
+          },
+          "overrides": []
+        },
+        "fill": 1,
+        "fillGradient": 0,
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 34
+        },
+        "hiddenSeries": false,
+        "id": 27,
+        "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+        },
+        "lines": true,
+        "linewidth": 1,
+        "nullPointMode": "null",
+        "percentage": false,
+        "pluginVersion": "7.1.0",
+        "pointradius": 2,
+        "points": false,
+        "renderer": "flot",
+        "seriesOverrides": [],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+          {
+            "expr": "avg(100-100*rate(node_cpu_seconds_total{mode=\"idle\",instance=\"a001teleprom003\"}[10m]))",
+            "interval": "",
+            "legendFormat": "CPU",
+            "refId": "A"
+          },
+          {
+            "expr": "({__name__=~\"node_memory_MemTotal.*\",instance=\"a001teleprom003\"} - {__name__=~\"node_memory_MemAvailable.*\",instance=\"a001teleprom003\"})* 100 / {__name__=~\"node_memory_MemTotal.*\",instance=\"a001teleprom003\"} ",
+            "interval": "",
+            "legendFormat": "Memory",
+            "refId": "B"
+          },
+          {
+            "expr": "min((node_filesystem_size_bytes{instance=\"a001teleprom003\"} - node_filesystem_avail_bytes{instance=\"a001teleprom003\"})*100/node_filesystem_size_bytes{instance=\"a001teleprom003\", mountpoint!~\".*(/var/local/ucode|/var/local/common|/dev/fd|/boot|/run).*\"}) by (mountpoint)",
+            "interval": "",
+            "legendFormat": "{{mountpoint}}",
+            "refId": "C"
+          }
+        ],
+        "thresholds": [
+          {
+            "colorMode": "critical",
+            "fill": true,
+            "line": true,
+            "op": "gt",
+            "value": 95
+          }
+        ],
+        "timeFrom": null,
+        "timeRegions": [],
+        "timeShift": null,
+        "title": "a001teleprom003",
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "type": "graph",
+        "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": []
+        },
+        "yaxes": [
+          {
+            "format": "short",
+            "label": null,
+            "logBase": 1,
+            "max": "100",
+            "min": null,
+            "show": true
+          },
+          {
+            "format": "short",
+            "label": null,
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          }
+        ],
+        "yaxis": {
+          "align": false,
+          "alignLevel": null
+        }
+      }
+    ],
+    "refresh": false,
+    "schemaVersion": 26,
+    "style": "dark",
+    "tags": [],
+    "templating": {
+      "list": []
+    },
+    "time": {
+      "from": "now-6h",
+      "to": "now"
+    },
+    "timepicker": {
+      "refresh_intervals": [
+        "10s",
+        "30s",
+        "1m",
+        "5m",
+        "15m",
+        "30m",
+        "1h",
+        "2h",
+        "1d"
+      ]
+    },
+    "timezone": "",
+    "title": "Control Plane Usage alert",
+    "uid": "ioIhceJnz",
+    "version": 87
+  }

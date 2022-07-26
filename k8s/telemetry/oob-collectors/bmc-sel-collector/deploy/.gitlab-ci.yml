@@ -1,0 +1,40 @@
+---
+
+.deploy: &deploy
+  image: dtzar/helm-kubectl:3.1.2
+  stage: deploy
+  script: 
+    - cd deploy
+    - kubectl create ns ${NS} || echo "namespace exists"
+    - helm repo add stable https://kubernetes-charts.storage.googleapis.com/
+    - helm upgrade --namespace ${NS} -i --debug "${RELEASE}"
+        --set build_id="${CI_PIPELINE_ID}"
+        --set image.repository="${IMAGE}"
+        --set image.tag="${CI_COMMIT_REF_NAME}"
+        -f ${CLUSTER}.yaml ./helm-chart-bmc-sel-collector
+
+whitley-deploy-prod:
+  variables:
+    CLUSTER: whitley
+    RELEASE: bmc-sel-collector
+    KUBECONFIG: ${CI_PROJECT_DIR}.tmp/KUBECONFIG_GDCR01PROD
+  <<: *deploy
+  tags:
+    - linux
+    - atscale
+    - docker
+  only:
+    - master
+
+whitley-deploy-branch:
+  variables:
+    CLUSTER: whitley
+    RELEASE: "${CI_COMMIT_REF_NAME}-bmc-sel-collector"
+    KUBECONFIG: ${CI_PROJECT_DIR}.tmp/KUBECONFIG_GDCR01PROD
+  <<: *deploy
+  tags:
+    - linux
+    - atscale
+    - docker
+  except:
+    - master

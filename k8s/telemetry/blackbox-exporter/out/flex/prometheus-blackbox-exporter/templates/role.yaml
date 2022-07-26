@@ -1,0 +1,21 @@
+---
+# Source: prometheus-blackbox-exporter/templates/role.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    helm.sh/chart: prometheus-blackbox-exporter-5.3.1
+    app.kubernetes.io/name: prometheus-blackbox-exporter
+    app.kubernetes.io/instance: atscale
+    app.kubernetes.io/version: "0.19.0"
+    app.kubernetes.io/managed-by: Helm
+  name: atscale-prometheus-blackbox-exporter
+rules:
+  - apiGroups:
+    - policy
+    resources:
+    - podsecuritypolicies
+    resourceNames:
+    - atscale-prometheus-blackbox-exporter-psp
+    verbs:
+    - use

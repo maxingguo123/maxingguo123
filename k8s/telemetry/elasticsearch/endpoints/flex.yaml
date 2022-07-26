@@ -1,0 +1,8 @@
+elasticsearch:
+  hosts:
+  - host: 10.45.242.4
+    port: 9200
+  scheme: https
+  user: elastic
+  password: 8t02M5PGB2bT8h51yJ4yOt9S 
+  cert: flex-es-cert

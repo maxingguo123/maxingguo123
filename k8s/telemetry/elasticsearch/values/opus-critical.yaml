@@ -1,0 +1,22 @@
+csp: opus
+
+master:
+  max_memory_gb: 16
+  heap_gb: 8
+  count: 1
+  storage:
+    class: local-storage
+    size: 97Gi
+
+data:
+  max_memory_gb: 32
+  heap_gb: 16
+  count: 3
+  storage:
+    class: local-storage
+    size: 392Gi
+
+kibana:
+  count: 1
+
+operator_node: telemetry

@@ -1,0 +1,47 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  namespace: mgmt
+  name: remove-ucode
+spec:
+  selector:
+    matchLabels:
+      name: remove-ucode
+  template:
+    metadata:
+      labels:
+        name: remove-ucode
+    spec:
+      hostNetwork: true
+      volumes:
+        - name: hostrootsys
+          hostPath:
+            path: /sys
+        - name: hostrootucode
+          hostPath:
+            path: /lib/firmware/intel-ucode
+      containers:
+      - name: remove-ucode
+        image: prt-registry.sova.intel.com/sandstone-init-container:32
+        imagePullPolicy: Always
+        volumeMounts:
+          - mountPath: /sys
+            name: hostrootsys
+          - mountPath: /lib/firmware/intel-ucode
+            name: hostrootucode
+        #run-specific uses env vars for params
+        command: ["/usr/bin/bash"]
+        args: ["-c", "rm -f /lib/firmware/intel-ucode/06-6a-*; touch /tmp/testdone; sleep infinity"]
+        readinessProbe:
+          exec:
+            command:
+              - cat
+              - /tmp/testdone
+            # Wait for 30s before checking for the first time
+            # then probe for completion every 5 seconds
+          initialDelaySeconds: 30
+          periodSeconds: 5
+        securityContext:
+          privileged: true
+          allowPrivilegeEscalation: true

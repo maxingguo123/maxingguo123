@@ -1,0 +1,151 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: node-labels-to-files
+  namespace: mgmt
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: node-labels-to-files
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - nodes
+  verbs:
+  - get
+  - watch
+  - list
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: node-labels-to-files-pod
+  namespace: mgmt
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - update
+  - get
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: node-labels-to-files
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: node-labels-to-files
+subjects:
+- kind: ServiceAccount
+  name: node-labels-to-files
+  namespace: mgmt
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: RoleBinding
+metadata:
+  name: node-labels-to-files-pod
+  namespace: mgmt
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: node-labels-to-files-pod
+subjects:
+- kind: ServiceAccount
+  name: node-labels-to-files
+  namespace: mgmt
+
+---
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: node-labels-to-files-ds
+  namespace: mgmt
+  labels:
+    app: node-labels-to-files
+spec:
+  selector:
+    matchLabels:
+      app: node-labels-to-files
+  template:
+    metadata:
+      labels:
+        app: node-labels-to-files
+    spec:
+      serviceAccount: node-labels-to-files
+      serviceAccountName: node-labels-to-files
+      hostNetwork: true
+      volumes:
+        - name: varlog
+          hostPath:
+            path: /var/log
+        - name: podinfo
+          downwardAPI:
+            items:
+              - path: "labels"
+                fieldRef:
+                  fieldPath: metadata.labels
+              - path: "annotations"
+                fieldRef:
+                  fieldPath: metadata.annotations
+      containers:
+      - name: node-labels-to-files
+        image: prt-registry.sova.intel.com/telemetry/node-labels-to-files:v0.2.2
+        imagePullPolicy: Always
+        command:
+          - /usr/bin/node-labels-to-files
+          - -v
+          - "2"
+        env:
+          - name: DELETE_STALE_FILES
+            value: "true"
+          - name: RELABEL_POD
+            value: "false"
+          - name: MODE
+            value: always
+          - name: DIRECTORY
+            value: /tmp/foo
+          - name: NODE_METADATA
+            value: /var/log/atscale/node-metadata.ndjson
+          - name: NODENAME
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
+          - name: HOST_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.hostIP
+          - name: POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: SERVICE_ACCOUNT
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.serviceAccountName
+        volumeMounts:
+          - name: podinfo
+            mountPath: /etc/podinfo
+          - name: varlog
+            mountPath: /var/log

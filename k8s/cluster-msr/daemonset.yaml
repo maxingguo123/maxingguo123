@@ -1,0 +1,46 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: cluster-msr
+  namespace: mgmt
+spec:
+  selector:
+      matchLabels:
+        name: cluster-msr
+  template:
+    metadata:
+        labels:
+          name: cluster-msr
+    spec:
+      containers:
+      - name: cluster-msr
+        image: prt-registry.sova.intel.com/cluster-msr:v0.4
+        imagePullPolicy: Always
+        env:
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: sys
+          mountPath: /sys
+          readOnly: false
+        - name: msrfile
+          mountPath: /configmaps
+          readOnly: true
+        - name: hostroot
+          mountPath: /hostroot
+          readOnly: false
+      volumes:
+        - name: sys
+          hostPath:
+            path: /sys
+        - name: msrfile
+          configMap:
+            name: cluster-msr-configmap
+        - name: hostroot
+          hostPath:
+            path: /
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 1
+    type: RollingUpdate

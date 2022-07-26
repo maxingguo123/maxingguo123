@@ -1,0 +1,359 @@
+# HELP go_gc_duration_seconds A summary of the pause duration of garbage collection cycles.
+# TYPE go_gc_duration_seconds summary
+go_gc_duration_seconds{quantile="0"} 4.1255e-05
+go_gc_duration_seconds{quantile="0.25"} 9.0665e-05
+go_gc_duration_seconds{quantile="0.5"} 0.000162379
+go_gc_duration_seconds{quantile="0.75"} 0.000315507
+go_gc_duration_seconds{quantile="1"} 0.243654464
+go_gc_duration_seconds_sum 4.564697211
+go_gc_duration_seconds_count 1310
+# HELP go_goroutines Number of goroutines that currently exist.
+# TYPE go_goroutines gauge
+go_goroutines 16
+# HELP go_info Information about the Go environment.
+# TYPE go_info gauge
+go_info{version="go1.13.15"} 1
+# HELP go_memstats_alloc_bytes Number of bytes allocated and still in use.
+# TYPE go_memstats_alloc_bytes gauge
+go_memstats_alloc_bytes 5.4322e+06
+# HELP go_memstats_alloc_bytes_total Total number of bytes allocated, even if freed.
+# TYPE go_memstats_alloc_bytes_total counter
+go_memstats_alloc_bytes_total 4.936469984e+09
+# HELP go_memstats_buck_hash_sys_bytes Number of bytes used by the profiling bucket hash table.
+# TYPE go_memstats_buck_hash_sys_bytes gauge
+go_memstats_buck_hash_sys_bytes 1.558041e+06
+# HELP go_memstats_frees_total Total number of frees.
+# TYPE go_memstats_frees_total counter
+go_memstats_frees_total 3.3309294e+07
+# HELP go_memstats_gc_cpu_fraction The fraction of this program's available CPU time used by the GC since the program started.
+# TYPE go_memstats_gc_cpu_fraction gauge
+go_memstats_gc_cpu_fraction 9.635135218872439e-05
+# HELP go_memstats_gc_sys_bytes Number of bytes used for garbage collection system metadata.
+# TYPE go_memstats_gc_sys_bytes gauge
+go_memstats_gc_sys_bytes 2.402304e+06
+# HELP go_memstats_heap_alloc_bytes Number of heap bytes allocated and still in use.
+# TYPE go_memstats_heap_alloc_bytes gauge
+go_memstats_heap_alloc_bytes 5.4322e+06
+# HELP go_memstats_heap_idle_bytes Number of heap bytes waiting to be used.
+# TYPE go_memstats_heap_idle_bytes gauge
+go_memstats_heap_idle_bytes 5.4870016e+07
+# HELP go_memstats_heap_inuse_bytes Number of heap bytes that are in use.
+# TYPE go_memstats_heap_inuse_bytes gauge
+go_memstats_heap_inuse_bytes 7.094272e+06
+# HELP go_memstats_heap_objects Number of allocated objects.
+# TYPE go_memstats_heap_objects gauge
+go_memstats_heap_objects 9082
+# HELP go_memstats_heap_released_bytes Number of heap bytes released to OS.
+# TYPE go_memstats_heap_released_bytes gauge
+go_memstats_heap_released_bytes 5.1953664e+07
+# HELP go_memstats_heap_sys_bytes Number of heap bytes obtained from system.
+# TYPE go_memstats_heap_sys_bytes gauge
+go_memstats_heap_sys_bytes 6.1964288e+07
+# HELP go_memstats_last_gc_time_seconds Number of seconds since 1970 of last garbage collection.
+# TYPE go_memstats_last_gc_time_seconds gauge
+go_memstats_last_gc_time_seconds 1.613066291091233e+09
+# HELP go_memstats_lookups_total Total number of pointer lookups.
+# TYPE go_memstats_lookups_total counter
+go_memstats_lookups_total 0
+# HELP go_memstats_mallocs_total Total number of mallocs.
+# TYPE go_memstats_mallocs_total counter
+go_memstats_mallocs_total 3.3318376e+07
+# HELP go_memstats_mcache_inuse_bytes Number of bytes in use by mcache structures.
+# TYPE go_memstats_mcache_inuse_bytes gauge
+go_memstats_mcache_inuse_bytes 166656
+# HELP go_memstats_mcache_sys_bytes Number of bytes used for mcache structures obtained from system.
+# TYPE go_memstats_mcache_sys_bytes gauge
+go_memstats_mcache_sys_bytes 180224
+# HELP go_memstats_mspan_inuse_bytes Number of bytes in use by mspan structures.
+# TYPE go_memstats_mspan_inuse_bytes gauge
+go_memstats_mspan_inuse_bytes 93976
+# HELP go_memstats_mspan_sys_bytes Number of bytes used for mspan structures obtained from system.
+# TYPE go_memstats_mspan_sys_bytes gauge
+go_memstats_mspan_sys_bytes 212992
+# HELP go_memstats_next_gc_bytes Number of heap bytes when next garbage collection will take place.
+# TYPE go_memstats_next_gc_bytes gauge
+go_memstats_next_gc_bytes 9.402464e+06
+# HELP go_memstats_other_sys_bytes Number of bytes used for other system allocations.
+# TYPE go_memstats_other_sys_bytes gauge
+go_memstats_other_sys_bytes 2.396895e+06
+# HELP go_memstats_stack_inuse_bytes Number of bytes in use by the stack allocator.
+# TYPE go_memstats_stack_inuse_bytes gauge
+go_memstats_stack_inuse_bytes 5.144576e+06
+# HELP go_memstats_stack_sys_bytes Number of bytes obtained from system for stack allocator.
+# TYPE go_memstats_stack_sys_bytes gauge
+go_memstats_stack_sys_bytes 5.144576e+06
+# HELP go_memstats_sys_bytes Number of bytes obtained from system.
+# TYPE go_memstats_sys_bytes gauge
+go_memstats_sys_bytes 7.385932e+07
+# HELP go_threads Number of OS threads created.
+# TYPE go_threads gauge
+go_threads 88
+# HELP ipmi_chassis_power_state Current power state (1=on, 0=off).
+# TYPE ipmi_chassis_power_state gauge
+ipmi_chassis_power_state 1
+# HELP ipmi_fan_speed_rpm Fan speed in rotations per minute.
+# TYPE ipmi_fan_speed_rpm gauge
+ipmi_fan_speed_rpm{id="10",name="Fan 4"} 20664
+ipmi_fan_speed_rpm{id="11",name="Fan 5"} 20336
+ipmi_fan_speed_rpm{id="12",name="Fan 6"} 20664
+ipmi_fan_speed_rpm{id="7",name="Fan 1"} 20418
+ipmi_fan_speed_rpm{id="8",name="Fan 2"} 20746
+ipmi_fan_speed_rpm{id="9",name="Fan 3"} 20582
+# HELP ipmi_fan_speed_state Reported state of a fan speed sensor (0=nominal, 1=warning, 2=critical).
+# TYPE ipmi_fan_speed_state gauge
+ipmi_fan_speed_state{id="10",name="Fan 4"} 0
+ipmi_fan_speed_state{id="11",name="Fan 5"} 0
+ipmi_fan_speed_state{id="12",name="Fan 6"} 0
+ipmi_fan_speed_state{id="7",name="Fan 1"} 0
+ipmi_fan_speed_state{id="8",name="Fan 2"} 0
+ipmi_fan_speed_state{id="9",name="Fan 3"} 0
+# HELP ipmi_power_state Reported state of a power sensor (0=nominal, 1=warning, 2=critical).
+# TYPE ipmi_power_state gauge
+ipmi_power_state{id="13",name="CPU Power"} 0
+ipmi_power_state{id="14",name="Cpu Power Averag"} 0
+ipmi_power_state{id="15",name="Cpu Power Averag"} 0
+ipmi_power_state{id="16",name="Cpu Power Cap CP"} 0
+ipmi_power_state{id="17",name="Cpu Power Cap CP"} 0
+ipmi_power_state{id="18",name="Dimm Power Avera"} 0
+ipmi_power_state{id="19",name="Dimm Power Avera"} 0
+ipmi_power_state{id="20",name="Dimm Power Cap C"} 0
+ipmi_power_state{id="21",name="Dimm Power Cap C"} 0
+ipmi_power_state{id="22",name="Memory Power"} 0
+ipmi_power_state{id="23",name="Total Power"} 0
+# HELP ipmi_power_watts Power reading in Watts.
+# TYPE ipmi_power_watts gauge
+ipmi_power_watts{id="13",name="CPU Power"} 370
+ipmi_power_watts{id="14",name="Cpu Power Averag"} 127
+ipmi_power_watts{id="15",name="Cpu Power Averag"} 127
+ipmi_power_watts{id="16",name="Cpu Power Cap CP"} 93
+ipmi_power_watts{id="17",name="Cpu Power Cap CP"} 93
+ipmi_power_watts{id="18",name="Dimm Power Avera"} 117
+ipmi_power_watts{id="19",name="Dimm Power Avera"} 116
+ipmi_power_watts{id="20",name="Dimm Power Cap C"} 6
+ipmi_power_watts{id="21",name="Dimm Power Cap C"} 6
+ipmi_power_watts{id="22",name="Memory Power"} 59
+ipmi_power_watts{id="23",name="Total Power"} 680
+# HELP ipmi_scrape_duration_seconds Returns how long the scrape took to complete in seconds.
+# TYPE ipmi_scrape_duration_seconds gauge
+ipmi_scrape_duration_seconds 17.844856672
+# HELP ipmi_sel_free_space_bytes Current free space remaining for new SEL entries.
+# TYPE ipmi_sel_free_space_bytes gauge
+ipmi_sel_free_space_bytes 65535
+# HELP ipmi_sel_logs_count Current number of log entries in the SEL.
+# TYPE ipmi_sel_logs_count gauge
+ipmi_sel_logs_count 18
+# HELP ipmi_sensor_state Indicates the severity of the state reported by an IPMI sensor (0=nominal, 1=warning, 2=critical).
+# TYPE ipmi_sensor_state gauge
+ipmi_sensor_state{id="0",name="System Airflow",type="Reserved"} 0
+ipmi_sensor_state{id="1",name="Pwm 1",type="Fan"} 0
+ipmi_sensor_state{id="102",name="Host Cpu Utiliza",type="Reserved"} 0
+ipmi_sensor_state{id="2",name="Pwm 2",type="Fan"} 0
+ipmi_sensor_state{id="3",name="Pwm 3",type="Fan"} 0
+ipmi_sensor_state{id="4",name="Pwm 6",type="Fan"} 0
+ipmi_sensor_state{id="5",name="Pwm 7",type="Fan"} 0
+ipmi_sensor_state{id="6",name="Pwm 8",type="Fan"} 0
+# HELP ipmi_sensor_value Generic data read from an IPMI sensor of unknown type, relying on labels for context.
+# TYPE ipmi_sensor_value gauge
+ipmi_sensor_value{id="0",name="System Airflow",type="Reserved"} 110
+ipmi_sensor_value{id="1",name="Pwm 1",type="Fan"} 99.96
+ipmi_sensor_value{id="102",name="Host Cpu Utiliza",type="Reserved"} 88.59
+ipmi_sensor_value{id="2",name="Pwm 2",type="Fan"} 99.96
+ipmi_sensor_value{id="3",name="Pwm 3",type="Fan"} 99.96
+ipmi_sensor_value{id="4",name="Pwm 6",type="Fan"} 99.96
+ipmi_sensor_value{id="5",name="Pwm 7",type="Fan"} 99.96
+ipmi_sensor_value{id="6",name="Pwm 8",type="Fan"} 99.96
+# HELP ipmi_temperature_celsius Temperature reading in degree Celsius.
+# TYPE ipmi_temperature_celsius gauge
+ipmi_temperature_celsius{id="101",name="SSB Temp"} 29
+ipmi_temperature_celsius{id="35",name="Core 2 CPU2"} 41
+ipmi_temperature_celsius{id="36",name="Core 3 CPU1"} 39
+ipmi_temperature_celsius{id="37",name="Core 3 CPU2"} 38
+ipmi_temperature_celsius{id="38",name="Core 4 CPU1"} 38
+ipmi_temperature_celsius{id="39",name="Core 5 CPU2"} 42
+ipmi_temperature_celsius{id="40",name="Core 7 CPU1"} 34
+ipmi_temperature_celsius{id="41",name="Core 7 CPU2"} 41
+ipmi_temperature_celsius{id="42",name="Core 8 CPU1"} 36
+ipmi_temperature_celsius{id="43",name="Core 8 CPU2"} 41
+ipmi_temperature_celsius{id="44",name="Core 10 CPU1"} 41
+ipmi_temperature_celsius{id="45",name="Core 10 CPU2"} 40
+ipmi_temperature_celsius{id="46",name="Core 11 CPU1"} 33
+ipmi_temperature_celsius{id="47",name="Core 11 CPU2"} 43
+ipmi_temperature_celsius{id="48",name="Core 12 CPU1"} 38
+ipmi_temperature_celsius{id="49",name="Core 12 CPU2"} 38
+ipmi_temperature_celsius{id="50",name="Core 13 CPU1"} 39
+ipmi_temperature_celsius{id="51",name="Core 13 CPU2"} 38
+ipmi_temperature_celsius{id="52",name="Core 14 CPU1"} 41
+ipmi_temperature_celsius{id="53",name="Core 15 CPU1"} 37
+ipmi_temperature_celsius{id="54",name="Core 15 CPU2"} 40
+ipmi_temperature_celsius{id="55",name="Core 17 CPU1"} 38
+ipmi_temperature_celsius{id="56",name="Core 18 CPU1"} 36
+ipmi_temperature_celsius{id="57",name="Core 18 CPU2"} 37
+ipmi_temperature_celsius{id="58",name="Core 19 CPU2"} 42
+ipmi_temperature_celsius{id="59",name="Core 20 CPU1"} 37
+ipmi_temperature_celsius{id="60",name="Core 20 CPU2"} 39
+ipmi_temperature_celsius{id="61",name="Core 21 CPU2"} 40
+ipmi_temperature_celsius{id="62",name="Core 22 CPU1"} 35
+ipmi_temperature_celsius{id="63",name="Core 24 CPU2"} 42
+ipmi_temperature_celsius{id="64",name="Core 25 CPU1"} 36
+ipmi_temperature_celsius{id="65",name="Core 25 CPU2"} 41
+ipmi_temperature_celsius{id="66",name="Core 26 CPU1"} 37
+ipmi_temperature_celsius{id="67",name="Core 27 CPU1"} 38
+ipmi_temperature_celsius{id="68",name="Core 27 CPU2"} 38
+ipmi_temperature_celsius{id="69",name="Core 28 CPU1"} 35
+ipmi_temperature_celsius{id="70",name="Core 29 CPU2"} 37
+ipmi_temperature_celsius{id="71",name="Core 31 CPU2"} 39
+ipmi_temperature_celsius{id="72",name="Core 32 CPU1"} 36
+ipmi_temperature_celsius{id="73",name="Core 32 CPU2"} 42
+ipmi_temperature_celsius{id="74",name="DIMM A1 CPU1"} 26
+ipmi_temperature_celsius{id="75",name="DIMM A1 CPU2"} 27
+ipmi_temperature_celsius{id="76",name="DIMM B1 CPU1"} 26
+ipmi_temperature_celsius{id="77",name="DIMM B1 CPU2"} 28
+ipmi_temperature_celsius{id="78",name="DIMM C1 CPU1"} 26
+ipmi_temperature_celsius{id="79",name="DIMM C1 CPU2"} 28
+ipmi_temperature_celsius{id="80",name="DIMM D1 CPU1"} 26
+ipmi_temperature_celsius{id="81",name="DIMM D1 CPU2"} 27
+ipmi_temperature_celsius{id="82",name="DIMM E1 CPU1"} 26
+ipmi_temperature_celsius{id="83",name="DIMM E1 CPU2"} 26
+ipmi_temperature_celsius{id="84",name="DIMM F1 CPU1"} 27
+ipmi_temperature_celsius{id="85",name="DIMM F1 CPU2"} 26
+ipmi_temperature_celsius{id="86",name="DIMM G1 CPU1"} 26
+ipmi_temperature_celsius{id="87",name="DIMM G1 CPU2"} 27
+ipmi_temperature_celsius{id="88",name="DIMM H1 CPU1"} 26
+ipmi_temperature_celsius{id="89",name="DIMM H1 CPU2"} 26
+ipmi_temperature_celsius{id="90",name="DTS CPU1"} 37
+ipmi_temperature_celsius{id="91",name="DTS CPU2"} 39
+ipmi_temperature_celsius{id="92",name="Die CPU1"} 42
+ipmi_temperature_celsius{id="93",name="Die CPU2"} 43
+ipmi_temperature_celsius{id="95",name="Front Panel Temp"} 23
+# HELP ipmi_temperature_state Reported state of a temperature sensor (0=nominal, 1=warning, 2=critical).
+# TYPE ipmi_temperature_state gauge
+ipmi_temperature_state{id="101",name="SSB Temp"} 0
+ipmi_temperature_state{id="35",name="Core 2 CPU2"} 0
+ipmi_temperature_state{id="36",name="Core 3 CPU1"} 0
+ipmi_temperature_state{id="37",name="Core 3 CPU2"} 0
+ipmi_temperature_state{id="38",name="Core 4 CPU1"} 0
+ipmi_temperature_state{id="39",name="Core 5 CPU2"} 0
+ipmi_temperature_state{id="40",name="Core 7 CPU1"} 0
+ipmi_temperature_state{id="41",name="Core 7 CPU2"} 0
+ipmi_temperature_state{id="42",name="Core 8 CPU1"} 0
+ipmi_temperature_state{id="43",name="Core 8 CPU2"} 0
+ipmi_temperature_state{id="44",name="Core 10 CPU1"} 0
+ipmi_temperature_state{id="45",name="Core 10 CPU2"} 0
+ipmi_temperature_state{id="46",name="Core 11 CPU1"} 0
+ipmi_temperature_state{id="47",name="Core 11 CPU2"} 0
+ipmi_temperature_state{id="48",name="Core 12 CPU1"} 0
+ipmi_temperature_state{id="49",name="Core 12 CPU2"} 0
+ipmi_temperature_state{id="50",name="Core 13 CPU1"} 0
+ipmi_temperature_state{id="51",name="Core 13 CPU2"} 0
+ipmi_temperature_state{id="52",name="Core 14 CPU1"} 0
+ipmi_temperature_state{id="53",name="Core 15 CPU1"} 0
+ipmi_temperature_state{id="54",name="Core 15 CPU2"} 0
+ipmi_temperature_state{id="55",name="Core 17 CPU1"} 0
+ipmi_temperature_state{id="56",name="Core 18 CPU1"} 0
+ipmi_temperature_state{id="57",name="Core 18 CPU2"} 0
+ipmi_temperature_state{id="58",name="Core 19 CPU2"} 0
+ipmi_temperature_state{id="59",name="Core 20 CPU1"} 0
+ipmi_temperature_state{id="60",name="Core 20 CPU2"} 0
+ipmi_temperature_state{id="61",name="Core 21 CPU2"} 0
+ipmi_temperature_state{id="62",name="Core 22 CPU1"} 0
+ipmi_temperature_state{id="63",name="Core 24 CPU2"} 0
+ipmi_temperature_state{id="64",name="Core 25 CPU1"} 0
+ipmi_temperature_state{id="65",name="Core 25 CPU2"} 0
+ipmi_temperature_state{id="66",name="Core 26 CPU1"} 0
+ipmi_temperature_state{id="67",name="Core 27 CPU1"} 0
+ipmi_temperature_state{id="68",name="Core 27 CPU2"} 0
+ipmi_temperature_state{id="69",name="Core 28 CPU1"} 0
+ipmi_temperature_state{id="70",name="Core 29 CPU2"} 0
+ipmi_temperature_state{id="71",name="Core 31 CPU2"} 0
+ipmi_temperature_state{id="72",name="Core 32 CPU1"} 0
+ipmi_temperature_state{id="73",name="Core 32 CPU2"} 0
+ipmi_temperature_state{id="74",name="DIMM A1 CPU1"} 0
+ipmi_temperature_state{id="75",name="DIMM A1 CPU2"} 0
+ipmi_temperature_state{id="76",name="DIMM B1 CPU1"} 0
+ipmi_temperature_state{id="77",name="DIMM B1 CPU2"} 0
+ipmi_temperature_state{id="78",name="DIMM C1 CPU1"} 0
+ipmi_temperature_state{id="79",name="DIMM C1 CPU2"} 0
+ipmi_temperature_state{id="80",name="DIMM D1 CPU1"} 0
+ipmi_temperature_state{id="81",name="DIMM D1 CPU2"} 0
+ipmi_temperature_state{id="82",name="DIMM E1 CPU1"} 0
+ipmi_temperature_state{id="83",name="DIMM E1 CPU2"} 0
+ipmi_temperature_state{id="84",name="DIMM F1 CPU1"} 0
+ipmi_temperature_state{id="85",name="DIMM F1 CPU2"} 0
+ipmi_temperature_state{id="86",name="DIMM G1 CPU1"} 0
+ipmi_temperature_state{id="87",name="DIMM G1 CPU2"} 0
+ipmi_temperature_state{id="88",name="DIMM H1 CPU1"} 0
+ipmi_temperature_state{id="89",name="DIMM H1 CPU2"} 0
+ipmi_temperature_state{id="90",name="DTS CPU1"} 0
+ipmi_temperature_state{id="91",name="DTS CPU2"} 0
+ipmi_temperature_state{id="92",name="Die CPU1"} 0
+ipmi_temperature_state{id="93",name="Die CPU2"} 0
+ipmi_temperature_state{id="95",name="Front Panel Temp"} 0
+# HELP ipmi_up '1' if a scrape of the IPMI device was successful, '0' otherwise.
+# TYPE ipmi_up gauge
+ipmi_up{collector="bmc"} 0
+ipmi_up{collector="chassis"} 1
+ipmi_up{collector="ipmi"} 1
+ipmi_up{collector="sel"} 1
+# HELP ipmi_voltage_state Reported state of a voltage sensor (0=nominal, 1=warning, 2=critical).
+# TYPE ipmi_voltage_state gauge
+ipmi_voltage_state{id="105",name="A P12V PSU SCALE"} 0
+ipmi_voltage_state{id="106",name="P1V8 PCH"} 0
+ipmi_voltage_state{id="107",name="P3V3"} 0
+ipmi_voltage_state{id="108",name="P3VBAT"} 0
+ipmi_voltage_state{id="109",name="P12V AUX"} 0
+ipmi_voltage_state{id="110",name="P105 PCH AUX"} 0
+ipmi_voltage_state{id="111",name="PVCCIN CPU1"} 0
+ipmi_voltage_state{id="112",name="PVCCIN CPU2"} 0
+ipmi_voltage_state{id="113",name="PVCCIO CPU1"} 0
+ipmi_voltage_state{id="114",name="PVCCIO CPU2"} 0
+ipmi_voltage_state{id="115",name="PVDQ ABC CPU1"} 0
+ipmi_voltage_state{id="116",name="PVDQ ABC CPU2"} 0
+ipmi_voltage_state{id="117",name="PVDQ DEF CPU1"} 0
+ipmi_voltage_state{id="118",name="PVDQ DEF CPU2"} 0
+ipmi_voltage_state{id="119",name="PVNN PCH AUX"} 0
+# HELP ipmi_voltage_volts Voltage reading in Volts.
+# TYPE ipmi_voltage_volts gauge
+ipmi_voltage_volts{id="105",name="A P12V PSU SCALE"} 12.1
+ipmi_voltage_volts{id="106",name="P1V8 PCH"} 1.8
+ipmi_voltage_volts{id="107",name="P3V3"} 3.34
+ipmi_voltage_volts{id="108",name="P3VBAT"} 3.14
+ipmi_voltage_volts{id="109",name="P12V AUX"} 12.03
+ipmi_voltage_volts{id="110",name="P105 PCH AUX"} 1.06
+ipmi_voltage_volts{id="111",name="PVCCIN CPU1"} 1.81
+ipmi_voltage_volts{id="112",name="PVCCIN CPU2"} 1.81
+ipmi_voltage_volts{id="113",name="PVCCIO CPU1"} 1.04
+ipmi_voltage_volts{id="114",name="PVCCIO CPU2"} 1.04
+ipmi_voltage_volts{id="115",name="PVDQ ABC CPU1"} 1.25
+ipmi_voltage_volts{id="116",name="PVDQ ABC CPU2"} 1.25
+ipmi_voltage_volts{id="117",name="PVDQ DEF CPU1"} 1.25
+ipmi_voltage_volts{id="118",name="PVDQ DEF CPU2"} 1.25
+ipmi_voltage_volts{id="119",name="PVNN PCH AUX"} 0.91
+# HELP process_cpu_seconds_total Total user and system CPU time spent in seconds.
+# TYPE process_cpu_seconds_total counter
+process_cpu_seconds_total 102.8
+# HELP process_max_fds Maximum number of open file descriptors.
+# TYPE process_max_fds gauge
+process_max_fds 1.048576e+06
+# HELP process_open_fds Number of open file descriptors.
+# TYPE process_open_fds gauge
+process_open_fds 14
+# HELP process_resident_memory_bytes Resident memory size in bytes.
+# TYPE process_resident_memory_bytes gauge
+process_resident_memory_bytes 4.4560384e+07
+# HELP process_start_time_seconds Start time of the process since unix epoch in seconds.
+# TYPE process_start_time_seconds gauge
+process_start_time_seconds 1.61301815146e+09
+# HELP process_virtual_memory_bytes Virtual memory size in bytes.
+# TYPE process_virtual_memory_bytes gauge
+process_virtual_memory_bytes 1.19291904e+08
+# HELP process_virtual_memory_max_bytes Maximum amount of virtual memory available in bytes.
+# TYPE process_virtual_memory_max_bytes gauge
+process_virtual_memory_max_bytes -1
+# HELP promhttp_metric_handler_requests_in_flight Current number of scrapes being served.
+# TYPE promhttp_metric_handler_requests_in_flight gauge
+promhttp_metric_handler_requests_in_flight 2
+# HELP promhttp_metric_handler_requests_total Total number of scrapes by HTTP status code.
+# TYPE promhttp_metric_handler_requests_total counter
+promhttp_metric_handler_requests_total{code="200"} 4815
+promhttp_metric_handler_requests_total{code="500"} 0
+promhttp_metric_handler_requests_total{code="503"} 0

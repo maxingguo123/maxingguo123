@@ -1,0 +1,11 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: filebeat-bridge-{{.Values.name}}-config
+  labels:
+    addonmanager.kubernetes.io/mode: Reconcile
+data:
+{{range $path, $_ := $.Files.Glob "config/**.yml"}}
+{{$path | base | indent 2}}: |-
+{{tpl ($.Files.Get $path) $ | indent 4}}  
+{{end}}

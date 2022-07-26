@@ -1,0 +1,205 @@
+{
+  "order": 0,
+  "version": 1,
+  "index_patterns": [
+    "qpool-*",
+    "critical-qpool-*"
+  ],
+  "mappings": {
+    "properties": {
+      "@timestamp": {
+        "type": "date_nanos"
+      },
+      "timestamp_ns": {
+        "type": "date_nanos"
+      },
+      "priority": {
+        "type": "keyword",
+        "ignore_above": 256
+      },
+      "syslog_facility": {
+        "type": "keyword",
+        "ignore_above": 256
+      },
+      "syslog_identifier": {
+        "type": "keyword",
+        "ignore_above": 256
+      },
+      "syslog_pid": {
+        "type": "keyword",
+        "index": false
+      },
+      "boot_id": {
+        "type": "keyword",
+        "index": false
+      },
+      "cap_effective": {
+        "type": "keyword",
+        "index": false
+      },
+      "cmdline": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
+        }
+      },
+      "comm": {
+        "type": "keyword",
+        "ignore_above": 256
+      },
+      "exe": {
+        "type": "keyword",
+        "ignore_above": 256
+      },
+      "gid": {
+        "type": "keyword",
+        "index": false
+      },
+      "hostname": {
+        "type": "keyword",
+        "ignore_above": 256
+      },
+      "kernel_device": {
+        "type": "keyword",
+        "ignore_above": 256
+      },
+      "kernel_subsystem": {
+        "type": "keyword",
+        "ignore_above": 256
+      },
+      "machine_id": {
+        "type": "keyword",
+        "index": false
+      },
+      "pid": {
+        "type": "keyword",
+        "index": false
+      },
+      "selinux_context": {
+        "type": "keyword",
+        "ignore_above": 256
+      },
+      "source_monotonic_timestamp": {
+        "type": "keyword",
+        "index": false
+      },
+      "source_realtime_timestamp": {
+        "type": "keyword",
+        "index": false
+      },
+      "stream_id": {
+        "type": "keyword",
+        "index": false
+      },
+      "systemd_cgroup": {
+        "type": "keyword",
+        "ignore_above": 256
+      },
+      "systemd_invocation_id": {
+        "type": "keyword",
+        "index": false
+      },
+      "systemd_slice": {
+        "type": "keyword",
+        "ignore_above": 256
+      },
+      "systemd_unit": {
+        "type": "keyword",
+        "ignore_above": 256
+      },
+      "transport": {
+        "type": "keyword",
+        "ignore_above": 256
+      },
+      "udev_sysname": {
+        "type": "keyword",
+        "ignore_above": 256
+      },
+      "uid": {
+        "type": "keyword",
+        "index": false
+      },
+      "docker": {
+        "properties": {
+          "container_id": {
+            "type": "keyword",
+            "index": false
+          }
+        }
+      },
+      "kubernetes": {
+        "properties": {
+          "container_image": {
+            "type": "keyword",
+            "ignore_above": 256
+          },
+          "container_image_id": {
+            "type": "keyword",
+            "index": false
+          },
+          "container_name": {
+            "type": "keyword",
+            "ignore_above": 256
+          },
+          "host": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword",
+                "ignore_above": 256
+              }
+            }
+          },
+          "labels": {
+            "properties": {
+              "name": {
+                "type": "keyword",
+                "ignore_above": 256
+              }
+            }
+          },
+          "master_url": {
+            "type": "keyword",
+            "index": false
+          },
+          "namespace_id": {
+            "type": "keyword",
+            "index": false
+          },
+          "namespace_name": {
+            "type": "keyword",
+            "ignore_above": 256
+          },
+          "pod_id": {
+            "type": "keyword",
+            "index": false
+          },
+          "pod_name": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
+        }
+      },
+      "log": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
+        }
+      },
+      "stream": {
+        "type": "keyword",
+        "ignore_above": 256
+      },
+      "tag": {
+        "type": "keyword",
+        "index": false
+      }
+    }
+  }
+}

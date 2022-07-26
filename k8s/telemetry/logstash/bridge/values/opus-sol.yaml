@@ -1,0 +1,32 @@
+name: atscale-sol
+topic: sol_with_metadata
+esindex: sol
+threads: 3
+replicas: 3
+pipeline_batch_delay: 50
+# Check logstash docs for paramters: https://www.elastic.co/guide/en/logstash/current/plugins-filters-throttle.html
+throttle:
+  # Throttle if more than 1 SOL Heartbeat in 10 sec period
+  message: "SOL Heartbeat"
+  before_count: -1
+  after_count: 1
+  period: 10
+  max_age: 20
+customFilters: |-
+  if [metadata][cscope] {
+    json {
+      source => "[metadata][cscope]"
+      target => "[metadata][cscope]"
+    }
+  }
+
+  if [metadata][test] {
+    json {
+    source => "[metadata][test]"
+    target => "[metadata][test]"
+    }
+  }
+
+  mutate {
+    add_field => { "host" =>  "%{[@metadata][kafka][key]}" }
+  }

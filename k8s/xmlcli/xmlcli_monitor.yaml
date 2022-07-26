@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  namespace: NAMESPACE
+  name: SANDSTONE_NAME
+spec:
+  selector:
+    matchLabels:
+      name: SANDSTONE_NAME
+  template:
+    metadata:
+      labels:
+        name: SANDSTONE_NAME
+    spec:
+      nodeSelector:
+        SANDSTONE_NODE_LABEL: "true"
+      containers:
+      - name: SANDSTONE_NAME
+        image: REGISTRY/REPO:DOCKER_TAG
+        imagePullPolicy: Always
+        command: ["/xmlcli/xmlcli_monitor.sh"]
+        volumeMounts:
+        - mountPath: /xmlcli/pysvtools/xmlcli/cfg/
+          name: knob-config
+        env:
+          - name: XC_INTERVAL
+            value: "XC_MONITOR_INTERVAL"
+        readinessProbe:
+          exec:
+            command:
+              - cat
+              - /tmp/testdone
+          initialDelaySeconds: 30
+          periodSeconds: 5
+        securityContext:
+          privileged: true
+      volumes:
+      - name: knob-config
+        configMap:
+          name: knob-monitor-config-map

@@ -1,0 +1,10 @@
+name: atscale
+topic: atscale
+esindex: qpool
+threads: 3
+replicas: 3
+pipeline_batch_delay: 50
+customFilters: |-
+  if ([kubernetes][host] == "r05s12.zp31l10b01" or [kubernetes][host] == "r08s12.zp31l10b01" or [kubernetes][host] == "r08s02.zp31l10b01" or [kubernetes][host] == "r04s16.zp31l10b01" or [kubernetes][host] == "r05s03.zp31l10b01" or [kubernetes][host] == "r11s06.zp31l10b01" or [kubernetes][host] == "r05s01.zp31l10b01" ) {
+    drop { }
+  }

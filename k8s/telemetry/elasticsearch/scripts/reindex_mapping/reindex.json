@@ -1,0 +1,8 @@
+{
+   "source": {
+     "index": "qpool-DATE"
+   },
+   "dest": {
+     "index": "qpool-reindex-DATE"
+   }
+}

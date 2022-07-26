@@ -1,0 +1,18 @@
+replicas: 1
+labels:
+- app: clusterhealth
+nodeSelector:
+  nodetype: telemetry
+locations:
+- l10a
+elasticsearch:
+  host: http://192.168.0.11:920
+  user: ""
+  pass: ""
+  use_ssl: false
+  cacert: ""
+api_url: "http://ive-infra04.deacluster.intel.com:5000"
+tolerations:
+- key: node-role.kubernetes.io/master
+  effect: NoSchedule
+image: prt-registry.sova.intel.com/cluster-health:v0.73

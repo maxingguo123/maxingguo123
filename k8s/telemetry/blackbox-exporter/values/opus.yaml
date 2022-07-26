@@ -1,0 +1,47 @@
+kind: Deployment
+
+nodeSelector:
+  kafka: "true"
+
+allowIcmp: true
+
+config:
+ modules:
+  http_2xx:
+      prober: http
+      timeout: 10s
+      http:
+        valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
+        no_follow_redirects: false
+        preferred_ip_protocol: "ip4"
+  icmp:
+    prober: icmp
+    timeout: 10s
+    icmp:
+      preferred_ip_protocol: ip4
+
+serviceMonitor:
+  enabled: true
+  defaults:
+    module: icmp
+    labels:
+      type: telemetry
+  targets:
+    - name: kafka0
+      url: atscale-cp-kafka-0.atscale-cp-kafka-headless.monitoring.svc.cluster.local
+    - name: kafka1
+      url: atscale-cp-kafka-1.atscale-cp-kafka-headless.monitoring.svc.cluster.local
+    - name: kafka2
+      url: atscale-cp-kafka-2.atscale-cp-kafka-headless.monitoring.svc.cluster.local
+    - name: zookeeper0
+      url: atscale-cp-zookeeper-0.atscale-cp-zookeeper-headless.monitoring.svc.cluster.local
+    - name: zookeeper1
+      url: atscale-cp-zookeeper-1.atscale-cp-zookeeper-headless.monitoring.svc.cluster.local
+    - name: zookeeper2
+      url: atscale-cp-zookeeper-2.atscale-cp-zookeeper-headless.monitoring.svc.cluster.local
+    - name: fluentd-systemd-reset
+      url: a01s19.dev.intelatopus.local:24210/api/config.json
+      module: http_2xx
+    - name: fluentd-systemd-vrmargin
+      url: a01s19.dev.intelatopus.local:24213/api/config.json
+      module: http_2xx      

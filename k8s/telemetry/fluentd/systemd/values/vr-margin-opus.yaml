@@ -1,0 +1,6 @@
+name: vr-margin
+log_root: /var/local/logs/pmb_margining_logs
+log_files: /var/local/logs/pmb_margining_logs/*.txt
+extract_metadata: False
+topic: atscale-other
+monitoring_port: 24213

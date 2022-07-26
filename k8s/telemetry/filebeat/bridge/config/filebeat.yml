@@ -1,0 +1,10 @@
+filebeat.inputs:
+- type: kafka
+  hosts:
+    {{range $.Values.kafka}}-{{.host}}:{{.port}}
+    {{end}}
+  topics: [{{$.Values.topic}}]
+  group_id: {{$.Release.Name}}
+  initial_offset: "oldest"
+  fetch:
+    max: 5242880

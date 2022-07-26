@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clusterhealth
+  namespace: kube-system
+  labels:
+    app: clusterhealth
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: clusterhealth
+  template:
+    metadata:
+      labels:
+        app: clusterhealth
+        tier: control-plane-addon
+    spec:
+      containers:
+        - name: cluster-health
+          image: "{{ .Values.image }}"
+          imagePullPolicy: "IfNotPresent" 
+          volumeMounts:
+          - name: config-volume
+            mountPath: /etc/clusterhealth
+          {{- if .Values.extraVolumeMounts }}{{ toYaml .Values.extraVolumeMounts | trim | nindent 10 }}{{ end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+      - name: config-volume
+        configMap:
+          name: clusterhealth-cm
+      {{- if .Values.extraVolumes }}{{ toYaml .Values.extraVolumes | trim | nindent 6 }}{{ end }}    
+      serviceAccount: clusterhealth
+

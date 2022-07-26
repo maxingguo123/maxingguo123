@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ucode-mapping
+  namespace: mgmt
+data:
+  ucode_config.yaml: |-
+    cluster_endpoint: "http://ive-infra04.deacluster.intel.com:5000"
+    location: null
+    pools:

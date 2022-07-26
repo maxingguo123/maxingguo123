@@ -1,0 +1,20 @@
+---
+# Source: cp-ksql-server/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: atscale-bmc-sol-cp-ksql-server
+  labels:
+    app: cp-ksql-server
+    chart: cp-ksql-server-0.1.0
+    release: atscale-bmc-sol
+    heritage: Helm
+spec:
+  ports:
+      - name: ksql-server
+        port: 8088
+      - name: metrics
+        port: 5556
+  selector:
+    app: cp-ksql-server
+    release: atscale-bmc-sol

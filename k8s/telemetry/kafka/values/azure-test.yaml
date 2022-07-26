@@ -1,0 +1,84 @@
+## ------------------------------------------------------
+## Zookeeper
+## ------------------------------------------------------
+cp-zookeeper:
+  enabled: true
+  image: confluentinc/cp-zookeeper
+  imageTag: 5.5.2
+  podManagementPolicy: Parallel
+  servers: 3
+  globalOutstandingLimit: 5000
+  nodeSelector:
+    zookeeper: "true"
+  persistence:
+    dataDirSize: 1Gi
+    dataDirStorageClass: faster
+    dataLogDirSize: 1Gi
+    dataLogDirStorageClass: faster
+    #  resources:
+    #    requests:
+    #      memory: 750Mi
+## ------------------------------------------------------
+## Kafka
+## ------------------------------------------------------
+cp-kafka:
+  enabled: true
+  image: confluentinc/cp-enterprise-kafka
+  imageTag: 5.5.2
+  podManagementPolicy: Parallel
+  nodeSelector:
+    kafka: "true"
+  brokers: 3
+  configurationOverrides:
+    "offsets.topic.replication.factor": "2"
+    "default.replication.factor": "2"
+    "retention.ms": "604800000"
+    "replica.fetch.max.bytes": "10485760"
+    "message.max.bytes": "10485760"
+    "num.partitions": "3"
+    "confluent.support.metrics.enable": "false"
+  heapOptions: "-Xms6G -Xmx6G"
+  nodeport:
+    enabled: true
+  persistence:
+    storageClass: faster
+    size: 2048Gi
+    #  resources:
+    #    requests:
+    #      memory: 750Mi
+
+## ------------------------------------------------------
+## Schema Registry
+## ------------------------------------------------------
+cp-schema-registry:
+  enabled: false
+
+## ------------------------------------------------------
+## REST Proxy
+## ------------------------------------------------------
+cp-kafka-rest:
+  enabled: false
+
+## ------------------------------------------------------
+## Kafka Connect
+## ------------------------------------------------------
+cp-kafka-connect:
+  enabled: false
+
+## ------------------------------------------------------
+## KSQL Server
+## ------------------------------------------------------
+cp-ksql-server:
+  enabled: false
+  image: confluentinc/cp-ksqldb-server
+  imageTag: 5.5.2
+  nodeSelector:
+    ksql: "true"
+  podManagementPolicy: Parallel
+  configurationOverrides:
+    "confluent.support.metrics.enable": "false"
+## ------------------------------------------------------
+## Control Center
+## ------------------------------------------------------
+cp-control-center:
+  enabled: false

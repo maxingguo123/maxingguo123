@@ -1,0 +1,21 @@
+---
+# Source: prometheus-blackbox-exporter/templates/service.yaml
+kind: Service
+apiVersion: v1
+metadata:
+  name: atscale-prometheus-blackbox-exporter
+  labels:
+    app.kubernetes.io/name: prometheus-blackbox-exporter
+    app.kubernetes.io/instance: atscale
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: prometheus-blackbox-exporter-4.10.1
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 9115
+      targetPort: 9115
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: prometheus-blackbox-exporter
+    app.kubernetes.io/instance: atscale

@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  namespace: NAMESPACE
+  name: SANDSTONE_NAME
+spec:
+  selector:
+    matchLabels:
+      name: SANDSTONE_NAME
+  template:
+    metadata:
+      labels:
+        name: SANDSTONE_NAME
+    spec:
+      nodeSelector:
+        SANDSTONE_NODE_LABEL: "true"
+      containers:
+      - name: SANDSTONE_NAME
+        image: REGISTRY/REPO:DOCKER_TAG
+        imagePullPolicy: Always
+        env:
+          - name: XC_OP
+            value: "XC_CMD_OP"
+          - name: XC_KNOB
+            value: "XC_CMD_KNOB"
+        readinessProbe:
+          exec:
+            command:
+              - cat
+              - /tmp/testdone
+          initialDelaySeconds: 30
+          periodSeconds: 5
+        securityContext:
+          privileged: true

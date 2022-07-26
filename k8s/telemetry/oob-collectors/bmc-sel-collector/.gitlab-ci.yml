@@ -1,0 +1,12 @@
+---
+
+variables:
+  IMAGE: registry01.l10b2.deacluster.intel.com/infra/bmc-sel-collector
+  http_proxy: http://proxy-us.intel.com:911
+  https_proxy: http://proxy-us.intel.com:911
+  no_proxy: 10.219.20.17,10.219.20.16,10.219.20.15,10.165.92.146,gitlab.devtools.intel.com
+  NS: tele-bmc-sel
+
+include:
+  - 'code/.gitlab-ci.yml'
+  - 'deploy/.gitlab-ci.yml'

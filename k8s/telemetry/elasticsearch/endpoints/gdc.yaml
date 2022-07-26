@@ -1,0 +1,5 @@
+elasticsearch:
+  hosts:
+  - host: 192.168.0.11
+    port: 920
+  scheme: http

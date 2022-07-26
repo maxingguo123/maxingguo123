@@ -1,0 +1,23 @@
+csp: azure
+ilb: true
+master:
+  max_memory_gb: 54
+  heap_gb: 16
+  count: 1
+  storage:
+    class: faster 
+    size: 1024Gi
+
+data:
+  max_memory_gb: 54
+  heap_gb: 16
+  count: 1
+  storage:
+    class: faster 
+    size: 2048Gi
+
+criticaldata:
+  count: 1
+
+kibana:
+  count: 1

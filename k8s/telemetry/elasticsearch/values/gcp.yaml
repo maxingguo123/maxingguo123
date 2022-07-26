@@ -1,0 +1,21 @@
+csp: gcp
+master:
+  max_memory_gb: 44
+  heap_gb: 16
+  count: 5
+  storage:
+    class: faster 
+    size: 2048Gi
+
+data:
+  max_memory_gb: 44
+  heap_gb: 16
+  count: 48
+  storage:
+    class: faster 
+    size: 2048Gi
+
+kibana:
+  count: 3
+
+imageRepo: gcr.io/sspiat-akrose

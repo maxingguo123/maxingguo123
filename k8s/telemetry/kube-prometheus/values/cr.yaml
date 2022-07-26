@@ -1,0 +1,32 @@
+prometheus:
+  replicas: 1
+  retention: '12d'
+  retentionSizePerc: 90
+  storage:
+    node:
+      class: local-storage
+      size: 589
+    k8s:
+      class: local-storage
+      size: 489
+    telemetry:
+      class: local-storage
+      size: 99
+
+grafana:
+  replicas: 1
+  storage:
+    class: local-storage
+    size: 975Mi 
+host_aliases:
+  - ip: "13.107.18.11"
+    hostnames:
+    - "outlook.office.com"
+monitored_namespaces:
+  - default
+  - kube-system
+  - monitoring
+  - mgmt
+  - oss-mgmt
+  - ive-mgmt
+  - infra-mgmt

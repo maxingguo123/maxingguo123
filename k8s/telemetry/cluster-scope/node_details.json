@@ -1,0 +1,63 @@
+[
+  {
+    "0": {
+      "ppin": "0x064AF2CA674E0365",
+      "qdf": "QUZS",
+      "ult": "0xc9bb3202a18301"
+    },
+    "1": {
+      "ppin": "0x064AEFCAEF01A40C",
+      "qdf": "QUZS",
+      "ult": "0xc9bf5200d00002"
+    },
+    "architecture": "64bit",
+    "automationState": "alive",
+    "biosVersion": "WLYDCRB1.SYS.0018.D22.2008120238",
+    "bmc": true,
+    "bmcAccesible": "True",
+    "bmcAvailable": "True",
+    "bmcVersion": "wht-0.74-7-gb7105d-31e5d79",
+    "caterrCount": "unknown",
+    "cpldVersion": "unknown",
+    "cpuId": "0x606a5",
+    "errorLogCompleted": 0,
+    "frontPanelStatus": {
+      "amber": "off",
+      "blue": "on",
+      "green": "blink"
+    },
+    "hostPrimaryNetwork": "True",
+    "ip": "10.219.22.105",
+    "isBlocked": false,
+    "kubectl_nodeowner": "piv",
+    "kubectl_status": "Ready",
+    "last known ping bmc": "Fri, 25 Sep 2020 20:36:10 GMT",
+    "last known ping os": "Fri, 25 Sep 2020 20:36:10 GMT",
+    "last test ended": "ive-resnet-50",
+    "last test started": "ive-resnet-50",
+    "last_pulled": "Thu, 01 Oct 2020 19:16:23 GMT",
+    "location": "l10b2",
+    "meVersion": "4.4.3.183.0",
+    "microcode": "0x8c5841b1",
+    "name": "r31s05",
+    "os": "Linux",
+    "owner": null,
+    "platform": "Linux-5.8.0-rc4+-x86_64-with-glibc2.29",
+    "pool": "ICX_XCC-C0_PIV_EXC_PIV_TEST-DEV_BRICEONK",
+    "port": 7100,
+    "powerStatus": "On",
+    "rack": "31",
+    "reservation_scenario": null,
+    "reservation_start_time": null,
+    "reserved": "No",
+    "sdrVersion": "Can't collect SDR due to this issue: https://hsdes.intel.com/appstore/article/#/14011372068",
+    "status_collected": true,
+    "stepping": "XCC-C0",
+    "time of last test ended": "Sat, 19 Sep 2020 19:13:13 GMT",
+    "time of last test started": "Sat, 19 Sep 2020 19:13:13 GMT",
+    "timestamp": "Wed, 26 Aug 2020 23:07:44 GMT",
+    "tws_version": "2.14.6",
+    "week": 32,
+    "year": 2020
+  }
+]

@@ -1,0 +1,8 @@
+elasticsearch:
+  hosts:
+  - host: 10.250.0.197
+    port: 9200
+  scheme: https
+  user: paiv_admin
+  password: password
+  cert: opus-es-cert

@@ -1,0 +1,5 @@
+elasticsearch:
+  hosts:
+  - host: 10.219.23.201
+    port: 9200
+  scheme: http

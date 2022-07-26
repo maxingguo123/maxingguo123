@@ -1,0 +1,240 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: node-heartbeat
+  namespace: mgmt
+  labels:
+    k8s-app: node-heartbeat
+spec:
+  selector:
+    matchLabels:
+      name: node-heartbeat
+  template:
+    metadata:
+      labels:
+        name: node-heartbeat
+    spec:
+      hostNetwork: true
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+      containers:
+      - name: node-heartbeat
+        image: prt-registry.sova.intel.com/sandstone-init-container:32
+        command: ["/usr/bin/bash"]
+        args: ["-c", "count=0; while true; do echo \"Heartbeat:\" $count; count=$((count+1)); sleep 60; done"]
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: node-manager
+  namespace: mgmt
+  labels:
+    k8s-app: node-manager
+spec:
+  selector:
+    matchLabels:
+      name: node-manager
+      
+  template:
+    metadata:
+      labels:
+        name: node-manager
+    spec:
+      hostNetwork: true
+      initContainers:
+      - name: node-details-cpu
+        image: prt-registry.sova.intel.com/sandstone-init-container:32
+        command: ["/usr/bin/bash"]
+        args: ["-c", "lscpu; exit 0"]
+        securityContext:
+          privileged: true
+          allowPrivilegeEscalation: true
+      - name: node-details-msrs
+        image: prt-registry.sova.intel.com/sandstone-init-container:32
+        command: ["/usr/bin/bash"]
+        args: ["-c", "rdmsr -a 0x8b; rdmsr -a 0x4f; exit 0"]
+        securityContext:
+          privileged: true
+          allowPrivilegeEscalation: true
+      containers:
+      ######################
+      ##    EFIBOOTMGR    ##
+      ######################
+      - name: efibootmgr-monitor
+        image: prt-registry.sova.intel.com/sandstone:efibootmgr
+        imagePullPolicy: Always
+        command: ["/usr/bin/bash"]
+        args: ["-c", 'while true; do echo -e "efibootmgr-result: $(efibootmgr | grep $(efibootmgr|head -1|sed -e "s/BootCurrent: /Boot/"))"; efibootmgr; sleep 3600; done;']
+        volumeMounts:
+          - mountPath: /sys
+            name: hostrootsys
+        securityContext:
+          privileged: true
+          allowPrivilegeEscalation: true
+      ######################
+      ##    PCIE-LINK    ##
+      ######################
+      - name: pcie-link
+        image: prt-registry.sova.intel.com/sandstone:pcie-check
+        imagePullPolicy: Always
+        command: ["/usr/bin/bash"]
+        args: ["-c", "while true; do echo 'PCIe Link Training:'; for i in `lspci | grep 'Eth'| grep -v 'Virtual Function' | awk {'print $1'}`; do echo -ne `lspci | grep $i`; echo -ne ' -> '; lspci -s $i -vv | grep 'LnkSta:'| tr -d '[:blank:]';done;sleep 3600;done;"]
+        volumeMounts:
+          - mountPath: /lib/modules
+            name: modules
+        securityContext:
+          privileged: true
+          allowPrivilegeEscalation: true
+      ######################
+      ## VT-d CHECKER     ##
+      ######################
+      - name: node-details-blk
+        image: prt-registry.sova.intel.com/sandstone-init-container:32
+        command: ["/usr/bin/bash"]
+        args: ["-c", "while true; do lsblk; sleep 3600; done"]
+        securityContext:
+          privileged: true
+          allowPrivilegeEscalation: true
+      - name: node-details-network
+        image: mcastelino/hwinfo
+        command: ["/usr/bin/bash"]
+        args: ["-c", "while true; do lspci | egrep -i --color 'network|ethernet'; sleep 3600; done"]
+        securityContext:
+          privileged: true
+          allowPrivilegeEscalation: true
+      - name: vtd-check
+        image: prt-registry.sova.intel.com/sandstone:jasper-vtd-detector-v0.1
+        command: ["/usr/bin/bash"]
+        args: ["-c", "while true; do /run.sh; sleep 3600; done"]
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: dbus
+          mountPath: /var/run/dbus
+          readOnly: true
+        - name: systemd
+          mountPath: /run/systemd
+          readOnly: true
+        - name: journal
+          mountPath: /journal
+          readOnly: true
+        - mountPath: /sys
+          name: hostrootsys
+      ######################
+      ## NODE FINGERPRINT ##
+      ######################
+      - name: node-fingerprint
+        image: mcastelino/hwinfo
+        command: ["/usr/bin/bash"]
+        args: ["-c", "while true; do lscpu; cat /proc/meminfo | head -2; sleep 3600; done;"]
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: dbus
+          mountPath: /var/run/dbus
+          readOnly: true
+        - name: systemd
+          mountPath: /run/systemd
+          readOnly: true
+        - name: journal
+          mountPath: /journal
+          readOnly: true
+      ######################
+      ## JOURNAL STUFF    ##
+      ######################
+      - name: journal-capture-kernel
+        image: centos/systemd
+        imagePullPolicy: IfNotPresent
+        command: [ "bash", "-c", "dmesg -w" ]
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: dbus
+          mountPath: /var/run/dbus
+          readOnly: true
+        - name: systemd
+          mountPath: /run/systemd
+          readOnly: true
+        - name: journal
+          mountPath: /journal
+          readOnly: true
+      - name: journal-capture
+        image: centos/systemd
+        imagePullPolicy: IfNotPresent
+        command: [ "bash", "-c", "journalctl -D /journal -u mcelog -f" ]
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: dbus
+          mountPath: /var/run/dbus
+          readOnly: true
+        - name: systemd
+          mountPath: /run/systemd
+          readOnly: true
+        - name: journal
+          mountPath: /journal
+          readOnly: true
+      - name: journal-all
+        image: centos/systemd
+        imagePullPolicy: IfNotPresent
+        command: [ "bash", "-c", "journalctl -D /journal -f -p 4" ]
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: dbus
+          mountPath: /var/run/dbus
+          readOnly: true
+        - name: systemd
+          mountPath: /run/systemd
+          readOnly: true
+        - name: journal
+          mountPath: /journal
+          readOnly: true
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - name: hostroot
+          hostPath:
+            path: /tmp
+            type: Directory
+        - name: hostrootsys
+          hostPath:
+            path: /sys
+        - name: hostrootucode
+          hostPath:
+            path: /lib/firmware/intel-ucode
+        - name: dbus
+          hostPath:
+            path: /var/run/dbus
+        - name: systemd
+          hostPath:
+            path: /run/systemd
+        - name: journal
+          hostPath:
+            path: /var/log/journal
+        - name: ucode-map
+          configMap:
+            name: ucode-mapping
+        - name: modules
+          hostPath:
+            path: /lib/modules

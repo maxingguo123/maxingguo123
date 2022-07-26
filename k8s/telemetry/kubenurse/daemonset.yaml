@@ -1,0 +1,40 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    name: kubenurse
+  name: kubenurse
+spec:
+  selector:
+    matchLabels:
+      name: kubenurse
+  template:
+    metadata:
+      labels:
+        name: kubenurse
+      annotations:
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "8080"
+        prometheus.io/scheme: "http"
+        prometheus.io/scrape: "true"
+    spec:
+      nodeSelector:
+        nodetype: telemetry        
+      serviceAccountName: nurse
+      containers:
+      - name: kubenurse
+        env:
+        - name: KUBENURSE_INGRESS_URL
+          value: https://kubenurse.example.com
+        - name: KUBENURSE_SERVICE_URL
+          value: http://kubenurse.kube-system.svc.cluster.local:8080
+        - name: KUBENURSE_NAMESPACE
+          value: kube-system
+        - name: KUBENURSE_NEIGHBOUR_FILTER
+          value: "name=kubenurse"
+        image: "prt-registry.sova.intel.com/telemetry/kubenurse:v1.2.0"
+        ports:
+        - name: metrics
+          containerPort: 8080
+          protocol: TCP

@@ -1,0 +1,29 @@
+---
+
+.build: &build
+  image: "docker:18.06.1-dind"
+  stage: build
+  script:
+    - printenv
+    - cd code
+    - docker build -t "${IMAGE}:${CI_COMMIT_REF_NAME}"
+        --build-arg "http_proxy" 
+        --build-arg "https_proxy" 
+        --build-arg "no_proxy"
+        .
+    - docker push "${IMAGE}:${CI_COMMIT_REF_NAME}"
+    - docker rmi "${IMAGE}:${CI_COMMIT_REF_NAME}"
+
+whitley-build-and-push:
+  <<: *build
+  tags:
+    - linux
+    - atscale
+    - docker
+
+.purley-build-and-push:
+  variables:
+    IMAGE: sv-registry.zpn.intel.com/infra/bmc-eventservice-exporter
+  <<: *build
+  tags:
+    - purley

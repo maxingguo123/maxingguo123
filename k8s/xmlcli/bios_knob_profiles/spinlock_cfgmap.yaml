@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: knob-monitor-config-map
+  namespace: NAMESPACE
+data:
+  BiosKnobs.ini: "[BiosKnobs]\nCpuMtoIWa=1\n"

@@ -1,0 +1,19 @@
+---
+# Source: fluentd-kafka/templates/fluentd-kafka-monitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: fluentd-kafka
+  labels:
+    k8s-app: fluentd-kafka
+spec:
+  selector:
+    matchLabels:
+      k8s-app: fluentd-kafka
+  namespaceSelector:
+    matchNames:
+    - mgmt
+    
+  podMetricsEndpoints:
+  - port: metrics
+    interval: 10s

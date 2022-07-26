@@ -1,0 +1,51 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  labels:
+    prometheus: k8s
+  name: k8s
+  namespace: monitoring
+spec:
+  alerting:
+    alertmanagers:
+    - name: alertmanager-main
+      namespace: monitoring
+      port: web
+  image: quay.io/prometheus/prometheus:v2.20.0
+  nodeSelector:
+    prometheus-k8s: "true"
+  podMonitorNamespaceSelector: {}
+  podMonitorSelector: 
+    matchLabels:
+      type: k8s
+  replicas: {{.Values.prometheus.replicas}}
+  resources:
+    requests:
+      memory: 400Mi
+  retention: {{.Values.prometheus.retention}}
+  retentionSize: {{div (mul .Values.prometheus.retentionSizePerc .Values.prometheus.storage.k8s.size) 100}}GB
+  ruleSelector:
+    matchLabels:
+      prometheus: k8s
+      role: alert-rules
+  securityContext:
+    fsGroup: 2000
+    runAsNonRoot: true
+    runAsUser: 1000
+  storage:
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{.Values.prometheus.storage.k8s.size}}Gi
+        storageClassName: {{.Values.prometheus.storage.k8s.class}}
+
+  serviceAccountName: prometheus-k8s
+  serviceMonitorNamespaceSelector: {}
+  serviceMonitorSelector:
+    matchLabels:
+      type: k8s
+  version: v2.20.0
+  walCompression: true

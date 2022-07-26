@@ -1,0 +1,105 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: network-capture
+  namespace: mgmt
+spec:
+  selector:
+      matchLabels:
+        name: network-capture
+  template:
+    metadata:
+        labels:
+          name: network-capture
+    spec:
+      hostNetwork: true
+      containers:
+      - name: network-capture
+        image: gmmaha/networkstuff
+        imagePullPolicy: IfNotPresent
+        command: [ "/usr/bin/bash" ]
+        args: ["-c", "lspci -nn | grep Ethernet; for node in `ip -o link show | awk '{print $2}'`; do echo ${node%%\\:}; ethtool -i ${node%%\\:}; done; ip a; while true; do ip a; for node in `ip -o link show | awk '{print $2}'`; do ethtool -S ${node%%\\:}; done; dmesg | grep i40e; sleep 60; done"]
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: dbus
+          mountPath: /var/run/dbus
+          readOnly: true
+        - name: systemd
+          mountPath: /run/systemd
+          readOnly: true
+      - name: network-monitor
+        image: gmmaha/networkstuff
+        imagePullPolicy: IfNotPresent
+        command: [ "bash", "-c", "ip -d -t monitor all 2>&1 > >(sed 's/^/NetMonitor: /;w /hostroot/dev/console')"]
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: dbus
+          mountPath: /var/run/dbus
+          readOnly: true
+        - name: systemd
+          mountPath: /run/systemd
+          readOnly: true
+        - name: hostdev
+          mountPath: /hostroot/dev
+      - name: network-dmesg
+        image: centos/systemd
+        imagePullPolicy: IfNotPresent
+        command: [ "bash", "-c", "dmesg -w 2>&1 > >(sed 's/^/NetMonitor: /;w /hostroot/dev/console')" ]
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: dbus
+          mountPath: /var/run/dbus
+          readOnly: true
+        - name: systemd
+          mountPath: /run/systemd
+          readOnly: true
+        - name: hostdev
+          mountPath: /hostroot/dev
+      - name: network-heartbeat
+        image: prt-registry.sova.intel.com/sandstone-init-container:32
+        command: ["/usr/bin/bash"]
+        args: ["-c", "count=0; while true; do echo \"Heartbeat:\" $count; count=$((count+1)); sleep 60; done 2>&1 > >(sed 's/^/NetMonitor: /;w /hostroot/dev/console')"]
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: dbus
+          mountPath: /var/run/dbus
+          readOnly: true
+        - name: systemd
+          mountPath: /run/systemd
+          readOnly: true
+        - name: hostdev
+          mountPath: /hostroot/dev
+      volumes:
+        - name: dbus
+          hostPath:
+            path: /var/run/dbus
+        - name: systemd
+          hostPath:
+            path: /run/systemd
+        - name: hostdev
+          hostPath:
+            path: /dev
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 1
+    type: RollingUpdate

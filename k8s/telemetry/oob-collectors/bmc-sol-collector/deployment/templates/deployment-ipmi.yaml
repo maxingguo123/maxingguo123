@@ -1,0 +1,77 @@
+{{if .Values.drivers.ipmi}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sol-collector.fullname" . }}-ipmi
+  labels:
+{{ include "sol-collector.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "sol-collector.name" . }}-ipmi
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "sol-collector.name" . }}-ipmi
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      nodeSelector:
+        sol-collector: "true"
+      serviceAccountName: {{ template "sol-collector.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: service
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.service_image.repository }}:{{ .Values.service_image.tag }}"
+          imagePullPolicy: {{ .Values.service_image.pullPolicy }}
+          env:
+            - name: OUTPUT_DIRECTORY
+              value: "/fluentdout"
+            - name: DRIVER
+              value: "ipmi"
+            - name: INVENTORY_FILE
+              value: "/inventory/ipmi-prometheus.json"
+            - name: BMC_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "sol-collector.fullname" . }}-bmc
+                  key: ipmi_user
+            - name: BMC_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "sol-collector.fullname" . }}-bmc
+                  key: ipmi_password
+          ports:
+            - name: http
+              containerPort: 9666
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          volumeMounts:
+            - mountPath: /inventory
+              name: inventory
+              readOnly: true
+            - mountPath: /fluentdout
+              name: fluentd
+              readOnly: false
+          resources:
+            {{- toYaml .Values.service_resources | nindent 12 }}
+      volumes:
+        - name: inventory
+          nfs:
+            path: {{ .Values.inventory_nfs_share }}
+            server: {{ .Values.inventory_nfs_server }}
+        - name: fluentd
+          hostPath:
+            path: /var/log/sol-collector
+{{end}}

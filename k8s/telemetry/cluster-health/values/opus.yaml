@@ -1,0 +1,30 @@
+replicas: 1
+labels:
+- app: clusterhealth
+nodeSelector:
+  nodetype: telemetry
+locations:
+- "opusa"
+- "op20lmain1"
+- "op20lmain2"
+- "op20lmain3"
+- "op20lmain4"
+elasticsearch:
+  host: https://10.250.0.197:9200
+  user: "paiv_admin"
+  pass: "password"
+  use_ssl: true
+  cacert: /elastic-cert/ca.crt
+api_url: "http://ive-infra04.deacluster.intel.com:5000"
+tolerations:
+- key: node-role.kubernetes.io/master
+  effect: NoSchedule
+image: prt-registry.sova.intel.com/cluster-health:v0.77
+extraVolumeMounts:
+- name: elastic-cert
+  mountPath: /elastic-cert
+extraVolumes:
+- name: elastic-cert
+  secret:
+    secretName: atscale-es-cert
+

@@ -1,0 +1,6 @@
+cluster: flex
+esindex: critical-qpool
+elasticsearch: false
+# Optionally add node selector to control where the daemonset lands
+# nodeSelector:
+#  nodeowner: test

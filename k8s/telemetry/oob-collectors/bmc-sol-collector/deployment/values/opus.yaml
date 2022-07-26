@@ -1,0 +1,23 @@
+---
+inventory_nfs_share: /mnt/Pool01/cluster-inventory/v2
+inventory_nfs_server: 10.250.0.16
+
+# those values will be overwritten by config from `inventory_nfs_share`:
+redfish_user: defaultuser
+redfish_password: 0penBmc1
+ipmi_user: dafaultuser
+ipmi_password: 0penBmc1
+
+service_image:
+  repository: "prt-registry.sova.intel.com/infra/bmc-sol-collector"
+  tag: 0.4.0
+
+health_probe:
+  ipmi:
+    sessions_threshold: 0
+  redfish:
+    sessions_threshold: 30
+
+drivers:
+  ipmi: false
+  redfish: true

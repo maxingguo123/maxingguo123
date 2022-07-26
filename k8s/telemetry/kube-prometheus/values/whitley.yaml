@@ -1,0 +1,29 @@
+prometheus:
+  replicas: 1
+  retention: '7d'
+  retentionSizePerc: 90
+  storage:
+    node:
+      class: local-storage
+      size: 589
+    k8s:
+      class: local-storage
+      size: 489
+    telemetry:
+      class: local-storage
+      size: 99
+
+grafana:
+  replicas: 1
+  storage:
+    class: local-storage
+    size: 92Mi 
+monitored_namespaces:
+  - default
+  - kube-system
+  - monitoring
+  - mgmt
+  - oss-mgmt
+  - ive-mgmt
+  - infra-mgmt
+  - piv-mgmt

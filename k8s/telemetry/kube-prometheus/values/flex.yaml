@@ -1,0 +1,39 @@
+prometheus:
+  replicas: 1
+  retention: '24d'
+  retentionSizePerc: 90
+  storage:
+    node:
+      class: local-storage
+      size: 1180 
+    k8s:
+      class: local-storage
+      size: 983 
+    telemetry:
+      class: local-storage
+      size: 491 
+
+grafana:
+  replicas: 1
+  storage:
+    class: local-storage
+    size: 1951Mi 
+  env:
+  - name: HTTP_PROXY
+    value: proxy-dmz.intel.com:911
+  - name: HTTPS_PROXY
+    value: proxy-dmz.intel.com:912
+  - name: NO_PROXY
+    value: localhost,intel.com,10.0.0.0/8,10.64.0.0/10,100.64.0.0/12,100.80.0.0/16,10.244.0.0/16,10.96.0.0/12,.svc      
+host_aliases:
+  - ip: "13.107.18.11"
+    hostnames:
+    - "outlook.office.com"
+monitored_namespaces:
+  - default
+  - kube-system
+  - monitoring
+  - mgmt
+  - oss-mgmt
+  - ive-mgmt
+  - infra-mgmt

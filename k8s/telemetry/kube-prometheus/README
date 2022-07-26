@@ -1,0 +1,6 @@
+Manifests - Contains the unmodified files
+Templates - Contains file that used to be in manifests, but we customize
+
+If you want to customize a file under Manifests, move it into Templates and template it.
+
+RULE: Do not require values.yaml to have default values. We want to keep values.yaml small.!!

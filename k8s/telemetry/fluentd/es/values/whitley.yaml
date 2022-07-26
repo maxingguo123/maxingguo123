@@ -1,0 +1,13 @@
+cluster: whitley
+esindex: qpool
+tenants:
+- username: default
+  mgmt_ns: mgmt
+# - username: ive
+#   mgmt_ns: ive-mgmt
+# - username: infra
+#   mgmt_ns: infra-mgmt
+# - username: oss
+#   mgmt_ns: oss-mgmt
+# - username: piv
+#   mgmt_ns: piv-mgmt

@@ -1,0 +1,6 @@
+name: reset-test
+log_root: /var/local/logs/reset_tests
+log_files: /var/local/logs/reset_tests/*/*/*/*
+extract_metadata: True
+topic: atscale-other
+monitoring_port: 24210

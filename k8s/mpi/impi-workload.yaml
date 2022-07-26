@@ -1,0 +1,156 @@
+apiVersion: kubeflow.org/v1alpha2
+kind: MPIJob
+metadata:
+  name: SANDSTONE_NAME
+  namespace: NAMESPACE
+spec:
+  slotsPerWorker: 1
+  cleanPodPolicy: Running
+  mpiDistribution: IntelMPI
+  mpiReplicaSpecs:
+    Launcher:
+      replicas: 1
+      template:
+        spec:
+          nodeSelector:
+            SANDSTONE_NODE_LABEL: "true"
+          volumes:
+            - name: dshm
+              emptyDir:
+                medium: Memory
+            - name: data
+              emptyDir: {}
+            - name: hostroot
+              hostPath:
+                path: /
+                type: Directory
+            - name: modules
+              hostPath:
+                path: /lib/modules
+            - name: journal
+              hostPath:
+                path: /var/log/journal
+            - name: machineid
+              hostPath:
+                path: /etc/machine-id
+            - name: sys
+              hostPath:
+                path: /sys
+            - name: dbus
+              hostPath:
+                path: /var/run/dbus
+            - name: systemd
+              hostPath:
+                path: /run/systemd
+          containers:
+          - image: REGISTRY/sandstone:DOCKER_TAG
+            name: SANDSTONE_NAME
+            volumeMounts:
+              - mountPath: /data
+                name: data
+              - mountPath: /dev/shm
+                name: dshm
+              - mountPath: /hostroot
+                name: hostroot
+                readOnly: false
+              - mountPath: /lib/modules
+                name: modules
+                readOnly: true
+              - mountPath: /var/log/journal
+                name: journal
+                readOnly: true
+              - mountPath: /etc/machine-id
+                name: machineid
+                readOnly: true
+              - mountPath: /sys
+                name: sys
+                readOnly: false
+            #run-specific uses env vars for params
+            command: ["/tests/scripts/run-specific.sh"]
+            env:
+              - name: SANDSTONE_BIN
+                value: "SANDSTONE_BIN_PATH"
+              - name: SANDSTONE_ARGS
+                value: "SANDSTONE_TEST_ARGS"
+              - name: EXTRA_ARGS
+                value: "EXTRA_ARGS_ARG"
+            readinessProbe:
+              exec:
+                command:
+                  - cat
+                  - /tmp/testdone
+                # Wait for 30s before checking for the first time
+                # then probe for completion every 5 seconds
+              initialDelaySeconds: 30
+              periodSeconds: 5
+            securityContext:
+              privileged: true
+    Worker:
+      replicas: REPLICAS
+      template:
+        spec:
+          affinity:
+            podAntiAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+              - labelSelector:
+                  matchExpressions:
+                  - key: mpi_role_type
+                    operator: In
+                    values:
+                    - worker
+                topologyKey: "kubernetes.io/hostname"
+          nodeSelector:
+            SANDSTONE_NODE_LABEL: "true"
+          volumes:
+            - name: dshm
+              emptyDir:
+                medium: Memory
+            - name: data
+              emptyDir: {}
+            - name: hostroot
+              hostPath:
+                path: /
+                type: Directory
+            - name: modules
+              hostPath:
+                path: /lib/modules
+            - name: journal
+              hostPath:
+                path: /var/log/journal
+            - name: machineid
+              hostPath:
+                path: /etc/machine-id
+            - name: sys
+              hostPath:
+                path: /sys
+            - name: dbus
+              hostPath:
+                path: /var/run/dbus
+            - name: systemd
+              hostPath:
+                path: /run/systemd
+          containers:
+          - image: REGISTRY/sandstone:DOCKER_TAG
+            name: SANDSTONE_NAME
+            volumeMounts:
+              - mountPath: /data
+                name: data
+              - mountPath: /dev/shm
+                name: dshm
+              - mountPath: /hostroot
+                name: hostroot
+                readOnly: false
+              - mountPath: /lib/modules
+                name: modules
+                readOnly: true
+              - mountPath: /var/log/journal
+                name: journal
+                readOnly: true
+              - mountPath: /etc/machine-id
+                name: machineid
+                readOnly: true
+              - mountPath: /sys
+                name: sys
+                readOnly: false
+            securityContext:
+              privileged: true

@@ -1,0 +1,13 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: fluentd-bridge-liveness-v0.1.6
+  labels:
+    addonmanager.kubernetes.io/mode: Reconcile
+data:
+  check_health.sh: |-
+    CUR=`curl -s http://localhost:24231/metrics | grep "write_count.*elasticsearch" | awk '{print \$2}'` 
+    CUR=`printf "%.0f" $CUR`
+    PREV=`cat /tmp/counter`
+    echo $CUR>/tmp/counter 
+    echo "Current: $CUR, Prev: $PREV"; [ $((CUR-PREV)) -gt 0 ]

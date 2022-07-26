@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  namespace: mgmt
+  name: efibootmgr-monitor
+spec:
+  selector:
+    matchLabels:
+      name: efibootmgr-monitor
+  template:
+    metadata:
+      labels:
+        name: efibootmgr-monitor
+    spec:
+      containers:
+      - name: efibootmgr-monitor
+        image: prt-registry.sova.intel.com/sandstone:efibootmgr
+        imagePullPolicy: Always
+        command: ["/usr/bin/bash"]
+        args: ["-c", 'while true; do echo -e "efibootmgr-result: $(efibootmgr | grep $(efibootmgr|head -1|sed -e "s/BootCurrent: /Boot/"))"; efibootmgr; sleep 3600; done;']
+        volumeMounts:
+          - mountPath: /sys
+            name: hostrootsys
+        securityContext:
+          privileged: true
+          allowPrivilegeEscalation: true
+      volumes:
+        - name: hostroot
+          hostPath:
+            path: /tmp
+            type: Directory
+        - name: hostrootsys
+          hostPath:
+            path: /sys

@@ -1,0 +1,22 @@
+---
+# Source: sol-collector/templates/service-redfish.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: atscale-sol-collector-redfish
+  labels:
+    app.kubernetes.io/name: sol-collector
+    helm.sh/chart: sol-collector-0.1.0
+    app.kubernetes.io/instance: atscale
+    app.kubernetes.io/version: "1.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9666
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: sol-collector-redfish
+    app.kubernetes.io/instance: atscale

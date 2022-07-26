@@ -1,0 +1,19 @@
+# Makefile to build the init Container
+ifneq (,$(findstring initcontainer,$(MAKECMDGOALS)))
+DOCKER_TAG?=$(shell cat $(TOPDIR)/k8s/initcontainer/init-cont-ver.txt)
+endif
+initcontainer-build: DOCKER_NAME ?= sandstone-init-container
+initcontainer-build:
+	docker build $(DOCKER_ARGS) -t $(DOCKER_NAME):$(DOCKER_TAG) -f $(TOPDIR)/k8s/initcontainer/Dockerfile $(TOPDIR)/k8s/initcontainer
+
+
+initcontainer-push: DOCKER_NAME ?= sandstone-init-container
+initcontainer-push: PUSH_TAG:= $(DOCKER_TAG) latest
+initcontainer-push:
+	$(foreach i,$(PUSH_TAG), \
+		docker tag $(DOCKER_NAME):$(DOCKER_TAG) $(REGISTRY)/$(DOCKER_NAME):$(i); \
+		docker push $(REGISTRY)/$(DOCKER_NAME):$(i);)
+
+
+.PHONY: initcontainer
+initcontainer: initcontainer-build initcontainer-push

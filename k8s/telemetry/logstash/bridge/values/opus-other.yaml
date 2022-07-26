@@ -1,0 +1,6 @@
+name: atscale-other
+topic: atscale-other
+esindex: other-qpool
+threads: 3
+replicas: 3
+pipeline_batch_delay: 50

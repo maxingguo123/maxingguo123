@@ -1,0 +1,928 @@
+---
+# Source: fluentd-kafka/templates/fluentd-kafka-configmap.yaml
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: fluentd-kafka-config-v0.1.6
+  namespace: mgmt
+  labels:
+    addonmanager.kubernetes.io/mode: Reconcile
+data:
+# https://github.com/helm/helm/issues/5979#issuecomment-518231758
+
+  containers.input.conf: |-
+    
+    <source>
+      @id fluentd-containers.log
+      @type tail
+      path /var/log/containers/*.log
+      pos_file /var/log/es-containers.log.pos
+      tag raw.kubernetes.*
+      read_from_head true
+      <parse>
+        @type multi_format
+        <pattern>
+          format json
+          time_key time
+          time_format %Y-%m-%dT%H:%M:%S.%NZ
+        </pattern>
+        <pattern>
+          format /^(?<time>\S+) (?<stream>stdout|stderr) [^ ]* (?<log>.*)$/
+          time_format %Y-%m-%dT%H:%M:%S.%N%:z
+        </pattern>
+      </parse>
+    </source>
+    # tag fluentd rate_exceeded logs, ignore other fluentd logs
+    <match raw.kubernetes.var.log.containers.**fluent**.log>
+      @type rewrite_tag_filter
+      <rule>
+        key log
+        pattern /{"group_key"/
+        tag rate_exceeded
+      </rule>
+      <rule>
+        key log
+        pattern /.+/
+        tag ignore
+      </rule>
+    </match>
+    # parse rate exceeded logs into format
+    <filter rate_exceeded>
+      @type parser
+      key_name log
+      <parse>
+        @type regexp
+        expression /^(?<time>.{10}\s.{18}\s.{5})\s(?<level>.*?):\s(?<log>.*)$/
+        #time_format %d/%b/%Y:%H:%M:%S %z
+      </parse>
+    </filter>
+    # make log message into record accessible via json
+    <filter rate_exceeded>
+      @type parser
+      key_name log
+      <parse>
+        @type json
+      </parse>
+    </filter>
+    # create metrics for rate exceeded
+    <filter rate_exceeded>
+        @type prometheus
+        # fluentd_input_status_rate_exceeded_count metric counts instances of rate_exceeded messages in the fluentd log and is NOT a total of instances or messages etc.
+        <metric>
+          name fluentd_input_status_rate_exceeded_count
+          type counter
+          desc The total number rate exceeded log messages
+        </metric>
+        # fluentd_input_status_rate_exceeded_guage contains the rate of messages per second for host and container combos that exceed the max rate
+        <metric>
+          name fluentd_input_status_rate_exceeded_guage
+          type gauge
+          desc Rate of messages
+          key rate_s
+        </metric>
+    </filter>
+    # do not send rate_exceeded logs to final output
+    <match rate_exceeded>
+      @type null
+    </match>
+    
+    <match raw.kubernetes.var.log.containers.**fluent**.log>
+      @type null
+    </match>
+    
+    <match raw.kubernetes.var.log.containers.**opcm-collector**.log>
+      @type null
+    </match>
+    
+    # <match raw.kubernetes.var.log.containers.**kafka**.log>
+    #   @type null
+    # </match>
+    
+    
+    # Detect exceptions in the log output and forward them as one log entry.
+    <match raw.kubernetes.**>
+      @id raw.kubernetes
+      @type detect_exceptions
+      remove_tag_prefix raw
+      message log
+      stream stream
+      multiline_flush_interval 5
+      max_bytes 500000
+      max_lines 1000
+    </match>
+      
+
+  forward.input.conf: |-
+    # Takes the messages sent over TCP
+    <source>
+      @type forward
+    </source>
+      
+
+  metadata.conf: |-
+    <source>
+      @id test_meta_file
+      @type tail
+      path /var/log/atscale/test-metadata.ndjson
+      format json
+      read_lines_limit 1
+      read_from_head true
+      tag metadata.test
+    </source>
+    
+    # Add test metadata
+    # __dummy*__ are temporary keys that will be discarded later
+    # Instead of assigning values to these keys, we have ruby snippet that will update record with metadata
+    
+    <filter **>
+      @type record_modifier
+      prepare_value $test_metadata = Hash.new
+    
+    # Cache metadata in global variable
+      <record>
+        __dummy1__ ${(tag == 'metadata.test') ? ($test_metadata=record.clone) : nil}
+      </record>
+    
+    # If the log doesn't have a field called "metadata", add an empty hash
+      <record>
+        __dummy2__ ${!tag.start_with?('metadata.') && !record.key?("metadata") ? record["metadata"]=Hash.new : nil}
+      </record>
+    
+    # Copy cached metadata to log
+      <record>
+        __dummy3__ ${ (!tag.start_with?('metadata.') && !$test_metadata.nil?) ? record["metadata"]["test"]=$test_metadata : nil}
+      </record>
+    
+      remove_keys __dummy1__, __dummy2__, __dummy3__
+    
+    </filter>
+    
+    <source>
+      @id node_meta_file
+      @type tail
+      path /var/log/atscale/node-metadata.ndjson
+      format json
+      read_lines_limit 1
+      read_from_head true
+      tag metadata.node
+    </source>
+    
+    # Add node metadata
+    <filter **>
+      @type record_modifier
+      prepare_value $node_metadata = Hash.new
+    
+    
+    # Cache metadata in global variable
+      <record>
+        __dummy1__ ${(tag == 'metadata.node') ? ($node_metadata=record.clone) : nil}
+      </record>
+    
+    # If the log doesn't have a field called "metadata", add an empty hash
+      <record>
+        __dummy2__ ${!tag.start_with?('metadata.') && !record.key?("metadata") ? record["metadata"]=Hash.new : nil}
+      </record>
+    
+    # Copy cached metadata to log
+      <record>
+        __dummy3__ ${(!tag.start_with?('metadata.') && !$node_metadata.nil?) ? record["metadata"]["node"]=$node_metadata : nil}
+      </record>
+    
+      remove_keys __dummy1__, __dummy2__, __dummy3__
+    
+    </filter>
+    
+    <source>
+      @id cscope_metadata_file
+      @type tail
+      path /var/log/atscale/cscope-metadata.ndjson
+      format json
+      read_lines_limit 1
+      read_from_head true
+      tag metadata.cscope
+    </source>
+    
+    # Add clusterscope metadata
+    <filter **>
+      @type record_modifier
+      prepare_value $cscope_metadata = Hash.new
+    
+    
+    # Cache metadata in global variable
+      <record>
+        __dummy1__ ${(tag == 'metadata.cscope') ? ($cscope_metadata=record.clone) : nil}
+      </record>
+    
+    # If the log doesn't have a field called "metadata", add an empty hash
+      <record>
+        __dummy2__ ${!tag.start_with?('metadata.') && !record.key?("metadata") ? record["metadata"]=Hash.new : nil}
+      </record>
+    
+    # Copy cached metadata to log
+      <record>
+        __dummy3__ ${(!tag.start_with?('metadata.') && !$cscope_metadata.nil?) ? record["metadata"]["cscope"]=$cscope_metadata : nil}
+      </record>
+    
+      remove_keys __dummy1__, __dummy2__, __dummy3__
+    
+    </filter>
+    
+    <match metadata.**>
+      @type null
+    </match>
+      
+
+  monitoring.conf: |-
+    # Prometheus Exporter Plugin
+    # input plugin that exports metrics
+    <source>
+      @type prometheus
+    </source>
+    
+    <source>
+      @type monitor_agent
+      port 24210
+    </source>
+    
+    # input plugin that collects metrics from MonitorAgent
+    <source>
+      @type prometheus_monitor
+      <labels>
+        host ${hostname}
+      </labels>
+    </source>
+    
+    # input plugin that collects metrics for output plugin
+    <source>
+      @type prometheus_output_monitor
+      <labels>
+        host ${hostname}
+      </labels>
+    </source>
+    
+    #NOTE: The metrics generated by this plugin keeps growing as more containers get created. Keep this disabled.
+    # input plugin that collects metrics for in_tail plugin
+    # <source>
+    #   @type prometheus_tail_monitor
+    #   <labels>
+    #     host ${hostname}
+    #   </labels>
+    # </source>
+      
+
+  output.conf: |-
+    # Enriches records with Kubernetes metadata
+    <match kubernetes.var.log.containers.prometheus-adapter**>
+      @type rewrite_tag_filter
+      <rule>
+        key log
+        pattern /unable to fetch .* metrics for/
+        tag ignore
+      </rule>
+      <rule>
+        key log
+        pattern /.+/
+        tag prometheus-adapter.${tag}
+      </rule>
+    </match>
+    
+    <match kubernetes.var.log.containers.canal**>
+      @type rewrite_tag_filter
+      <rule>
+        key log
+        pattern /.*[INFO].*/
+        tag ignore
+      </rule>
+      <rule>
+        key log
+        pattern /.+/
+        tag canal.${tag}
+      </rule>
+    </match>
+    
+    
+    <filter systemd.**>
+      @type systemd_entry
+      field_map {"MESSAGE": "log"}
+      field_map_strict false
+      fields_lowercase true
+      fields_strip_underscores true
+    </filter>
+    
+    <filter kubernetes.**>
+      @type kubernetes_metadata
+    </filter>
+    
+    <filter **>
+      @type record_modifier
+      <record>
+        cluster-name whitley
+      </record>
+    </filter>
+    
+    <filter kubernetes.var.log.containers.**shc-chyenne**.log>
+      @type record_modifier
+      <record>
+         #Strip ANSI colors. Reference: https://en.wikipedia.org/wiki/ANSI_escape_code
+         #Similar to the following fluentd plugin
+         #https://github.com/mattheworiordan/fluent-plugin-color-stripper
+         log ${record["log"].gsub(/\033\[\d{1,2}(;\d{1,2}){0,2}[mGK]/, '')}
+      </record>
+    </filter>
+    
+    # Adds 2 new fields that can be used in data analysis to sort logs
+    # fluentd_start_time - start time epoch (nanoseconds) of the fluentd daemon.
+    # fluentd_counter - processed line counter. This counter resets to zero on fluentd restart.
+    <filter **>
+      @type record_modifier
+      prepare_value @global_counter = 0; t = Time.now; @fluentd_start_time = t.to_i * (10 ** 9) + t.nsec
+      <record>
+        fluentd_counter ${@global_counter+=1; @global_counter}
+        fluentd_start_time ${@fluentd_start_time}
+      </record>
+    </filter>
+    
+    <filter **>
+      @type prometheus
+      <metric>
+        name fluentd_input_status_num_records_total
+        type counter
+        desc The total number of incoming records
+        <labels>
+          hostname ${hostname}
+        </labels>
+      </metric>
+    </filter>
+    
+    <match kubernetes.var.log.containers.**ptu-monitor**>
+      @type rewrite_tag_filter
+      <rule>
+        key log
+        pattern /^[\s]*[\d]*[\s]*CPU\d/
+        tag ptu.measurements
+      </rule>
+      <rule>
+        key log
+        pattern /.+/
+        tag ptu.${tag}
+      </rule>
+    </match>
+    
+    <filter ptu.measurements>
+      @type parser
+      key_name log
+      reserve_data true
+      reserve_time true
+      inject_key_prefix ptu.
+      <parse>
+        @type regexp
+        expression /^[\s]*(?<index>[\d]*)[\s]*(?<cpu>CPU\d)[\s-]*(?<cfreq>[\d]*)[\s]*(?<ufreq>[\d]*)[\s]*(?<util>[\d\.]*)[\s]*(?<ipc>[\d\.]*)[\s]*(?<c0>[\d\.]*)[\s]*(?<c1>[\d\.]*)[\s]*(?<c6>[\d\.]*)[\s]*(?<pc2>[\d\.]*)[\s]*(?<pc6>[\d\.]*)[\s-]*(?<temp>[\d]*)[\s-]*(?<dts>[\d]*)[\s]*(?<power>[\d\.]*)[\s]*(?<volt>[\d\.]*)[\s]*(?<uvolt>[\d\.]*)[\s]*(?<tstat>[\dx]*)[\s]*(?<tlog>[\dx]*)[\s]*(?<tl>[\d]*)[\s]*(?<tmargin>[\d\.]*)/
+        types index:integer,cfreq:integer,ufreq:integer,util:float,ipc:float,c0:float,c1:float,c6:float,pc2:float,pc6:float,temp:integer,dts:integer,power:float,volt:float,uvolt:float,tl:integer,tlmargin:float
+      </parse>
+    </filter>
+    
+    <match kubernetes.var.log.containers.cluster-msr**>
+      @type rewrite_tag_filter
+      <rule>
+        key log
+        pattern /^MSR\s*[\d|[a-zA-z]]*\s*has\svalues\s*\{\'/
+        tag msr.field
+      </rule>
+    </match>
+    
+    <filter msr.field>
+      @type parser
+      key_name log
+      reserve_data true
+      reserve_time true
+      inject_key_prefix msr.
+      <parse>
+        @type regexp
+        expression /^MSR\s*(?<key>[\d|[a-zA-z]]*)\s*has\svalues\s*\{\'(?<value>[\d|[a-zA-z]]*)\s*/
+      </parse>
+    </filter>
+    
+    <filter msr.field>
+      @type record_transformer
+      enable_ruby
+      <record>
+        msr.decimal ${record["msr.value"].to_i(16)}
+      </record>
+    </filter>
+    
+    <match kubernetes.var.log.containers.hp-linpack**>
+      @type rewrite_tag_filter
+      <rule>
+        key log
+        pattern /^[\s]*[\d\.\s\:]**hp-linpack-[\d\w]*\[[\d\,]*\]/
+        tag hplinpack.measurements
+      </rule>
+      <rule>
+        key log
+        pattern /^[\s]*Peak Performance[\s]*\=[\s]*[\d\.]*[\s]*GFlops/
+        tag hplinpack.result
+      </rule>
+      <rule>
+        key log
+        pattern /.+/
+        tag hplinpack.${tag}
+      </rule>
+    </match>
+    
+    <filter hplinpack.measurements>
+      @type parser
+      key_name log
+      reserve_data true
+      reserve_time true
+      inject_key_prefix hplinpack.
+      <parse>
+        @type regexp
+        expression /^[\s]*(?<Frac>[\d\.]*)[\s]*(?<n>[\d\.]*)[\s]*(?<PFact>[\d\.]*)[\s]*(?<Bcast>[\d\.]*)[\s]*(?<Swap>[\d\.]*)[\s]*(?<Update>[\d\.]*)[\s]*(?<PPerf>[\d\.]*)[\s]*(?<BcstBW>[\d\.]*)[\s]*(?<SwapBW>[\d\.]*)[\s]*(?<CPU>[\d\.]*)[\s]*(?<Kernel>[\d\.]*)[\s]*(?<Total>[\d\.]*)[\s]*(?<Powr>[\d\.]*)[\s]*(?<Dpwr>[\d\.]*)[\s]*(?<Tmp>[\d\.]*)[\s]*(?<CFreq>[\d\.]*)[\s]*(?<UFreq>[\d\.]*)[\s]*(?<Time>[\d\:\.]*)[\s]*(?<WhoamI>[\w\-\[\,\]]*)/
+        types Frac:float,n:integer,PFact:float,Bcast:float,Swap:float,Update:float,PPerf:float,BcstBW:float,SwapBW:float,CPU:float,Kernel:float,Total:float,Powr:float,Dpwr:float,Tmp:float,CFreq:float,UFreq:float 
+      </parse>
+    </filter>
+    
+    <filter hplinpack.result>
+      @type parser
+      key_name log
+      reserve_data true
+      reserve_time true
+      inject_key_prefix benchmark.
+      <parse>
+        @type regexp
+        expression /^[\s]*Peak Performance[\s]*\=[\s]*(?<result>[\d\.]*)[\s]*GFlops/
+      </parse>
+    </filter>
+    
+    <match kubernetes.var.log.containers.pts**>
+      @type rewrite_tag_filter
+      <rule>
+        key log
+        pattern /^[\s]*\"[^"]*\",(HIB|LIB),[\d\.]*/
+        tag pts.result
+      </rule>
+      <rule>
+        key log
+        pattern /.+/
+        tag pts.${tag}
+      </rule>
+    </match>
+    
+    <filter pts.result>
+      @type parser
+      key_name log
+      reserve_data true
+      reserve_time true
+      inject_key_prefix benchmark.
+      <parse>
+        @type regexp
+        expression /^[\s]*\"(?<name>[^"]*)\",(?<type>HIB|LIB),(?<result>[\d]*.*)/
+        types result:float
+      </parse>
+    </filter>
+    
+    # Concatenate multi-line logs
+    <filter multiline.**>
+      @type concat
+      key message
+      multiline_end_regexp /\n$/
+      separator ""
+    </filter>
+    
+    <match ignore>
+      @type null
+    </match>
+    
+    # Remove metadata from sol data.
+    # TODO: Revisit metadata on telemetry nodes
+    <filter sol.logs>
+      @type record_modifier
+      remove_keys metadata
+      <record>
+        kafkatopic sol
+      </record>
+    </filter>
+    
+    # goal: send specific log line to two different kafka topics: atscale and cluster-pnp
+    # tag specific log line
+    <match kubernetes.var.log.containers.paiv-pnp**>
+      @type rewrite_tag_filter
+      <rule>
+        key log
+        pattern /Flag_Cluster_PnP_SPIV_SO.*/
+        tag paiv-pnp
+      </rule>
+      <rule>
+        key log
+        pattern /.+/
+        tag atscale
+      </rule>
+    </match>
+    # duplicate our log line, tag one for each kafka topic
+    <match paiv-pnp>
+      @type copy
+      <store>
+        @type rewrite_tag_filter
+        <rule>
+          key log
+          pattern /.+/
+          tag clusterpnp
+        </rule>
+      </store>
+      <store>
+        @type rewrite_tag_filter
+        <rule>
+          key log
+          pattern /.+/
+          tag atscale
+        </rule>
+      </store>
+    </match>
+    # modify kafkatopic for each copy of record
+    <filter clusterpnp>
+      @type record_modifier
+      <record>
+        kafkatopic cluster-pnp
+      </record>
+    </filter>
+    <filter atscale>
+      @type record_modifier
+      <record>
+        kafkatopic atscale
+      </record>
+    </filter>
+    
+    # throttle plugin settings
+    #<filter kubernetes.** >
+    #  @type throttle
+    #  group_key kubernetes.host,kubernetes.pod_name
+    #  group_bucket_period_s   60
+    #  group_bucket_limit    6000
+    #  group_reset_rate_s     100
+    #  group_drop_logs false
+    #</filter>
+    #<filter systemd.**>
+    #  @type throttle
+    #  group_key hostname,syslog_identifier
+    #  group_bucket_period_s   60
+    #  group_bucket_limit    6000
+    #  group_reset_rate_s     100
+    #  group_drop_logs false
+    #</filter>
+    
+    
+    <match **>
+      @type rdkafka2
+      @log_level info
+    
+      brokers 10.219.23.26:31090,10.219.23.28:31091,10.219.23.30:31092,
+    
+      # Behavior of fluentd : If the record contains a field with name matching the 'topic_key' it will use the value of the field to decide where to send the logs
+      # If not it will use the topic specified in the 'default_topic' setting.
+      # Important: This will only work if the buffer chunk key is same as topic_key.
+      topic_key kafkatopic
+      default_topic atscale
+    
+      # Exclude topic_key. Don't need that on record
+      exclude_topic_key true 
+    
+      # ruby-kafka configuration
+      max_send_limit_bytes 10485760
+      # kafka_agg_max_bytes 10485760
+      # kafka_agg_max_messages 5000
+      #get_kafka_client_log true
+      #compression_codec snappy
+      #idempotent true
+      rdkafka_options {
+        "enable.idempotence" : true,
+        "compression.codec": "snappy"
+      }
+    
+      <format>
+        @type json
+      </format>
+    
+      <inject>
+        tag_key tag
+        time_key timestamp_ns
+        time_type string
+        time_format %Y-%m-%dT%H:%M:%S.%NZ
+      </inject>
+      # See fluentd document for buffer related parameters: https://docs.fluentd.org/v/1.0/configuration/buffer-section
+      # Buffer chunk key should be same with topic_key. If value is not found in the record, default_topic is used.
+      <buffer tag, kafkatopic>
+        @type file
+        path /var/log/fluentd-buffers/fluentd-kafka.buffer
+        flush_mode interval
+        retry_type exponential_backoff
+        flush_thread_count 3
+        flush_interval 30s
+        retry_forever true
+        retry_max_interval 120000
+        chunk_limit_size 10M
+        queue_limit_length 8
+        overflow_action block
+      </buffer>
+    </match>
+    
+      
+
+  system.conf: |-
+    <system>
+      @log_level fatal
+      root_dir /tmp/fluentd-buffers/
+      rpc_endpoint 0.0.0.0:24444
+    </system>
+      
+
+  system.input.conf: |-
+    # log example:
+    # r10s09 - 1595609860 - 11 - 1595610456.306468 - [154284.691224] bash[1335]:  SOL Heartbeat
+    <source>
+      @type tail
+      path /var/log/sol-collector/*.log
+      pos_file /var/log/sol-collector/fluentd.pos
+      read_from_head true
+      tag sol.logs
+      <parse>
+        @type regexp
+        expression /^(?<host>[^ ]+) - (?<collector_start_epoch>[^ ]+) - (?<collector_counter>[^ ]+) - (?<time>[^ ]+) - (?<message>.*)/
+        time_key time
+        time_type float
+      </parse>
+    </source>
+    
+    # Example:
+    # 2015-12-21 23:17:22,066 [salt.state       ][INFO    ] Completed state [net.ipv4.ip_forward] at time 23:17:22.066081
+    <source>
+      @id minion
+      @type tail
+      format /^(?<time>[^ ]* [^ ,]*)[^\[]*\[[^\]]*\]\[(?<severity>[^ \]]*) *\] (?<message>.*)$/
+      time_format %Y-%m-%d %H:%M:%S
+      path /var/log/salt/minion
+      pos_file /var/log/fluentd-kafka/salt.pos
+      tag salt
+    </source>
+    
+    <source>
+      @id ive
+      @type tail
+      format none
+      path /pub/logs/**
+      pos_file /var/log/ive.log.pos
+      time_key time
+      format /^time=(?<time>[\d]+-[\d]+-[\d]+ [\d]+:[\d]+:[\d]+\.[\d]+) host=(?<host>[\S]*) test_name=(?<test_name>[\S]*) status=(?<status>[\S]*) message=(?<log>.*)$/
+      time_format %Y-%m-%d %H:%M:%S.%N
+      read_from_head true
+      tag ive
+    </source>
+    
+    # Example:
+    # Dec 21 23:17:22 gke-foo-1-1-4b5cbd14-node-4eoj startupscript: Finished running startup script /var/run/google.startup.script
+    <source>
+      @id startupscript.log
+      @type tail
+      format syslog
+      path /var/log/startupscript.log
+      pos_file /var/log/fluentd-kafka/es-startupscript.log.pos
+      tag startupscript
+    </source>
+    
+    # Examples:
+    # time="2016-02-04T06:51:03.053580605Z" level=info msg="GET /containers/json"
+    # time="2016-02-04T07:53:57.505612354Z" level=error msg="HTTP Error" err="No such image: -f" statusCode=404
+    # TODO(random-liu): Remove this after cri container runtime rolls out.
+    <source>
+      @id docker.log
+      @type tail
+      format /^time="(?<time>[^)]*)" level=(?<severity>[^ ]*) msg="(?<message>[^"]*)"( err="(?<error>[^"]*)")?( statusCode=($<status_code>\d+))?/
+      path /var/log/docker.log
+      pos_file /var/log/fluentd-kafka/es-docker.log.pos
+      tag docker
+    </source>
+    
+    # Example:
+    # 2016/02/04 06:52:38 filePurge: successfully removed file /var/etcd/data/member/wal/00000000000006d0-00000000010a23d1.wal
+    <source>
+      @id etcd.log
+      @type tail
+      # Not parsing this, because it doesn't have anything particularly useful to
+      # parse out of it (like severities).
+      format none
+      path /var/log/etcd.log
+      pos_file /var/log/fluentd-kafka/es-etcd.log.pos
+      tag etcd
+    </source>
+    
+    # Multi-line parsing is required for all the kube logs because very large log
+    # statements, such as those that include entire object bodies, get split into
+    # multiple lines by glog.
+    
+    # Example:
+    # I0204 07:32:30.020537    3368 server.go:1048] POST /stats/container/: (13.972191ms) 200 [[Go-http-client/1.1] 10.244.1.3:40537]
+    <source>
+      @id kubelet.log
+      @type tail
+      format multiline
+      multiline_flush_interval 5s
+      format_firstline /^\w\d{4}/
+      format1 /^(?<severity>\w)(?<time>\d{4} [^\s]*)\s+(?<pid>\d+)\s+(?<source>[^ \]]+)\] (?<message>.*)/
+      time_format %m%d %H:%M:%S.%N
+      path /var/log/kubelet.log
+      pos_file /var/log/es-kubelet.log.pos
+      tag multiline.kubelet
+    </source>
+    
+    # Example:
+    # I1118 21:26:53.975789       6 proxier.go:1096] Port "nodePort for kube-system/default-http-backend:http" (:31429/tcp) was open before and is still needed
+    <source>
+      @id kube-proxy.log
+      @type tail
+      format multiline
+      multiline_flush_interval 5s
+      format_firstline /^\w\d{4}/
+      format1 /^(?<severity>\w)(?<time>\d{4} [^\s]*)\s+(?<pid>\d+)\s+(?<source>[^ \]]+)\] (?<message>.*)/
+      time_format %m%d %H:%M:%S.%N
+      path /var/log/kube-proxy.log
+      pos_file /var/log/fluentd-kafka/es-kube-proxy.log.pos
+      tag multiline.kube-proxy
+    </source>
+    
+    # Example:
+    # I0204 07:00:19.604280       5 handlers.go:131] GET /api/v1/nodes: (1.624207ms) 200 [[kube-controller-manager/v1.1.3 (linux/amd64) kubernetes/6a81b50] 127.0.0.1:38266]
+    <source>
+      @id kube-apiserver.log
+      @type tail
+      format multiline
+      multiline_flush_interval 5s
+      format_firstline /^\w\d{4}/
+      format1 /^(?<severity>\w)(?<time>\d{4} [^\s]*)\s+(?<pid>\d+)\s+(?<source>[^ \]]+)\] (?<message>.*)/
+      time_format %m%d %H:%M:%S.%N
+      path /var/log/kube-apiserver.log
+      pos_file /var/log/fluentd-kafka/es-kube-apiserver.log.pos
+      tag multiline.kube-apiserver
+    </source>
+    
+    # Example:
+    # I0204 06:55:31.872680       5 servicecontroller.go:277] LB already exists and doesn't need update for service kube-system/kube-ui
+    <source>
+      @id kube-controller-manager.log
+      @type tail
+      format multiline
+      multiline_flush_interval 5s
+      format_firstline /^\w\d{4}/
+      format1 /^(?<severity>\w)(?<time>\d{4} [^\s]*)\s+(?<pid>\d+)\s+(?<source>[^ \]]+)\] (?<message>.*)/
+      time_format %m%d %H:%M:%S.%N
+      path /var/log/kube-controller-manager.log
+      pos_file /var/log/fluentd-kafka/es-kube-controller-manager.log.pos
+      tag multiline.kube-controller-manager
+    </source>
+    
+    # Example:
+    # W0204 06:49:18.239674       7 reflector.go:245] pkg/scheduler/factory/factory.go:193: watch of *api.Service ended with: 401: The event in requested index is outdated and cleared (the requested history has been cleared [2578313/2577886]) [2579312]
+    <source>
+      @id kube-scheduler.log
+      @type tail
+      format multiline
+      multiline_flush_interval 5s
+      format_firstline /^\w\d{4}/
+      format1 /^(?<severity>\w)(?<time>\d{4} [^\s]*)\s+(?<pid>\d+)\s+(?<source>[^ \]]+)\] (?<message>.*)/
+      time_format %m%d %H:%M:%S.%N
+      path /var/log/kube-scheduler.log
+      pos_file /var/log/fluentd-kafka/es-kube-scheduler.log.pos
+      tag multiline.kube-scheduler
+    </source>
+    
+    # Example:
+    # I0603 15:31:05.793605       6 cluster_manager.go:230] Reading config from path /etc/gce.conf
+    <source>
+      @id glbc.log
+      @type tail
+      format multiline
+      multiline_flush_interval 5s
+      format_firstline /^\w\d{4}/
+      format1 /^(?<severity>\w)(?<time>\d{4} [^\s]*)\s+(?<pid>\d+)\s+(?<source>[^ \]]+)\] (?<message>.*)/
+      time_format %m%d %H:%M:%S.%N
+      path /var/log/glbc.log
+      pos_file /var/log/fluentd-kafka/es-glbc.log.pos
+      tag multiline.glbc
+    </source>
+    
+    # Example:
+    # I0603 15:31:05.793605       6 cluster_manager.go:230] Reading config from path /etc/gce.conf
+    <source>
+      @id cluster-autoscaler.log
+      @type tail
+      format multiline
+      multiline_flush_interval 5s
+      format_firstline /^\w\d{4}/
+      format1 /^(?<severity>\w)(?<time>\d{4} [^\s]*)\s+(?<pid>\d+)\s+(?<source>[^ \]]+)\] (?<message>.*)/
+      time_format %m%d %H:%M:%S.%N
+      path /var/log/cluster-autoscaler.log
+      pos_file /var/log/fluentd-kafka/es-cluster-autoscaler.log.pos
+      tag multiline.cluster-autoscaler
+    </source>
+    
+    # Logs from systemd-journal for interesting services.
+    # TODO(random-liu): Remove this after cri container runtime rolls out.
+    <source>
+      @id journald-docker
+      @type systemd
+      matches [{ "_SYSTEMD_UNIT": "docker.service" }]
+      <storage>
+        @type local
+        persistent true
+        path /var/log/fluentd-kafka/journald-docker.pos
+      </storage>
+      read_from_head true
+      tag systemd.docker
+    </source>
+    
+    <source>
+      @id journald-container-runtime
+      @type systemd
+      matches [{ "_SYSTEMD_UNIT": "crio.service" }]
+      <storage>
+        @type local
+        persistent true
+        path /var/log/fluentd-kafka/journald-container-runtime.pos
+      </storage>
+      read_from_head true
+      tag systemd.container-runtime
+    </source>
+    
+    # <source>
+    #   @type systemd
+    #   path /var/log/journal
+    #   matches [{"SYSLOG_IDENTIFIER": "kata-runtime"}, {"SYSLOG_IDENTIFIER": "kata-proxy"}, {"SYSLOG_IDENTIFIER": "kata-shim"}]
+    #   tag kata-containers
+    #   <entry>
+    #     fields_strip_underscores true
+    #     fields_lowercase true
+    #   </entry>
+    # </source>
+    
+    <source>
+      @id journald-kubelet
+      @type systemd
+      matches [{ "_SYSTEMD_UNIT": "kubelet.service", "PRIORITY": 4 }]
+      <storage>
+        @type local
+        persistent true
+        path /var/log/journald-kubelet.pos
+      </storage>
+      read_from_head true
+      tag systemd.kubelet
+    </source>
+    
+    <source>
+      @id journald-mcelog
+      @type systemd
+      matches [{ "_SYSTEMD_UNIT": "mcelog.service" }]
+      <storage>
+        @type local
+        persistent true
+        path /var/log/journald-mcelog.pos
+      </storage>
+      read_from_head true
+      tag systemd.mcelog
+    </source>
+    
+    <source>
+      @id journald-containerd
+      @type systemd
+      matches [{ "_SYSTEMD_UNIT": "containerd.service", "PRIORITY": 4 }]
+      <storage>
+        @type local
+        persistent true
+        path /var/log/journald-containerd.pos
+      </storage>
+      read_from_head true
+      tag systemd.containerd
+    </source>
+    
+    <source>
+      @id journald-node-problem-detector
+      @type systemd
+      matches [{ "_SYSTEMD_UNIT": "node-problem-detector.service" }]
+      <storage>
+        @type local
+        persistent true
+        path /var/log/fluentd-kafka/journald-node-problem-detector.pos
+      </storage>
+      read_from_head true
+      tag systemd.node-problem-detector
+    </source>
+    
+    <source>
+      @id kernel
+      @type systemd
+      matches [{ "_TRANSPORT": "kernel" }]
+      <storage>
+        @type local
+        persistent true
+        path /var/log/kernel.pos
+      </storage>
+      read_from_head true
+      tag systemd.kernel
+    </source>

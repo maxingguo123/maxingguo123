@@ -1,0 +1,49 @@
+# Since we need to enable "asdbg user and will assign 0penBmc1 password" with the following ipmitool command  to connect to each Node through At-Scale that allow us to pull ADFs logs
+# Command can be executed from OS.
+# ipmitool raw 0x30 0x5f 0x01 0x30 0x70 0x65 0x6e 0x42 0x6d 0x63 0x31
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: whitley-bmcuser
+  namespace: mgmt
+spec:
+  selector:
+      matchLabels:
+        name: whitley-bmcuser
+  template:
+    metadata:
+        labels:
+          name: whitley-bmcuser
+    spec:
+      hostNetwork: true
+      containers:
+      - name: whitley-bmcuser
+        image: prt-registry.sova.intel.com/sandstone-init-container:32
+        imagePullPolicy: IfNotPresent
+        command: [ "/usr/bin/bash" ]
+        args: ["-c", "ipmitool raw 0x30 0x5f 0x01 0x30 0x70 0x65 0x6e 0x42 0x6d 0x63 0x31; sleep infinity"]
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        securityContext:
+          privileged: true
+        volumeMounts:
+          - mountPath: /proc
+            name: hostrootproc
+          - mountPath: /sys
+            name: hostrootsys
+          - mountPath: /hostroot
+            name: hostroot
+      volumes:
+        - name: hostrootproc
+          hostPath:
+            path: /proc
+        - name: hostrootsys
+          hostPath:
+            path: /sys
+        - name: hostroot
+          hostPath:
+            path: /

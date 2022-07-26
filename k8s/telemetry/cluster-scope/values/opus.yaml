@@ -1,0 +1,4 @@
+location: "opusa"
+image: prt-registry.sova.intel.com/cluster-scope:v0.70
+clusterscope:
+  rootURL: ive-infra04.deacluster.intel.com:5000/api/node/metadata?name=

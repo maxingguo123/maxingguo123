@@ -1,0 +1,9 @@
+nodeSelector:
+  esexporter: "true"
+es:
+  sslSkipVerify: true
+
+serviceMonitor:
+  enabled: true
+  labels:
+    type: telemetry

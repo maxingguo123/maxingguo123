@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kafka-client
+  namespace: monitoring
+spec:
+  nodeSelector:
+    kafka: "true"
+  containers:
+  - name: kafka-client
+    image: confluentinc/cp-kafka:5.3.1
+    command:
+      - sh
+      - -c
+      - "exec tail -f /dev/null"
+#     volumeMounts:
+#       - mountPath: /kafkadata
+#         name: kafkadata
+#         readOnly: true
+#   volumes:
+#     - name: kafkadata
+#       hostPath:
+#         path: /disks/kafkadata

@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: killer-pod
+  namespace: NAMESPACE
+  labels:
+    k8s-app: killer-pod
+spec:
+  selector:
+    matchLabels:
+      name: killer-pod
+  template:
+    metadata:
+      labels:
+        name: killer-pod
+    spec:
+      nodeSelector:
+        REBOOTLABEL: "true"
+      hostNetwork: true
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+      initContainers:
+        - name: create-metadata
+          image: prt-registry.sova.intel.com/cluster-scope:v0.41
+          command: ["/bin/bash"]
+          args: ["-c", "mkdir -p /var/log/atscale; (echo '{\"name\": \"SANDSTONE_NAME\", \"runid\": \"ATSCALE_RUNID\", \"pipeline\": \"ATSCALE_PIPELINE\",\"buildtimestamp\": \"ATSCALE_BUILD_TIMESTAMP\"}' | tee -a /var/log/atscale/test-metadata.ndjson | jq -c '. += {\"type\": \"test-metadata\"}'>/hostroot/dev/console &); \
+                 sleep 5; \
+                 echo run-start-indicator"]
+          securityContext:
+            privileged: true
+            allowPrivilegeEscalation: true
+          volumeMounts:
+          - name: varlog
+            mountPath: /var/log
+          - name: hostroot
+            mountPath: /hostroot
+      containers:
+      - name: killer-pod
+        image: prt-registry.sova.intel.com/sandstone:orca-v1
+        imagePullPolicy: Always
+        command: ["/tests/cleanup-host.sh"]
+        volumeMounts:
+          - mountPath: /hostproc
+            name: hostrootproc
+          - mountPath: /sys
+            name: hostrootsys
+          - mountPath: /hostroot
+            name: hostroot
+        env:
+          - name: REBOOT_TYPE
+            value: REBOOTTYPE
+          - name: REBOOT_NODE
+            value: "false"
+          - name: CLEAN_COUNTER
+            value: "true"
+        securityContext:
+          privileged: true
+          capabilities:
+            add: ["SYS_ADMIN"]
+        readinessProbe:
+          exec:
+            command:
+              - cat
+              - /tmp/donedone
+            # Wait for 30s before checking for the first time
+            # then probe for completion every 5 seconds
+            #initialDelaySeconds: 30
+            #periodSeconds: 5
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - name: hostrootproc
+          hostPath:
+            path: /proc
+        - name: hostrootsys
+          hostPath:
+            path: /sys
+        - name: hostroot
+          hostPath:
+            path: /
+        - name: varlog
+          hostPath:
+            path: /var/log

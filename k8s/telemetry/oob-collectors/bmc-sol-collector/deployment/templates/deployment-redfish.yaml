@@ -1,0 +1,86 @@
+{{if .Values.drivers.redfish}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sol-collector.fullname" . }}-redfish
+  labels:
+{{ include "sol-collector.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "sol-collector.name" . }}-redfish
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      annotations:
+        build_id: {{ default "disabled" .Values.build_id | quote }}
+      labels:
+        app.kubernetes.io/name: {{ include "sol-collector.name" . }}-redfish
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      nodeSelector:
+        sol-collector: "true"
+      serviceAccountName: {{ template "sol-collector.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: service-init
+          securityContext:
+            runAsUser: 0
+          image: "{{ .Values.service_image.repository }}:{{ .Values.service_image.tag }}"
+          imagePullPolicy: {{ .Values.service_image.pullPolicy }}
+          command: ["sh", "-c", "chown -R 1000:1000 /fluentdout"]
+          volumeMounts:
+            - mountPath: /fluentdout
+              name: fluentd
+              readOnly: false 
+      containers:
+        - name: service
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.service_image.repository }}:{{ .Values.service_image.tag }}"
+          imagePullPolicy: {{ .Values.service_image.pullPolicy }}
+          env:
+            - name: OUTPUT_DIRECTORY
+              value: "/fluentdout"
+            - name: DRIVER
+              value: "redfish"
+            - name: INVENTORY_FILE
+              value: "/inventory/redfish-prometheus.json"
+            - name: BMC_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "sol-collector.fullname" . }}-bmc
+                  key: redfish_user
+            - name: BMC_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "sol-collector.fullname" . }}-bmc
+                  key: redfish_password
+          ports:
+            - name: http
+              containerPort: 9666
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          volumeMounts:
+            - mountPath: /inventory
+              name: inventory
+              readOnly: true
+            - mountPath: /fluentdout
+              name: fluentd
+              readOnly: false
+          resources:
+            {{- toYaml .Values.service_resources | nindent 12 }}
+      volumes:
+        - name: inventory
+          nfs:
+            path: {{ .Values.inventory_nfs_share }}
+            server: {{ .Values.inventory_nfs_server }}
+        - name: fluentd
+          hostPath:
+            path: /var/log/sol-collector
+{{end}}

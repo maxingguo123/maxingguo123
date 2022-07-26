@@ -1,0 +1,16 @@
+{
+  "aliases": {},
+  "index_patterns": [
+    "health-*"
+  ],
+  "mappings": {
+    "dynamic": true,
+    "properties": {
+      "@timestamp": {
+        "type": "date"
+      }
+    }
+  },
+  "order": 0,
+  "version": 1
+}

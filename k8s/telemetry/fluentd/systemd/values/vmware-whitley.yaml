@@ -1,0 +1,6 @@
+name: vmware-test
+log_root: /var/local/common/vmware/systemlogs
+log_files: /var/local/common/vmware/systemlogs/*.log,/var/local/common/vmware/systemlogs/vm_logs/*.log,/var/local/common/vmware/systemlogs/host_logs/*/*.log
+extract_metadata: False
+topic: atscale-other
+monitoring_port: 24211

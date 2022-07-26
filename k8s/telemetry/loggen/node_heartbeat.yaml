@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: node-heartbeat
+  namespace: mgmt
+  labels:
+    k8s-app: node-heartbeat
+spec:
+  selector:
+    matchLabels:
+      name: node-heartbeat
+  template:
+    metadata:
+      labels:
+        name: node-heartbeat
+    spec:
+      hostNetwork: true
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+      containers:
+      - name: node-heartbeat
+        image: centos/systemd
+        command: ["/usr/bin/bash"]
+        args: ["-c", "count=0; while true; do echo \"Heartbeat:\" $count; count=$((count+1)); sleep 10; done"]
+

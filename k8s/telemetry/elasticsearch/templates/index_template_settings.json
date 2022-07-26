@@ -1,0 +1,8 @@
+{
+  "order": 1,
+  "index_patterns": ["qpool-*"],
+  "settings": {
+	  "number_of_shards": {{.Values.data.count}},
+    "index.routing.allocation.include.index_type": "non-critical"
+  }
+}

@@ -1,0 +1,71 @@
+---
+# Source: prometheus-blackbox-exporter/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: atscale-prometheus-blackbox-exporter
+  labels:
+    helm.sh/chart: prometheus-blackbox-exporter-5.3.1
+    app.kubernetes.io/name: prometheus-blackbox-exporter
+    app.kubernetes.io/instance: atscale
+    app.kubernetes.io/version: "0.19.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: prometheus-blackbox-exporter
+      app.kubernetes.io/instance: atscale
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        helm.sh/chart: prometheus-blackbox-exporter-5.3.1
+        app.kubernetes.io/name: prometheus-blackbox-exporter
+        app.kubernetes.io/instance: atscale
+        app.kubernetes.io/version: "0.19.0"
+        app.kubernetes.io/managed-by: Helm
+      annotations:
+        checksum/config: 08fd58ff8813c64a86cfc6000d2e3269c107d415d6e35d49f4d892d6b3e6060b
+    spec:
+      automountServiceAccountToken: false
+      serviceAccountName: atscale-prometheus-blackbox-exporter
+      nodeSelector:
+        kafka: "true"
+      restartPolicy: Always
+      containers:      
+        - name: blackbox-exporter
+          image: "prom/blackbox-exporter:v0.19.0"
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            readOnlyRootFilesystem: true
+            capabilities:
+              add: ["NET_RAW"]
+          env:
+          args:
+            - "--config.file=/config/blackbox.yaml"
+          resources:
+            {}
+          ports:
+            - containerPort: 9115
+              name: http
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+          volumeMounts:
+            - mountPath: /config
+              name: config
+      hostNetwork: false
+      volumes:      
+        - name: config
+          configMap:
+            name: atscale-prometheus-blackbox-exporter

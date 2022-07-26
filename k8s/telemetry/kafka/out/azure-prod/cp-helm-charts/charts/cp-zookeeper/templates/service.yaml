@@ -1,0 +1,19 @@
+---
+# Source: cp-helm-charts/charts/cp-zookeeper/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: atscale-cp-zookeeper
+  labels:
+    app: cp-zookeeper
+    chart: cp-zookeeper-0.1.0
+    release: atscale
+    heritage: Helm
+spec:
+  type: 
+  ports:
+    - port: 2181
+      name: client
+  selector:
+    app: cp-zookeeper
+    release: atscale

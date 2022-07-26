@@ -1,0 +1,13 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: fluentd-kafka-config-v0.1.6
+  namespace: mgmt
+  labels:
+    addonmanager.kubernetes.io/mode: Reconcile
+data:
+# https://github.com/helm/helm/issues/5979#issuecomment-518231758
+{{range $path, $_ := $.Files.Glob "config/**.conf"}}
+{{$path | base | indent 2}}: |-
+{{tpl ($.Files.Get $path) $ | indent 4}}  
+{{end}}

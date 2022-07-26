@@ -1,0 +1,676 @@
+{
+  "aliases": {},
+  "index_patterns": [
+    "qpool-*",
+    "critical-qpool-*"
+  ],
+  "mappings": {
+    "dynamic": false,
+    "properties": {
+      "@timestamp": {
+        "type": "date"
+      },
+      "@version": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "boot_id": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "cap_effective": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "cluster-name": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "cmdline": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "comm": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "docker": {
+        "properties": {
+          "container_id": {
+            "fields": {
+              "keyword": {
+                "ignore_above": 256,
+                "type": "keyword"
+              }
+            },
+            "type": "text"
+          }
+        }
+      },
+      "exe": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "fluentd_counter": {
+        "type": "long"
+      },
+      "fluentd_start_time": {
+        "type": "long"
+      },
+      "gid": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "host": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "hostname": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "kafka_offset": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "kernel_device": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "kernel_subsystem": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "kubernetes": {
+        "properties": {
+          "container_image": {
+            "fields": {
+              "keyword": {
+                "ignore_above": 256,
+                "type": "keyword"
+              }
+            },
+            "type": "text"
+          },
+          "container_image_id": {
+            "fields": {
+              "keyword": {
+                "ignore_above": 256,
+                "type": "keyword"
+              }
+            },
+            "type": "text"
+          },
+          "container_name": {
+            "fields": {
+              "keyword": {
+                "ignore_above": 256,
+                "type": "keyword"
+              }
+            },
+            "type": "text"
+          },
+          "host": {
+            "fields": {
+              "keyword": {
+                "ignore_above": 256,
+                "type": "keyword"
+              }
+            },
+            "type": "text"
+          },
+          "labels": {
+            "dynamic": true,
+            "properties": {}
+          },
+          "master_url": {
+            "fields": {
+              "keyword": {
+                "ignore_above": 256,
+                "type": "keyword"
+              }
+            },
+            "type": "text"
+          },
+          "namespace_id": {
+            "fields": {
+              "keyword": {
+                "ignore_above": 256,
+                "type": "keyword"
+              }
+            },
+            "type": "text"
+          },
+          "namespace_name": {
+            "fields": {
+              "keyword": {
+                "ignore_above": 256,
+                "type": "keyword"
+              }
+            },
+            "type": "text"
+          },
+          "orphaned_namespace": {
+            "fields": {
+              "keyword": {
+                "ignore_above": 256,
+                "type": "keyword"
+              }
+            },
+            "type": "text"
+          },
+          "pod_id": {
+            "fields": {
+              "keyword": {
+                "ignore_above": 256,
+                "type": "keyword"
+              }
+            },
+            "type": "text"
+          },
+          "pod_name": {
+            "fields": {
+              "keyword": {
+                "ignore_above": 256,
+                "type": "keyword"
+              }
+            },
+            "type": "text"
+          }
+        }
+      },
+      "log": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "logstash_time": {
+        "type": "date"
+      },
+      "benchmark.name": {
+        "type": "keyword"
+      },
+      "benchmark.type": {
+        "type": "keyword"
+      },
+      "benchmark.result": {
+        "type": "float"
+      },
+      "ptu.index": {
+        "type": "long"
+      },
+      "ptu.cpu": {
+        "type": "keyword"
+      },
+      "ptu.cfreq": {
+        "type": "long"
+      },
+      "ptu.ufreq": {
+        "type": "long"
+      },
+      "ptu.util": {
+        "type": "float"
+      },
+      "ptu.ipc": {
+        "type": "float"
+      },
+      "ptu.c0": {
+        "type": "float"
+      },
+      "ptu.c1": {
+        "type": "float"
+      },
+      "ptu.c6": {
+        "type": "float"
+      },
+      "ptu.pc2": {
+        "type": "float"
+      },
+      "ptu.pc6": {
+        "type": "float"
+      },
+      "ptu.temp": {
+        "type": "long"
+      },
+      "ptu.dts": {
+        "type": "long"
+      },
+      "ptu.power": {
+        "type": "float"
+      },
+      "ptu.volt": {
+        "type": "float"
+      },
+      "ptu.uvolt": {
+        "type": "float"
+      },
+      "ptu.tstat": {
+        "type": "keyword"
+      },
+      "ptu.tlog": {
+        "type": "keyword"
+      },
+      "ptu.tl": {
+        "type": "long"
+      },
+      "ptu.tmargin": {
+        "type": "float"
+      },
+      "hplinpack.Frac": {
+        "type": "float"
+      },
+      "hplinpack.n": {
+        "type": "long"
+      },
+      "hplinpack.PFact": {
+        "type": "float"
+      },
+      "hplinpack.Bcast": {
+        "type": "float"
+      },
+      "hplinpack.Swap": {
+        "type": "float"
+      },
+      "hplinpack.Update": {
+        "type": "float"
+      },
+      "hplinpack.PPerf": {
+        "type": "float"
+      },
+      "hplinpack.BcstBW": {
+        "type": "float"
+      },
+      "hplinpack.SwapBW": {
+        "type": "float"
+      },
+      "hplinpack.CPU": {
+        "type": "float"
+      },
+      "hplinpack.Kernel": {
+        "type": "float"
+      },
+      "hplinpack.Total": {
+        "type": "float"
+      },
+      "hplinpack.Powr": {
+        "type": "float"
+      },
+      "hplinpack.Dpwr": {
+        "type": "float"
+      },
+      "hplinpack.Tmp": {
+        "type": "float"
+      },
+      "hplinpack.CFreq": {
+        "type": "float"
+      },
+      "hplinpack.UFreq": {
+        "type": "float"
+      },
+      "hplinpack.Time": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "hplinpack.WhoamI": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "msr.key": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "msr.value": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "msr.decimal": {
+        "type": "long"
+      },
+      "machine_id": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "message": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "metadata": {
+        "dynamic": true,
+        "properties": {}
+      },
+      "pid": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "priority": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "runid": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "selinux_context": {
+        "ignore_above": 256,
+        "type": "keyword"
+      },
+      "source_monotonic_timestamp": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "source_realtime_timestamp": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "status": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "stream": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "stream_id": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "subcluster-name": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "syslog_facility": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "syslog_identifier": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "syslog_pid": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "syslog_raw": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "syslog_timestamp": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "systemd_cgroup": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "systemd_invocation_id": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "systemd_slice": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "systemd_unit": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "tag": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "test": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "test_name": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "timestamp_ns": {
+        "type": "date_nanos"
+      },
+      "transport": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "udev_devnode": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "udev_sysname": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      },
+      "uid": {
+        "fields": {
+          "keyword": {
+            "ignore_above": 256,
+            "type": "keyword"
+          }
+        },
+        "type": "text"
+      }
+    }
+  },
+  "order": 0,
+  "version": 1
+}

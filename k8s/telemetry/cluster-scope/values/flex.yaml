@@ -1,0 +1,4 @@
+location: "fl30lne001"
+image: prt-registry.sova.intel.com/cluster-scope:v0.70
+clusterscope:
+  rootURL: api.clusterscope.ingress.fl30lcent1.deacluster.intel.com/api/node/metadata?name=

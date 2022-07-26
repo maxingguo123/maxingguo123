@@ -1,0 +1,78 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: clusterhealth
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  name: clusterhealth
+rules:
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["get", "watch", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: clusterhealth
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: clusterhealth
+subjects:
+- kind: ServiceAccount
+  name: clusterhealth
+  namespace: kube-system
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: clusterhealth-cm
+  namespace: kube-system
+data:
+  config.json: |
+    {
+      "locations": ["l10b2","zp31l10b01","zp31l10b02"],
+      "es_index": "health",
+      "es_host": "http://10.219.23.201:9200",
+      "es_user": "",
+      "es_pass": "",
+      "es_use_ssl": false,
+      "es_cacert": "",
+      "interval": 10
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clusterhealth
+  namespace: kube-system
+  labels:
+    app: clusterhealth
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: clusterhealth
+  template:
+    metadata:
+      labels:
+        app: clusterhealth
+        tier: control-plane-addons
+    spec:
+      nodeSelector:
+        nodetype: telemetry
+      containers:
+        - name: cluster-health
+          image: prt-registry.sova.intel.com/cluster-health:v0.73
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+          - name: config-volume
+            mountPath: /etc/clusterhealth
+      serviceAccount: clusterhealth
+      volumes:
+        - name: config-volume
+          configMap:
+            name: clusterhealth-cm

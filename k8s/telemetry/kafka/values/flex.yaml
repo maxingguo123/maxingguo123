@@ -1,0 +1,79 @@
+## ------------------------------------------------------
+## Zookeeper
+## ------------------------------------------------------
+cp-zookeeper:
+  enabled: true
+  servers: 3
+  globalOutstandingLimit: 5000
+  nodeSelector:
+    zookeeper: "true"
+  persistence:
+    dataDirSize: 7999Mi
+    dataDirStorageClass: local-storage
+    dataLogDirSize: 10015Mi
+    dataLogDirStorageClass: local-storage
+    #  resources:
+    #    requests:
+    #      memory: 750Mi
+## ------------------------------------------------------
+## Kafka
+## ------------------------------------------------------
+cp-kafka:
+  enabled: true
+  nodeSelector:
+    kafka: "true"
+  brokers: 3
+  configurationOverrides:
+    "zookeeper.session.timeout.ms": 300000
+    "zookeeper.connection.timeout.ms": 300000
+    "session.timeout.ms": 600000
+    "offsets.topic.replication.factor": "2"
+    "default.replication.factor": "2"
+    "retention.ms": "432000000"
+    "replica.fetch.max.bytes": "10485760"
+    "message.max.bytes": "10485760"
+    "num.partitions": "9"
+    "confluent.support.metrics.enable": "false"
+    "confluent.metrics.reporter.topic.replicas": "2"
+    "unclean.leader.election.enable": "true"
+    "min.insync.replicas": "1"
+  # heapOptions: "-Xms6g -Xmx6g -XX:MetaspaceSize=96m -XX:+UseG1GC -XX:MaxGCPauseMillis=20 -XX:InitiatingHeapOccupancyPercent=35 -XX:G1HeapRegionSize=16M -XX:MinMetaspaceFreeRatio=50 -XX:MaxMetaspaceFreeRatio=80 -XX:-UseConcMarkSweepGC"
+  heapOptions: "-Xms9g -Xmx24g -XX:-UseConcMarkSweepGC"
+  nodeport:
+    enabled: true
+  persistence:
+    storageClass: local-storage
+    size: 884Gi
+    #  resources:
+    #    requests:
+    #      memory: 750Mi
+
+## ------------------------------------------------------
+## Schema Registry
+## ------------------------------------------------------
+cp-schema-registry:
+  enabled: false
+
+## ------------------------------------------------------
+## REST Proxy
+## ------------------------------------------------------
+cp-kafka-rest:
+  enabled: false
+
+## ------------------------------------------------------
+## Kafka Connect
+## ------------------------------------------------------
+cp-kafka-connect:
+  enabled: false
+
+## ------------------------------------------------------
+## KSQL Server
+## ------------------------------------------------------
+cp-ksql-server:
+  enabled: false
+
+## ------------------------------------------------------
+## Control Center
+## ------------------------------------------------------
+cp-control-center:
+  enabled: false

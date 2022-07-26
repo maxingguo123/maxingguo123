@@ -1,0 +1,23 @@
+---
+# Source: fluentd-prom/templates/fluentd-prom-monitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: fluentd-prom
+  labels:
+    k8s-app: fluentd-prom
+spec:
+  selector:
+    matchLabels:
+      k8s-app: fluentd-prom
+  namespaceSelector:
+    matchNames:
+    - mgmt
+    - ive-mgmt
+    - infra-mgmt
+    - oss-mgmt
+    - piv-mgmt
+    
+  podMetricsEndpoints:
+  - port: metrics
+    interval: 10s

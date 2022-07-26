@@ -1,0 +1,2 @@
+fluentd-kafka-configmap-*.yaml
+fluentd-kafka-ds-*.yaml

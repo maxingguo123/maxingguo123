@@ -1,0 +1,23 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: fluentd-prom
+  labels:
+    k8s-app: fluentd-prom
+    type: telemetry
+spec:
+  selector:
+    matchLabels:
+      k8s-app: fluentd-prom
+  namespaceSelector:
+    matchNames:
+    - mgmt
+  podMetricsEndpoints:
+  - port: metrics
+    interval: 10s
+    relabelings:
+    - action: replace
+      sourceLabels:
+      - __meta_kubernetes_pod_node_name
+      targetLabel: instance

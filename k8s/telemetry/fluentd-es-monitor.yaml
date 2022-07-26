@@ -1,0 +1,23 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: fluentd-es
+  labels:
+    k8s-app: fluentd-es
+spec:
+  selector:
+    matchLabels:
+      k8s-app: fluentd-es
+  namespaceSelector:
+    matchNames:
+    - mgmt
+    - oss-mgmt
+    - ive-mgmt
+    - infra-mgmt
+  podMetricsEndpoints:
+  - port: metrics
+    interval: 10s
+#  - targetPort: 24231
+#    path: "/metrics"
+---

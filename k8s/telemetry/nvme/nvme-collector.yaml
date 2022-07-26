@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: nvme-collector
+  namespace: monitoring
+  labels:
+    name: nvme-collector
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9121"
+spec:
+  selector:
+    matchLabels:
+      name: nvme-collector
+  template:
+    metadata:
+      labels:
+        name: nvme-collector
+    spec:
+      hostNetwork: true
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: nodeowner
+                operator: NotIn
+                values: [admin]
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+      containers:
+      - name: nvme-collector
+        image: prt-registry.sova.intel.com/telemetry/nvme-exporter
+        securityContext:
+          privileged: true
+        ports:
+          - name: metrics
+            containerPort: 9121
+            protocol: TCP

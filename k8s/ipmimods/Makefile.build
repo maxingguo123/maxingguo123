@@ -1,0 +1,14 @@
+IPMIMODS_DOCKER_NAME:=ipmimods
+IPMIMODS_DOCKER_TAG:=v0.1
+IPMIMODS_PUSH_TAG ?= $(IPMIMODS_DOCKER_TAG)
+REGISTRY ?= prt-registry.sova.intel.com
+
+ipmimods-build:
+	cd  $(TOPDIR)/k8s/ipmimods && \
+	docker build -t $(IPMIMODS_DOCKER_NAME):$(IPMIMODS_DOCKER_TAG) -f Dockerfile . 
+
+ipmimods-push: ipmimods-build
+	$(foreach i,$(IPMIMODS_PUSH_TAG), \
+		docker tag $(IPMIMODS_DOCKER_NAME):$(IPMIMODS_DOCKER_TAG) $(REGISTRY)/sandstone:$(IPMIMODS_DOCKER_NAME)-$(i); \
+		docker push $(REGISTRY)/sandstone:$(IPMIMODS_DOCKER_NAME)-$(i);)
+

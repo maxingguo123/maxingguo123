@@ -1,0 +1,5 @@
+cluster: gdc
+esindex: qpool
+#tenants:
+#- username: default
+#  mgmt_ns: kube-system

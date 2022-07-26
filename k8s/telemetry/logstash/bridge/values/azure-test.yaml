@@ -1,0 +1,7 @@
+name: atscale
+topic: atscale
+esindex: qpool
+threads: 3
+replicas: 3
+pipeline_batch_delay: 50
+log_window: 7

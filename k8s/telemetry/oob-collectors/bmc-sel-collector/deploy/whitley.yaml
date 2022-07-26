@@ -1,0 +1,20 @@
+---
+debug: true
+
+storage:
+  cache:
+    size: 1Gi
+    class: nfs-storage02-pool01
+
+inventory:
+  nfs_share: /mnt/Pool01/cluster-inventory/v2
+  nfs_server: 10.219.20.252
+
+
+kafka:
+  brokers: 
+    - "kafkacluster01-0.kafkacluster01-headless.kafka:9092"
+    - "kafkacluster01-1.kafkacluster01-headless.kafka:9092"
+    - "kafkacluster01-2.kafkacluster01-headless.kafka:9092"
+    - "kafkacluster01-3.kafkacluster01-headless.kafka:9092"
+  topic: bmc_sel

@@ -1,0 +1,127 @@
+From edac1174dd9ed5115244184e3ed5f2c6a914af98 Mon Sep 17 00:00:00 2001
+From: Manohar R Castelino <manohar.r.castelino@intel.com>
+Date: Thu, 18 Jul 2019 19:51:38 +0100
+Subject: [PATCH] json logging: Add support for logging using ndjson
+
+Add support for logging in ndjson format. This ensures that
+the log is machine parseable. It can then directly consumed
+by tools like logstash, fluentd or kubernetes node problem
+discovery.
+
+Signed-off-by: Manohar R Castelino <manohar.r.castelino@intel.com>
+---
+ mcelog.c | 52 +++++++++++++++++++++++++++++++++++++++++++++-------
+ 1 file changed, 45 insertions(+), 7 deletions(-)
+
+diff --git a/mcelog.c b/mcelog.c
+index cabfe0d..0e951db 100644
+--- a/mcelog.c
++++ b/mcelog.c
+@@ -71,6 +71,7 @@ static double cpumhz;
+ static int cpumhz_forced;
+ int ascii_mode;
+ int dump_raw_ascii;
++int dump_raw_json;
+ int daemon_mode;
+ static char *inputfile;
+ char *processor_flags;
+@@ -497,6 +498,35 @@ static void dump_mce_raw_ascii(struct mce *m, unsigned recordlen)
+ 	Wprintf("\n");
+ }
+ 
++static void dump_mce_raw_json(struct mce *m, unsigned recordlen)
++{
++	Wprintf("{");
++	if (!m->finished)
++		Wprintf("\"FINISHED\": false,");
++
++	Wprintf("\"CPU\": \"%u\",", m->extcpu ? m->extcpu : m->cpu);
++	Wprintf("\"BANK\": \"%d\",", m->bank);
++	Wprintf("\"TSC\": \"%#llx\",", m->tsc);
++	Wprintf("\"RIP\": \"%#02x:%#llx\",", m->cs, m->ip);
++	Wprintf("\"MISC\": \"%#llx\",", m->misc);
++	Wprintf("\"ADDR\": \"%#llx\",", m->addr);
++	Wprintf("\"STATUS\": \"%#llx\",", m->status);
++
++	Wprintf("\"MCGSTATUS\": \"%#llx\"", m->mcgstatus);
++	if (recordlen > offsetof(struct mce, cpuid))
++		Wprintf(",\"PROCESSOR\": \"%u:%#x\"", m->cpuvendor, m->cpuid);
++
++#define CPRINT(str, field) 				\
++	if (recordlen > offsetof(struct mce, field))	\
++		Wprintf("," str,  m->field)
++	CPRINT("\"TIME\": \"%llu\"", time);
++	CPRINT("\"SOCKETID\": \"%u\"", socketid);
++	CPRINT("\"APICID\": \"%u\"", apicid);
++	CPRINT("\"MCGCAP\": \"%#llx\"", mcgcap);
++#undef CPRINT
++	Wprintf("}\n");
++}
++
+ int is_cpu_supported(void)
+ { 
+ 	enum { 
+@@ -650,7 +680,11 @@ static void dump_mce_final(struct mce *m, char *symbol, int missing, int recordl
+ 	m->finished = 1;
+ 	if (m->cpuid)
+ 		mce_cpuid(m);
+-	if (!dump_raw_ascii) {
++        if (dump_raw_json) {
++		dump_mce_raw_json(m, recordlen);
++        } else if (dump_raw_ascii) {
++		dump_mce_raw_ascii(m, recordlen);
++        } else {
+ 		if (!dseen)
+ 			disclaimer();
+ 		dump_mce(m, recordlen);
+@@ -658,8 +692,7 @@ static void dump_mce_final(struct mce *m, char *symbol, int missing, int recordl
+ 			Wprintf("RIP: %s\n", symbol);
+ 		if (missing) 
+ 			Wprintf("(Fields were incomplete)\n");
+-	} else
+-		dump_mce_raw_ascii(m, recordlen);
++	}
+ 	flushlog();
+ }
+ 
+@@ -883,7 +916,7 @@ restart:
+ 			s = skipspace(s);
+ 			if (*s && data)
+ 				dump_mce_final(&m, symbol, missing, recordlen, disclaimer_seen); 
+-			if (!dump_raw_ascii)
++			if (!dump_raw_ascii || !dump_raw_json)
+ 				Wprintf("%s", start);
+ 			if (*s && data)
+ 				goto restart;
+@@ -1046,7 +1079,9 @@ static struct option options[] = {
+ 	{ "cpumhz", 1, NULL, O_CPUMHZ },
+ 	{ "syslog-error", 0, NULL, O_SYSLOG_ERROR },
+ 	{ "dump-raw-ascii", 0, &dump_raw_ascii, 1 },
++	{ "dump-raw-json", 0, &dump_raw_json, 0 },
+ 	{ "raw", 0, &dump_raw_ascii, 1 },
++	{ "json", 0, &dump_raw_json, 1 },
+ 	{ "no-syslog", 0, NULL, O_NO_SYSLOG },
+ 	{ "daemon", 0, NULL, O_DAEMON },
+ 	{ "ascii", 0, NULL, O_ASCII },
+@@ -1284,12 +1319,15 @@ static void process(int fd, unsigned recordlen, unsigned loglen, char *buf)
+ 			finish = 1;
+ 		if (!mce_filter(mce, recordlen)) 
+ 			continue;
+-		if (!dump_raw_ascii) {
++		if (dump_raw_json) {
++			dump_mce_raw_json(mce, recordlen);
++                } else if (dump_raw_ascii) {
++			dump_mce_raw_ascii(mce, recordlen);
++                } else {
+ 			disclaimer();
+ 			Wprintf("MCE %d\n", i);
+ 			dump_mce(mce, recordlen);
+-		} else
+-			dump_mce_raw_ascii(mce, recordlen);
++		}
+ 		flushlog();
+ 	}
+ 
+-- 
+2.22.0
+

@@ -1,0 +1,96 @@
+---
+# Source: sol-collector/templates/deployment-redfish.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: atscale-sol-collector-redfish
+  labels:
+    app.kubernetes.io/name: sol-collector
+    helm.sh/chart: sol-collector-0.1.0
+    app.kubernetes.io/instance: atscale
+    app.kubernetes.io/version: "1.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: sol-collector-redfish
+      app.kubernetes.io/instance: atscale
+  template:
+    metadata:
+      annotations:
+        build_id: "disabled"
+      labels:
+        app.kubernetes.io/name: sol-collector-redfish
+        app.kubernetes.io/instance: atscale
+    spec:
+      nodeSelector:
+        sol-collector: "true"
+      serviceAccountName: atscale-sol-collector
+      securityContext:
+        {}
+      initContainers:
+        - name: service-init
+          securityContext:
+            runAsUser: 0
+          image: "prt-registry.sova.intel.com/infra/bmc-sol-collector:0.4.0"
+          imagePullPolicy: Always
+          command: ["sh", "-c", "chown -R 1000:1000 /fluentdout"]
+          volumeMounts:
+            - mountPath: /fluentdout
+              name: fluentd
+              readOnly: false 
+      containers:
+        - name: service
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+          image: "prt-registry.sova.intel.com/infra/bmc-sol-collector:0.4.0"
+          imagePullPolicy: Always
+          env:
+            - name: OUTPUT_DIRECTORY
+              value: "/fluentdout"
+            - name: DRIVER
+              value: "redfish"
+            - name: INVENTORY_FILE
+              value: "/inventory/redfish-prometheus.json"
+            - name: BMC_USER
+              valueFrom:
+                secretKeyRef:
+                  name: atscale-sol-collector-bmc
+                  key: redfish_user
+            - name: BMC_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: atscale-sol-collector-bmc
+                  key: redfish_password
+          ports:
+            - name: http
+              containerPort: 9666
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          volumeMounts:
+            - mountPath: /inventory
+              name: inventory
+              readOnly: true
+            - mountPath: /fluentdout
+              name: fluentd
+              readOnly: false
+          resources:
+            limits:
+              cpu: 2
+              memory: 16G
+            requests:
+              cpu: 1
+              memory: 14G
+      volumes:
+        - name: inventory
+          nfs:
+            path: /mnt/Pool01/cluster-inventory/v2
+            server: 10.250.0.16
+        - name: fluentd
+          hostPath:
+            path: /var/log/sol-collector

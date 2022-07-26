@@ -1,0 +1,8 @@
+{
+  "order": 1,
+  "index_patterns": ["health-*"],
+  "settings": {
+    "number_of_shards": 8,
+    "index.routing.allocation.include.index_type": "non-critical"
+  }
+}
