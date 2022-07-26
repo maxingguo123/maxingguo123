@@ -32,10 +32,10 @@ spec:
       nodeSelector:
         SANDSTONE_NODE_LABEL: "true"
       volumes:
-        #- name: nfs-storage
-          #nfs:
-           #server: pnp-nfs.sh.intel.com
-           #path: /home/netflix/allsprlog/
+        - name: nfs-storage
+          nfs:
+           server: spiv-pnp-test.sh.intel.com
+           path: /data_bck/nfs/pnp
         - name: dshm
           emptyDir:
             medium: Memory
@@ -146,8 +146,8 @@ spec:
         image: REGISTRY/sandstone:DOCKER_TAG
         imagePullPolicy: Always
         volumeMounts:
-          #- mountPath: /home/ClusterPnP
-            #name: nfs-storage
+          - mountPath: /ClusterPnP/
+            name: nfs-storage
           - mountPath: /ClusterPnP
             name: host-clusterpnp
           - mountPath: /opt/intel/sep
