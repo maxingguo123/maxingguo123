@@ -9,3 +9,5 @@ pipeline {
     }    
   }  
 }
+
+env.KUBECTL_ARGS="--kubeconfig=/data_bck/kubeconfig/config"
