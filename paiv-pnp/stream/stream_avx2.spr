@@ -11,5 +11,5 @@ env.EXTRA_ARGS_ARG="3"
 // Here basetiem is 300, buffer is 30%
 env.JOB_RUNTIME=Math.round(1.3f * env.EXTRA_ARGS_ARG.toInteger() * 300)
 
-env.DEPLOYMENT_YAML_URL="https://raw.githubusercontent.com/intel-innersource/applications.infrastructure.data-center.jenkins.prt-int-cluster/main/paiv-pnp/paiv_pnp_spr_general.yaml"
+env.DEPLOYMENT_YAML_URL="https://raw.githubusercontent.com/maxingguo123/maxingguo123/main/paiv-pnp/paiv_pnp_spr_general.yaml"
 env.SANDSTONE_DEPLOYMENT="${env.WORKSPACE}/paiv_pnp_spr_general.yaml"
