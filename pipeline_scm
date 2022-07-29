@@ -5,7 +5,7 @@ pipeline {
   stages {
     stage('Deploy') {
         steps {
-            timeout(time: 1, unit: 'MINUTES') {sh "export KUBECONFIG=/data_bck/kubeconfig/config;kubectl apply -f stream.yaml;kubectl logs -f jenkins-stream-rsnfj -n kube-app"}
+            timeout(time: 1, unit: 'MINUTES') {sh "export KUBECONFIG=/data_bck/kubeconfig/config;kubectl apply -f stream.yaml;kubectl logs -f `kubectl get po -n kube-app -o wide|awk '/jenkins/{print $1}'` -n kube-app;kubectl delete job jenkins-stream -n kube-app"}
         }
     }    
   }  
