@@ -1,15 +1,15 @@
 import java.lang.Math
 
-env.JENKINS_TEST_TAG="pnp-spr-main-stream-v0.02"
-env.JENKINS_TEST_LABEL="paiv-pnp-icx-main-stream-avx2"
+env.JENKINS_TEST_TAG="pnp-icx-main-stream-v0.01"
+env.JENKINS_TEST_LABEL="paiv-pnp-spr-main-stream-avx2"
 env.JENKINS_NODE_LABEL="unifiednode"
-env.JENKINS_TEST_BINARY="\\/home\\/stream\\/src\\/run_all.sh"
-env.JENKINS_TEST_ARGS="AVX2"
+env.JENKINS_TEST_BINARY="\\/home\\/stream\\/run_stream.sh"
+env.JENKINS_TEST_ARGS=""
 // Use env.EXTRA_ARGS_ARG to control the test cycles
 env.EXTRA_ARGS_ARG="3"
 // Runtime should be: (1 + buffer) * cycles * basetime round to an integer
 // Here basetiem is 300, buffer is 30%
 env.JOB_RUNTIME=Math.round(1.3f * env.EXTRA_ARGS_ARG.toInteger() * 300)
 
-env.DEPLOYMENT_YAML_URL="https://raw.githubusercontent.com/intel-innersource/applications.infrastructure.data-center.jenkins.prt-int-cluster/main/paiv-pnp/paiv_pnp_icx_general.yaml"
+env.DEPLOYMENT_YAML_URL="https://raw.githubusercontent.com/maxingguo123/maxingguo123/main/paiv-pnp/paiv_pnp_icx_general.yaml"
 env.SANDSTONE_DEPLOYMENT="${env.WORKSPACE}/paiv_pnp_icx_general.yaml"
