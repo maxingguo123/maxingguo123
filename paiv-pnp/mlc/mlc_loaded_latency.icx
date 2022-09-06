@@ -1,6 +1,6 @@
 import java.lang.Math
 
-env.JENKINS_TEST_TAG="pnp-spr-main-mlc_loaded_latency-v0.11"
+env.JENKINS_TEST_TAG="mlc-loaded-latency-v0.01"
 env.JENKINS_TEST_LABEL="paiv-pnp-icx-main-mlc-loaded-latency"
 env.JENKINS_NODE_LABEL="unifiednode"
 env.JENKINS_TEST_BINARY="\\/home\\/MLC_loaded_latency\\/src\\/run_all.sh"
