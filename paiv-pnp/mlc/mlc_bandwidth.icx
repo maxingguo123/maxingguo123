@@ -1,6 +1,6 @@
 import java.lang.Math
 
-env.JENKINS_TEST_TAG="pnp-spr-main-mlc_bandwidth-v0.02"
+env.JENKINS_TEST_TAG="pnp-spr-main-mlc_bandwidth-v0.03"
 env.JENKINS_TEST_LABEL="paiv-pnp-icx-main-mlc-bandwidth"
 env.JENKINS_NODE_LABEL="unifiednode"
 env.JENKINS_TEST_BINARY="\\/home\\/MLC_bandwidth\\/src\\/run_all.sh"
