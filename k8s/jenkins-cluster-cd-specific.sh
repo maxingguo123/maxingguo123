@@ -2,7 +2,7 @@
 
 : ${KUBECTL_ARGS:=""}
 : ${NS:="default"}
-: ${REGISTRY:="prt-registry.sova.intel.com"}
+: ${REGISTRY:="pnp-harbor.sh.intel.com"}
 : ${RUN_AGGRESSOR:=false}
 : ${AGGRESSOR_CONFIG:=""}
 : ${AGGRESSOR_SCRIPT:=""}
