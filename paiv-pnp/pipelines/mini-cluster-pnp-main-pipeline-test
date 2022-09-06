@@ -5,8 +5,8 @@ def test_list = ["paiv-pnp/stream/stream_avx2"]
 
 
 def KUBECONFIG="--kubeconfig=/data_bck/kubeconfig/config"
-def JENKINS_NODE_LABEL="pnp-content-test-spr"
-def NS="pnp-content-test-spr"
+def JENKINS_NODE_LABEL="ipu-pnp-icx-dry-run"
+def NS="ipu-pnp-icx-dry-run"
 pipeline {
   agent { label 'common' }
   stages {
@@ -33,8 +33,8 @@ def run_job(job_file) {
   job = load(job_file)
   env.KUBECTL_ARGS="--kubeconfig=/data_bck/kubeconfig/config"
   base.init()
-  env.JENKINS_NODE_LABEL="pnp-content-test-spr"
-  env.NS="pnp-content-test-spr"
+  env.JENKINS_NODE_LABEL="ipu-pnp-icx-dry-run"
+  env.NS="ipu-pnp-icx-dry-run"
 
   iter = (env.ITERATIONS as int) ?: (1 as int)
   for (int i = 0; i < iter; i++) {
