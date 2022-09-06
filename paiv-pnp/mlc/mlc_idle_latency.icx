@@ -1,6 +1,6 @@
 import java.lang.Math
 
-env.JENKINS_TEST_TAG="pnp-icx-main-mlc_idle_latency-v0.02"
+env.JENKINS_TEST_TAG="mlc-idle-latency-v0.01"
 env.JENKINS_TEST_LABEL="paiv-pnp-icx-main-mlc-idle-latency"
 env.JENKINS_NODE_LABEL="unifiednode"
 env.JENKINS_TEST_BINARY="\\/home\\/MLC_idle_latency\\/src\\/run_all.sh"
