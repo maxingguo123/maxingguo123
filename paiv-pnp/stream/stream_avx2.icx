@@ -1,6 +1,6 @@
 import java.lang.Math
 
-env.JENKINS_TEST_TAG="pnp-icx-main-stream-v0.01"
+env.JENKINS_TEST_TAG="v0.01"
 env.JENKINS_TEST_LABEL="paiv-pnp-spr-main-stream-avx2"
 env.JENKINS_NODE_LABEL="unifiednode"
 env.JENKINS_TEST_BINARY="\\/home\\/stream\\/run_stream.sh"
