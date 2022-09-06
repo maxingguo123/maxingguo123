@@ -108,7 +108,7 @@ spec:
             privileged: true
             allowPrivilegeEscalation: true
         - name: node-details-ppin
-          image: REGISTRY/sandstone-init-container:32
+          image: REGISTRY/minicluster_pnp/sandstone-init-container:32
           command: ["/usr/bin/bash"]
           args: ["-c", "rdmsr -0 -a 0x4f; exit 0"]
           securityContext:
