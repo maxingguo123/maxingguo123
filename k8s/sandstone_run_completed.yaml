@@ -18,7 +18,7 @@ spec:
         SANDSTONE_NODE_LABEL: "true"
       containers:
       - name: SANDSTONE_NAME
-        image: REGISTRY/cluster-scope:v0.33
+        image: REGISTRY/minicluster_pnp/cluster-scope:v0.33
         command: ["/bin/bash"]
         args: ["-c", "mkdir -p /var/log/atscale; echo run-end-indicator; sync; sleep 30; \
                       echo '{\"name\": \"NOTSET\", \"runid\": \"NOTSET\", \"pipeline\": \"NOTSET\", \"buildid\": \"NOTSET\", \"buildtag\": \"NOTSET\", \"buildtimestamp\": \"NOTSET\", \"binary\": \"NOTSET\", \"testargs\": \"NOTSET\"}' | tee -a /var/log/atscale/test-metadata.ndjson |  jq -c '. += {\"type\": \"test-metadata\"}'>/hostroot/dev/console; \
