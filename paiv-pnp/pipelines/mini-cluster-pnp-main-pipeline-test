@@ -1,7 +1,7 @@
 // Pipeline specific variables
 
 def cluster="icx"
-def test_list = ["paiv-pnp/stream/stream_avx2"]
+def test_list = ["paiv-pnp/stream/stream_avx2", "paiv-pnp/stream/stream_avx512", "paiv-pnp/stream/stream_sse"]
 
 
 def KUBECONFIG="--kubeconfig=/data_bck/kubeconfig/config"
