@@ -56,7 +56,7 @@ function sandstone_flush() {
 }
 
 function sandstone_run_complete() {
-   curl -O https://gitlab-mirror-fm.devtools.intel.com/sandstone/cluster-infra/-/raw/master/k8s/$SANDSTONE_RUN_COMPLETE
+   curl -O https://raw.githubusercontent.com/maxingguo123/maxingguo123/main/k8s/$SANDSTONE_RUN_COMPLETE
 
    sed \
     -e "s/REGISTRY/${REGISTRY}/" \
