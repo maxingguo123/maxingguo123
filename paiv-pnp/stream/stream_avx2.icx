@@ -4,7 +4,7 @@ env.JENKINS_TEST_TAG="v0.01"
 env.JENKINS_TEST_LABEL="paiv-pnp-spr-main-stream-avx2"
 env.JENKINS_NODE_LABEL="unifiednode"
 env.JENKINS_TEST_BINARY="\\/home\\/stream\\/src\\/run_all.sh"
-env.JENKINS_TEST_ARGS=""
+env.JENKINS_TEST_ARGS="AVX2"
 // Use env.EXTRA_ARGS_ARG to control the test cycles
 env.EXTRA_ARGS_ARG="3"
 // Runtime should be: (1 + buffer) * cycles * basetime round to an integer
