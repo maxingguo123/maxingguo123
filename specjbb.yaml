@@ -14,10 +14,10 @@ spec:
       imagePullSecrets:
       - name: jenkins-docker
       containers:
-      - image: pnp-harbor.sh.intel.com/minicluster_pnp/pnp-icx:specjbb-v0.01
+      - image: pnp-harbor.sh.intel.com/minicluster_pnp/pnp-icx:specjbb-v0.00
         imagePullPolicy: Always
         name: jenkins-stream
-        command: ["sleep 8000s"]
+        command: ["./specjbb.sh"]
         securityContext:
           privileged: true
       nodeSelector: 
