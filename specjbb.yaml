@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: jenkins-stream
+  namespace: kube-app
+  annotations:
+    time: time15
+spec:
+  template:
+    metadata:
+      labels:
+        app: jenkins-stream
+    spec:
+      imagePullSecrets:
+      - name: jenkins-docker
+      containers:
+      - image: pnp-harbor.sh.intel.com/minicluster_pnp/pnp-icx:specjbb-v0.01
+        imagePullPolicy: Always
+        name: jenkins-stream
+        command: ["sleep 8000s"]
+        securityContext:
+          privileged: true
+      nodeSelector: 
+        kubernetes.io/hostname: spiv-pnp-4f-ipu-icx-backup
+      restartPolicy: Never
