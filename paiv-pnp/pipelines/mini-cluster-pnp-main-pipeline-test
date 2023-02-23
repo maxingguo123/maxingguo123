@@ -2,6 +2,7 @@
 
 def cluster="icx"
 def test_list = ["paiv-pnp/stream/stream_avx2", "paiv-pnp/stream/stream_avx512", "paiv-pnp/stream/stream_sse", "paiv-pnp/mlc/mlc_bandwidth", "paiv-pnp/mlc/mlc_idle_latency", "paiv-pnp/mlc/mlc_loaded_latency", "paiv-pnp/linpack/linpack_avx2", "paiv-pnp/linpack/linpack_avx512", "paiv-pnp/ai/ai_resnet50_inference", "paiv-pnp/speccpu/specrate2017-fp", "paiv-pnp/speccpu/specrate2017-int"]
+def test_list = []
 
 
 def KUBECONFIG="--kubeconfig=/data_bck/kubeconfig/config"
