@@ -34,8 +34,8 @@ spec:
       volumes:
         - name: nfs-storage
           nfs:
-           server: spiv-pnp-test.sh.intel.com
-           path: /data_bck/nfs/pnp
+           server: spiv-pnp-test1.sh.intel.com
+           path: /data_bck/nfs/pnp/icx/debug/specjbb
         - name: dshm
           emptyDir:
             medium: Memory
