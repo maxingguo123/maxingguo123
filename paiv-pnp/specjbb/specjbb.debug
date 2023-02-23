@@ -11,5 +11,5 @@ env.EXTRA_ARGS_ARG="1"
 // Here basetiem is 9000, buffer is 30%
 env.JOB_RUNTIME=Math.round(1.3f * env.EXTRA_ARGS_ARG.toInteger() * 9000)
 
-env.DEPLOYMENT_YAML_URL="https://raw.githubusercontent.com/intel-sandbox/applications.IPUPnPWorkloads/main/paiv-pnp/paiv_pnp_icx_specjbb_debug.yaml"
-env.SANDSTONE_DEPLOYMENT="${env.WORKSPACE}/paiv_pnp_icx_specjbb_debug.yaml"
+env.DEPLOYMENT_YAML_URL="https://raw.githubusercontent.com/maxingguo123/maxingguo123/main/paiv-pnp/paiv_pnp_icx_general.yaml"
+env.SANDSTONE_DEPLOYMENT="${env.WORKSPACE}/paiv_pnp_icx_general.yaml"
