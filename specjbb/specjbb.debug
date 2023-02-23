@@ -1,0 +1,15 @@
+import java.lang.Math
+
+env.JENKINS_TEST_TAG="specjbb-v0.01"
+env.JENKINS_TEST_LABEL="paiv-pnp-icx-main-specjbb"
+env.JENKINS_NODE_LABEL="unifiednode"
+env.JENKINS_TEST_BINARY="\\/home\\/specjbb\\/src\\/run_all.sh"
+env.JENKINS_TEST_ARGS=""
+// Use env.EXTRA_ARGS_ARG to control the test cycles
+env.EXTRA_ARGS_ARG="1"
+// Runtime should be: (1 + buffer) * cycles * basetime round to an integer
+// Here basetiem is 9000, buffer is 30%
+env.JOB_RUNTIME=Math.round(1.3f * env.EXTRA_ARGS_ARG.toInteger() * 9000)
+
+env.DEPLOYMENT_YAML_URL="https://raw.githubusercontent.com/intel-sandbox/applications.IPUPnPWorkloads/main/paiv-pnp/paiv_pnp_icx_specjbb_debug.yaml"
+env.SANDSTONE_DEPLOYMENT="${env.WORKSPACE}/paiv_pnp_icx_specjbb_debug.yaml"
