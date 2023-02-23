@@ -6,7 +6,7 @@ def test_list = ["paiv-pnp/specjbb/specjbb"]
 
 
 def KUBECONFIG="--kubeconfig=/data_bck/kubeconfig/config"
-def JENKINS_NODE_LABEL="ipu-pnp-icx-dry-run"
+def JENKINS_NODE_LABEL="debug-specjbb"
 def NS="ipu-pnp-icx-dry-run"
 pipeline {
   agent { label 'common' }
@@ -34,7 +34,7 @@ def run_job(job_file) {
   job = load(job_file)
   env.KUBECTL_ARGS="--kubeconfig=/data_bck/kubeconfig/config"
   base.init()
-  env.JENKINS_NODE_LABEL="ipu-pnp-icx-dry-run"
+  env.JENKINS_NODE_LABEL="debug-specjbb"
   env.NS="ipu-pnp-icx-dry-run"
 
   iter = (env.ITERATIONS as int) ?: (1 as int)
