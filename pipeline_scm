@@ -5,7 +5,7 @@ pipeline {
   stages {
     stage('Deploy') {
         steps {
-            timeout(time: 1, unit: 'MINUTES') {sh "export KUBECONFIG=/data_bck/kubeconfig/config;kubectl apply -f specjbb.yaml"}
+            timeout(time: 1, unit: 'MINUTES') {sh "export KUBECONFIG=/data_bck/kubeconfig/config;kubectl apply -f stream.yaml"}
         }
     }    
   }  
